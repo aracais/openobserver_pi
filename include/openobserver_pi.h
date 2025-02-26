@@ -1,5 +1,5 @@
 /******************************************************************************
- * $Id: testplugin_pi.h,v 1.0 2015/01/28 01:54:37 jongough Exp $
+ * $Id: openobserver_pi.h,v 1.0 2015/01/28 01:54:37 jongough Exp $
  *
  * Project:  OpenCPN
  * Purpose:  OpenCPN General Drawing Plugin
@@ -25,8 +25,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  */
-#ifndef _TESTPLUGINPI_H_
-#define _TESTPLUGINPI_H_
+#ifndef _OPENOBSERVERPI_H_
+#define _OPENOBSERVERPI_H_
 
 #ifdef __WXMSW__
 #ifdef _DEBUG
@@ -147,12 +147,12 @@ std::cout << x  << std::endl ; } while (0)
 
 //#define PI 3.14159265
 
-class testplugin_pi : public opencpn_plugin_118
+class openobserver_pi : public opencpn_plugin_118
 {
 public:
 
-    testplugin_pi(void *ppimgr);
-    ~testplugin_pi();
+    openobserver_pi(void *ppimgr);
+    ~openobserver_pi();
 
     wxWindow            *m_parent_window;
     wxFileConfig        *m_pTPConfig;
@@ -236,7 +236,7 @@ public:
     bool    m_bDoneODAPIVersionCall;
     int     m_iCallerId;
     bool    m_btpDialog;
-    int     m_testplugin_button_id;
+    int     m_openobserver_button_id;
     int     m_iODVersionMajor;
     int     m_iODVersionMinor;
     int     m_iODVersionPatch;

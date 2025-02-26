@@ -4,7 +4,7 @@
 # If you want to do a 'circleci local' build use the 'run-circleci-local.txt' file as the example to follow.
 #
 # Change the exports to meet the build requirements, i.e. the values in the config.yml file relevant to the particular job
-export OCPN_TARGET=bookworm
+export OCPN_TARGET=macos
 export BUILD_GTK3=true
 export WX_VER=32
 export LOCAL_DEPLOY=true

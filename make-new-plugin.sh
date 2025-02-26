@@ -3,26 +3,26 @@
 # This script refactors this plugin into a new plugin with a name of your choice.
 # To rename the plugin to "catsarebest", run `bash make-new-plugin.sh catsarebest`.
 
-newname="$1"
-Newname="$(echo "${newname^}")"
-NEWNAME="$(echo "${newname^^}")"
+newname=openobserver
+Newname=OpenObserver
+NEWNAME=OPENOBSERVER
 
-grep -rl testplugin . | grep -v .git | while read name; do
-  sed -e "s+testplugin+$newname+g" -i "$name";
+grep -rl openobserver . | grep -v .git | while read name; do
+  sed -e "s+openobserver+$newname+g" -i.sedbackup "$name";
 done
 
-grep -rl Testplugin . | grep -v .git | while read name; do  
-  sed -e "s+Testplugin+$Newname+g" -i "$name";
+grep -rl OpenObserver . | grep -v .git | while read name; do  
+  sed -e "s+OpenObserver+$Newname+g" -i.sedbackup "$name";
 done 
 
-grep -rl TESTPLUGIN . | grep -v .git | while read name; do  
-  sed -e "s+TESTPLUGIN+$NEWNAME+g" -i "$name";
+grep -rl OPENOBSERVER . | grep -v .git | while read name; do  
+  sed -e "s+OPENOBSERVER+$NEWNAME+g" -i.sedbackup "$name";
 done 
 
-find . -name "*testplugin*" | grep -v .git | while read name; do
-  mv "$name" "$(echo "$name" | sed -e "s+testplugin+$newname+g")"
+find . -name "*openobserver*" | grep -v .git | while read name; do
+  mv "$name" "$(echo "$name" | sed -e "s+openobserver+$newname+g")"
 done
 
-find . -name "*Testplugin*" | grep -v .git | while read name; do
-  mv "$name" "$(echo "$name" | sed -e "s+Testplugin+$Newname+g")"
+find . -name "*OpenObserver*" | grep -v .git | while read name; do
+  mv "$name" "$(echo "$name" | sed -e "s+OpenObserver+$Newname+g")"
 done

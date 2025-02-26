@@ -19,7 +19,7 @@
 # - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,                                       *
 # - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                                       *
 # -----------------------------------------------------------------------------
-# Frontend2 Author: Jon Gough Testplugin(TP) v1.0.328.0 05/02/2025 DD/MM/YYYY
+# Frontend2 Author: Jon Gough OpenObserver(TP) v1.0.328.0 05/02/2025 DD/MM/YYYY
 # format buildCI:yes useODAPI:yes validateJSON:yes
 # ---------------------------------------------------------------------------
 # -- When changing this file do NOT change the order of the sections.    -- ##
@@ -49,23 +49,23 @@ endif (COMMAND cmake_policy)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 
 # define plugin name, owner and versions
-set(VERBOSE_NAME "Testplugin")
-set(COMMON_NAME "Testplugin")
-set(TITLE_NAME "testplugin")
-set(PACKAGE_CONTACT "Jon Gough")
-set(PACKAGE "testplugin")
+set(VERBOSE_NAME "OpenObserver")
+set(COMMON_NAME "OpenObserver")
+set(TITLE_NAME "openobserver")
+set(PACKAGE_CONTACT "Alex Mansfield")
+set(PACKAGE "openobserver")
 set(SHORT_DESCRIPTION
     "Plugin to test examples of the ODAPI and JSON interface for ODRAW"
 )
 set(LONG_DESCRIPTION
-    "testplugin Plugin is used to test out the ODraw API and demonstrate how to use it successfully from another plugin"
+    "openobserver Plugin is used to test out the ODraw API and demonstrate how to use it successfully from another plugin"
 )
 
-set(VERSION_MAJOR "1")
+set(VERSION_MAJOR "0")
 set(VERSION_MINOR "0")
-set(VERSION_PATCH "328")
+set(VERSION_PATCH "1")
 set(VERSION_TWEAK "0")
-set(VERSION_DATE "05/02/2025") # DD/MM/YYYY format
+set(VERSION_DATE "01/03/2025") # DD/MM/YYYY format
 set(OCPN_MIN_VERSION "ov58")
 
 set(OCPN_API_VERSION_MAJOR "1")
@@ -85,7 +85,7 @@ set(ALPHA "alpha") # Standard Repos
 # Set if  Cloudsmith Base Repository name does not match your Git Repository
 # name. set(CLOUDSMITH_BASE_REPOSITORY "${GIT_REPOSITORY_NAME}")
 # set(CLOUDSMITH_BASE_REPOSITORY "opencpn-plugins")  #Ricks's customization
-set(CLOUDSMITH_BASE_REPOSITORY "testplugin") # without the pi
+set(CLOUDSMITH_BASE_REPOSITORY "openobserver") # without the pi
 
 # Set the following to use OpenCPN cloudsmith repositories instead of own
 # repositories
@@ -164,11 +164,11 @@ add_definitions(-DUSE_S57)
 # ---- Section Below - Add your project SET(SRCS and SET(HDRS  etc..
 
 set(SRCS src/tpControlDialogDef.cpp src/tpControlDialogImpl.cpp src/tpicons.cpp
-         src/tpJSON.cpp src/testplugin_pi.cpp src/tpUtils.cpp
+         src/tpJSON.cpp src/openobserver_pi.cpp src/tpUtils.cpp
 )
 
 set(HDRS
-    include/testplugin_pi.h
+    include/openobserver_pi.h
     include/tpicons.h
     include/tpControlDialogDef.h
     include/tpControlDialogImpl.h
