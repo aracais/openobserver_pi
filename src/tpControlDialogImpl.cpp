@@ -68,7 +68,7 @@ tpControlDialogImpl::tpControlDialogImpl( wxWindow* parent ) : tpControlDialogDe
     m_pfdDialog = NULL;
 
     if(!g_openobserver_pi->m_bODCreateBoundary) m_buttonCreateBoundaryODAPI->Disable();
-    if(!g_openobserver_pi->m_bODCreateBoundaryPoint) m_buttonCreateBoundaryPointODAPI->Disable();
+    // if(!g_openobserver_pi->m_bODCreateBoundaryPoint) m_buttonCreateBoundaryPointODAPI->Disable();
     if(!g_openobserver_pi->m_bODCreateTextPoint) m_buttonCreateTextPointODAPI->Disable();
     if(g_openobserver_pi->m_fnOutputJSON == wxEmptyString) m_checkBoxSaveJSON->Disable();
     else m_checkBoxSaveJSON->Enable();
@@ -978,8 +978,8 @@ void tpControlDialogImpl::SetPanels()
 {
     if(g_openobserver_pi->m_bODCreateBoundary) m_buttonCreateBoundaryODAPI->Enable();
     else m_buttonCreateBoundaryODAPI->Disable();
-    if(g_openobserver_pi->m_bODCreateBoundaryPoint) m_buttonCreateBoundaryPointODAPI->Enable();
-    else m_buttonCreateBoundaryPointODAPI->Disable();
+    // if(g_openobserver_pi->m_bODCreateBoundaryPoint) m_buttonCreateBoundaryPointODAPI->Enable();
+    // else m_buttonCreateBoundaryPointODAPI->Disable();
     if(g_openobserver_pi->m_bODCreateTextPoint) m_buttonCreateTextPointODAPI->Enable();
     else m_buttonCreateTextPointODAPI->Disable();
 }

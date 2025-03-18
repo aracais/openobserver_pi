@@ -669,7 +669,11 @@ void openobserver_pi::FindClosestBoundaryLineCrossing(FindClosestBoundaryLineCro
 
 bool openobserver_pi::CreateBoundaryPoint(CreateBoundaryPoint_t* pCBP)
 {
-    bool l_bRet = (*m_pODCreateBoundaryPoint)(pCBP);
+    PlugIn_Waypoint wp(pCBP->lat, pCBP->lon, "fish", "fish", GetNewGUID());
+    AddSingleWaypoint(&wp);
+
+    bool l_bRet = true; //(*m_pODCreateBoundaryPoint)(pCBP);
+
     DEBUGST("Boundary Point created: ");
     DEBUGEND(l_bRet);
     return true;
