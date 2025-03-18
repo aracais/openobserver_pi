@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version 3.10.1-0-g8feb16b)
+// C++ code generated with wxFormBuilder (version 4.2.1-0-g80c4cb6)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -10,20 +10,21 @@
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
+#include <wx/button.h>
 #include <wx/string.h>
-#include <wx/checkbox.h>
+#include <wx/bitmap.h>
+#include <wx/image.h>
+#include <wx/icon.h>
 #include <wx/gdicmn.h>
 #include <wx/font.h>
 #include <wx/colour.h>
 #include <wx/settings.h>
 #include <wx/sizer.h>
+#include <wx/grid.h>
 #include <wx/panel.h>
-#include <wx/bitmap.h>
-#include <wx/image.h>
-#include <wx/icon.h>
+#include <wx/checkbox.h>
 #include <wx/stattext.h>
 #include <wx/filepicker.h>
-#include <wx/button.h>
 #include <wx/textctrl.h>
 #include <wx/choice.h>
 #include <wx/clrpicker.h>
@@ -36,7 +37,6 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
-
 ///////////////////////////////////////////////////////////////////////////////
 /// Class tpControlDialogDef
 ///////////////////////////////////////////////////////////////////////////////
@@ -47,6 +47,10 @@ class tpControlDialogDef : public wxDialog
 	protected:
 		wxBoxSizer* m_SizerControl;
 		wxNotebook* m_notebookControl;
+		wxPanel* m_panelObservationTable;
+		wxButton* m_ObservationsNew;
+		wxButton* m_ObservationsDelete;
+		wxGrid* m_ObservationsTable;
 		wxPanel* m_panelGeneral;
 		wxCheckBox* m_checkBoxSaveJSONOnStartup;
 		wxCheckBox* m_checkBoxRecreateConfig;
@@ -165,6 +169,8 @@ class tpControlDialogDef : public wxDialog
 		wxButton* m_buttonClose;
 
 		// Virtual event handlers, override them in your derived class
+		virtual void tpControlOnClickNewObservation( wxCommandEvent& event ) { event.Skip(); }
+		virtual void tpControlOnClickDeleteObservation( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCheckBoxSaveJSONOnStartup( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCheckBoxDeleteFromConfig( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnFileChangeInputJSON( wxFileDirPickerEvent& event ) { event.Skip(); }

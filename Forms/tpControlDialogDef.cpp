@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version 3.10.1-0-g8feb16b)
+// C++ code generated with wxFormBuilder (version 4.2.1-0-g80c4cb6)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO *NOT* EDIT THIS FILE!
@@ -37,6 +37,60 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	fgSizer3->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	m_notebookControl = new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+	m_panelObservationTable = new wxPanel( m_notebookControl, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+	wxFlexGridSizer* fgSizerObservations;
+	fgSizerObservations = new wxFlexGridSizer( 2, 1, 0, 0 );
+	fgSizerObservations->SetFlexibleDirection( wxBOTH );
+	fgSizerObservations->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	wxFlexGridSizer* fgSizerObservationsButtons;
+	fgSizerObservationsButtons = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizerObservationsButtons->SetFlexibleDirection( wxBOTH );
+	fgSizerObservationsButtons->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	m_ObservationsNew = new wxButton( m_panelObservationTable, wxID_ANY, _("New"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizerObservationsButtons->Add( m_ObservationsNew, 0, wxALL, 5 );
+
+	m_ObservationsDelete = new wxButton( m_panelObservationTable, wxID_ANY, _("Delete"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizerObservationsButtons->Add( m_ObservationsDelete, 0, wxALL, 5 );
+
+
+	fgSizerObservations->Add( fgSizerObservationsButtons, 1, wxEXPAND, 5 );
+
+	m_ObservationsTable = new wxGrid( m_panelObservationTable, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+
+	// Grid
+	m_ObservationsTable->CreateGrid( 1, 5 );
+	m_ObservationsTable->EnableEditing( true );
+	m_ObservationsTable->EnableGridLines( true );
+	m_ObservationsTable->EnableDragGridSize( false );
+	m_ObservationsTable->SetMargins( 0, 0 );
+
+	// Columns
+	m_ObservationsTable->SetColSize( 0, 80 );
+	m_ObservationsTable->SetColSize( 1, 80 );
+	m_ObservationsTable->SetColSize( 2, 80 );
+	m_ObservationsTable->SetColSize( 3, 80 );
+	m_ObservationsTable->SetColSize( 4, 78 );
+	m_ObservationsTable->EnableDragColMove( false );
+	m_ObservationsTable->EnableDragColSize( true );
+	m_ObservationsTable->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Rows
+	m_ObservationsTable->EnableDragRowSize( true );
+	m_ObservationsTable->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
+
+	// Label Appearance
+
+	// Cell Defaults
+	m_ObservationsTable->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
+	fgSizerObservations->Add( m_ObservationsTable, 0, wxALL, 5 );
+
+
+	m_panelObservationTable->SetSizer( fgSizerObservations );
+	m_panelObservationTable->Layout();
+	fgSizerObservations->Fit( m_panelObservationTable );
+	m_notebookControl->AddPage( m_panelObservationTable, _("Observations"), false );
 	m_panelGeneral = new wxPanel( m_notebookControl, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxFlexGridSizer* fgSizer26;
 	fgSizer26 = new wxFlexGridSizer( 0, 2, 0, 0 );
@@ -88,7 +142,7 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	m_panelFileInput->SetSizer( m_fgSizerJSON );
 	m_panelFileInput->Layout();
 	m_fgSizerJSON->Fit( m_panelFileInput );
-	m_notebookControl->AddPage( m_panelFileInput, _("File Input"), false );
+	m_notebookControl->AddPage( m_panelFileInput, _("File Input"), true );
 	m_panelUserInput = new wxPanel( m_notebookControl, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	m_fgSizerUI = new wxFlexGridSizer( 0, 0, 0, 0 );
 	m_fgSizerUI->AddGrowableCol( 0 );
@@ -765,7 +819,7 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	m_panelUserInput->SetSizer( m_fgSizerUI );
 	m_panelUserInput->Layout();
 	m_fgSizerUI->Fit( m_panelUserInput );
-	m_notebookControl->AddPage( m_panelUserInput, _("User Input"), true );
+	m_notebookControl->AddPage( m_panelUserInput, _("User Input"), false );
 
 	fgSizer3->Add( m_notebookControl, 0, wxEXPAND | wxALL, 5 );
 
@@ -796,6 +850,8 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	this->Centre( wxBOTH );
 
 	// Connect Events
+	m_ObservationsNew->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::tpControlOnClickNewObservation ), NULL, this );
+	m_ObservationsDelete->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::tpControlOnClickDeleteObservation ), NULL, this );
 	m_checkBoxSaveJSONOnStartup->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnCheckBoxSaveJSONOnStartup ), NULL, this );
 	m_checkBoxRecreateConfig->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnCheckBoxDeleteFromConfig ), NULL, this );
 	m_filePickerInputJSON->Connect( wxEVT_COMMAND_FILEPICKER_CHANGED, wxFileDirPickerEventHandler( tpControlDialogDef::OnFileChangeInputJSON ), NULL, this );
@@ -827,6 +883,8 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 tpControlDialogDef::~tpControlDialogDef()
 {
 	// Disconnect Events
+	m_ObservationsNew->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::tpControlOnClickNewObservation ), NULL, this );
+	m_ObservationsDelete->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::tpControlOnClickDeleteObservation ), NULL, this );
 	m_checkBoxSaveJSONOnStartup->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnCheckBoxSaveJSONOnStartup ), NULL, this );
 	m_checkBoxRecreateConfig->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnCheckBoxDeleteFromConfig ), NULL, this );
 	m_filePickerInputJSON->Disconnect( wxEVT_COMMAND_FILEPICKER_CHANGED, wxFileDirPickerEventHandler( tpControlDialogDef::OnFileChangeInputJSON ), NULL, this );
