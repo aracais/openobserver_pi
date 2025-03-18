@@ -63,6 +63,11 @@ tpControlDialogImpl::tpControlDialogImpl( wxWindow* parent ) : tpControlDialogDe
     #endif // not defined __WXMSW__
 #endif // wxCHECK_VERSION(3,0,0)
 
+    wxGridCellAutoWrapStringEditor *editor = new wxGridCellAutoWrapStringEditor();
+    m_ObservationsTable->SetDefaultEditor(editor);
+    wxGridCellAutoWrapStringRenderer *renderer = new wxGridCellAutoWrapStringRenderer();
+    m_ObservationsTable->SetDefaultRenderer(renderer);
+
     m_bCreateBoundaryHasFocus = FALSE;
     m_bCreateBoundaryPointHasFocus = FALSE;
     m_pfdDialog = NULL;
@@ -72,6 +77,17 @@ tpControlDialogImpl::tpControlDialogImpl( wxWindow* parent ) : tpControlDialogDe
     if(!g_openobserver_pi->m_bODCreateTextPoint) m_buttonCreateTextPointODAPI->Disable();
     if(g_openobserver_pi->m_fnOutputJSON == wxEmptyString) m_checkBoxSaveJSON->Disable();
     else m_checkBoxSaveJSON->Enable();
+}
+
+void tpControlDialogImpl::OnButtonClickNewObservation( wxCommandEvent& event )
+{
+    m_ObservationsTable->InsertRows(0, 1);
+}
+
+void tpControlDialogImpl::OnButtonClickDeleteObservation( wxCommandEvent& event )
+{
+    if (m_ObservationsTable->GetNumberRows() > 0)
+        m_ObservationsTable->DeleteRows(0);
 }
 
 void tpControlDialogImpl::OnButtonClickCreateBoundaryODAPI( wxCommandEvent& event )
@@ -923,7 +939,7 @@ void tpControlDialogImpl::tpControlOnClickImportJSON( wxCommandEvent& event )
     Show(false);
 }
 
-void tpControlDialogImpl::SetLatLon( double lat, double lon )
+void tpControlDialogImpl::SetPositionFix( time_t fixTime, double lat, double lon )
 {
     m_textCtrlCornerLat->SetValue( toSDMM_PlugIn(1, lat));
     m_textCtrlCornerLon->SetValue( toSDMM_PlugIn(2, lon));
@@ -931,6 +947,16 @@ void tpControlDialogImpl::SetLatLon( double lat, double lon )
     m_textCtrlLongitude->SetValue( toSDMM_PlugIn( 2, lon ) );
     m_textCtrlTextPointLatitude->SetValue( toSDMM_PlugIn( 1, lat ) );
     m_textCtrlTextPointLongitude->SetValue( toSDMM_PlugIn( 2, lon ) );
+
+    char dateString[16];
+    std::strftime(dateString, 16, "%F", gmtime(&fixTime));
+    char timeString[16];
+    std::strftime(timeString, 16, "%T", gmtime(&fixTime));
+
+    m_ObservationsDate->SetValue(dateString);
+    m_ObservationsTime->SetValue(timeString);
+    m_ObservationsLat->SetValue(toSDMM_PlugIn(1, lat));
+    m_ObservationsLon->SetValue(toSDMM_PlugIn(2, lon));
 }
 
 void tpControlDialogImpl::OnButtonClickFonts( wxCommandEvent& event )

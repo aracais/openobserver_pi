@@ -39,12 +39,48 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	m_notebookControl = new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
 	m_panelObservationTable = new wxPanel( m_notebookControl, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxFlexGridSizer* fgSizerObservations;
-	fgSizerObservations = new wxFlexGridSizer( 2, 1, 0, 0 );
+	fgSizerObservations = new wxFlexGridSizer( 3, 1, 0, 0 );
 	fgSizerObservations->SetFlexibleDirection( wxBOTH );
 	fgSizerObservations->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
+	wxFlexGridSizer* fgSizerObservationsLabels;
+	fgSizerObservationsLabels = new wxFlexGridSizer( 1, 8, 0, 0 );
+	fgSizerObservationsLabels->SetFlexibleDirection( wxBOTH );
+	fgSizerObservationsLabels->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	m_ObservationsDateLabel = new wxStaticText( m_panelObservationTable, wxID_ANY, _("Date:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ObservationsDateLabel->Wrap( -1 );
+	fgSizerObservationsLabels->Add( m_ObservationsDateLabel, 0, wxALL, 5 );
+
+	m_ObservationsDate = new wxTextCtrl( m_panelObservationTable, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizerObservationsLabels->Add( m_ObservationsDate, 1, wxALL, 5 );
+
+	m_ObservationsTimeLabel = new wxStaticText( m_panelObservationTable, wxID_ANY, _("Time:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ObservationsTimeLabel->Wrap( -1 );
+	fgSizerObservationsLabels->Add( m_ObservationsTimeLabel, 0, wxALL, 5 );
+
+	m_ObservationsTime = new wxTextCtrl( m_panelObservationTable, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizerObservationsLabels->Add( m_ObservationsTime, 1, wxALL, 5 );
+
+	m_ObservationsLatLabel = new wxStaticText( m_panelObservationTable, wxID_ANY, _("Lat:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ObservationsLatLabel->Wrap( -1 );
+	fgSizerObservationsLabels->Add( m_ObservationsLatLabel, 0, wxALL, 5 );
+
+	m_ObservationsLat = new wxTextCtrl( m_panelObservationTable, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizerObservationsLabels->Add( m_ObservationsLat, 1, wxALL, 5 );
+
+	m_ObservationsLonLabel = new wxStaticText( m_panelObservationTable, wxID_ANY, _("Lon:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ObservationsLonLabel->Wrap( -1 );
+	fgSizerObservationsLabels->Add( m_ObservationsLonLabel, 0, wxALL, 5 );
+
+	m_ObservationsLon = new wxTextCtrl( m_panelObservationTable, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizerObservationsLabels->Add( m_ObservationsLon, 1, wxALL, 5 );
+
+
+	fgSizerObservations->Add( fgSizerObservationsLabels, 1, wxEXPAND, 5 );
+
 	wxFlexGridSizer* fgSizerObservationsButtons;
-	fgSizerObservationsButtons = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizerObservationsButtons = new wxFlexGridSizer( 1, 2, 0, 0 );
 	fgSizerObservationsButtons->SetFlexibleDirection( wxBOTH );
 	fgSizerObservationsButtons->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
@@ -55,9 +91,9 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	fgSizerObservationsButtons->Add( m_ObservationsDelete, 0, wxALL, 5 );
 
 
-	fgSizerObservations->Add( fgSizerObservationsButtons, 1, wxEXPAND, 5 );
+	fgSizerObservations->Add( fgSizerObservationsButtons, 1, 0, 5 );
 
-	m_ObservationsTable = new wxGrid( m_panelObservationTable, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
+	m_ObservationsTable = new wxGrid( m_panelObservationTable, wxID_ANY, wxDefaultPosition, wxSize( 740,500 ), 0 );
 
 	// Grid
 	m_ObservationsTable->CreateGrid( 1, 5 );
@@ -67,30 +103,25 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	m_ObservationsTable->SetMargins( 0, 0 );
 
 	// Columns
-	m_ObservationsTable->SetColSize( 0, 80 );
-	m_ObservationsTable->SetColSize( 1, 80 );
-	m_ObservationsTable->SetColSize( 2, 80 );
-	m_ObservationsTable->SetColSize( 3, 80 );
-	m_ObservationsTable->SetColSize( 4, 78 );
 	m_ObservationsTable->EnableDragColMove( false );
 	m_ObservationsTable->EnableDragColSize( true );
 	m_ObservationsTable->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
 
 	// Rows
-	m_ObservationsTable->EnableDragRowSize( true );
+	m_ObservationsTable->EnableDragRowSize( false );
 	m_ObservationsTable->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
 
 	// Label Appearance
 
 	// Cell Defaults
 	m_ObservationsTable->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
-	fgSizerObservations->Add( m_ObservationsTable, 0, wxALL, 5 );
+	fgSizerObservations->Add( m_ObservationsTable, 0, wxALL|wxEXPAND, 5 );
 
 
 	m_panelObservationTable->SetSizer( fgSizerObservations );
 	m_panelObservationTable->Layout();
 	fgSizerObservations->Fit( m_panelObservationTable );
-	m_notebookControl->AddPage( m_panelObservationTable, _("Observations"), false );
+	m_notebookControl->AddPage( m_panelObservationTable, _("Observations"), true );
 	m_panelGeneral = new wxPanel( m_notebookControl, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxFlexGridSizer* fgSizer26;
 	fgSizer26 = new wxFlexGridSizer( 0, 2, 0, 0 );
@@ -142,7 +173,7 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	m_panelFileInput->SetSizer( m_fgSizerJSON );
 	m_panelFileInput->Layout();
 	m_fgSizerJSON->Fit( m_panelFileInput );
-	m_notebookControl->AddPage( m_panelFileInput, _("File Input"), true );
+	m_notebookControl->AddPage( m_panelFileInput, _("File Input"), false );
 	m_panelUserInput = new wxPanel( m_notebookControl, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	m_fgSizerUI = new wxFlexGridSizer( 0, 0, 0, 0 );
 	m_fgSizerUI->AddGrowableCol( 0 );
@@ -850,8 +881,8 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	this->Centre( wxBOTH );
 
 	// Connect Events
-	m_ObservationsNew->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::tpControlOnClickNewObservation ), NULL, this );
-	m_ObservationsDelete->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::tpControlOnClickDeleteObservation ), NULL, this );
+	m_ObservationsNew->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnButtonClickNewObservation ), NULL, this );
+	m_ObservationsDelete->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnButtonClickDeleteObservation ), NULL, this );
 	m_checkBoxSaveJSONOnStartup->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnCheckBoxSaveJSONOnStartup ), NULL, this );
 	m_checkBoxRecreateConfig->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnCheckBoxDeleteFromConfig ), NULL, this );
 	m_filePickerInputJSON->Connect( wxEVT_COMMAND_FILEPICKER_CHANGED, wxFileDirPickerEventHandler( tpControlDialogDef::OnFileChangeInputJSON ), NULL, this );
@@ -883,8 +914,8 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 tpControlDialogDef::~tpControlDialogDef()
 {
 	// Disconnect Events
-	m_ObservationsNew->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::tpControlOnClickNewObservation ), NULL, this );
-	m_ObservationsDelete->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::tpControlOnClickDeleteObservation ), NULL, this );
+	m_ObservationsNew->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnButtonClickNewObservation ), NULL, this );
+	m_ObservationsDelete->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnButtonClickDeleteObservation ), NULL, this );
 	m_checkBoxSaveJSONOnStartup->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnCheckBoxSaveJSONOnStartup ), NULL, this );
 	m_checkBoxRecreateConfig->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnCheckBoxDeleteFromConfig ), NULL, this );
 	m_filePickerInputJSON->Disconnect( wxEVT_COMMAND_FILEPICKER_CHANGED, wxFileDirPickerEventHandler( tpControlDialogDef::OnFileChangeInputJSON ), NULL, this );

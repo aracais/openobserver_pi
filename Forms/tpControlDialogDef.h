@@ -10,22 +10,22 @@
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
-#include <wx/button.h>
 #include <wx/string.h>
-#include <wx/bitmap.h>
-#include <wx/image.h>
-#include <wx/icon.h>
+#include <wx/stattext.h>
 #include <wx/gdicmn.h>
 #include <wx/font.h>
 #include <wx/colour.h>
 #include <wx/settings.h>
+#include <wx/textctrl.h>
 #include <wx/sizer.h>
+#include <wx/button.h>
+#include <wx/bitmap.h>
+#include <wx/image.h>
+#include <wx/icon.h>
 #include <wx/grid.h>
 #include <wx/panel.h>
 #include <wx/checkbox.h>
-#include <wx/stattext.h>
 #include <wx/filepicker.h>
-#include <wx/textctrl.h>
 #include <wx/choice.h>
 #include <wx/clrpicker.h>
 #include <wx/slider.h>
@@ -48,6 +48,14 @@ class tpControlDialogDef : public wxDialog
 		wxBoxSizer* m_SizerControl;
 		wxNotebook* m_notebookControl;
 		wxPanel* m_panelObservationTable;
+		wxStaticText* m_ObservationsDateLabel;
+		wxTextCtrl* m_ObservationsDate;
+		wxStaticText* m_ObservationsTimeLabel;
+		wxTextCtrl* m_ObservationsTime;
+		wxStaticText* m_ObservationsLatLabel;
+		wxTextCtrl* m_ObservationsLat;
+		wxStaticText* m_ObservationsLonLabel;
+		wxTextCtrl* m_ObservationsLon;
 		wxButton* m_ObservationsNew;
 		wxButton* m_ObservationsDelete;
 		wxGrid* m_ObservationsTable;
@@ -169,8 +177,8 @@ class tpControlDialogDef : public wxDialog
 		wxButton* m_buttonClose;
 
 		// Virtual event handlers, override them in your derived class
-		virtual void tpControlOnClickNewObservation( wxCommandEvent& event ) { event.Skip(); }
-		virtual void tpControlOnClickDeleteObservation( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClickNewObservation( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClickDeleteObservation( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCheckBoxSaveJSONOnStartup( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCheckBoxDeleteFromConfig( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnFileChangeInputJSON( wxFileDirPickerEvent& event ) { event.Skip(); }

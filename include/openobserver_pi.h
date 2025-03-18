@@ -197,6 +197,7 @@ public:
     bool KeyboardEventHook( wxKeyEvent &event );
     bool MouseEventHook( wxMouseEvent &event );
     void SetCursorLatLon(double lat, double lon);
+    void SetPositionFix(PlugIn_Position_Fix &pfix);
 
     // OD Methods
     void ProcessTimerEvent(wxTimerEvent& ev);

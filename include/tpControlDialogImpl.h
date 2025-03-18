@@ -57,6 +57,10 @@ class tpControlDialogImpl : public tpControlDialogDef
         void tpControlOnClickImportJSON( wxCommandEvent& event );
         void tpControlOKClick( wxCommandEvent& event );
         void tpControlCloseClick( wxCommandEvent& event );
+
+        void OnButtonClickNewObservation( wxCommandEvent& event );
+        void OnButtonClickDeleteObservation( wxCommandEvent& event );
+
         void OnButtonClickFonts( wxCommandEvent& event );
         void OnButtonClickCreateBoundaryODAPI( wxCommandEvent& event );
         void OnButtonClickDeleteBoundaryODAPI( wxCommandEvent& event );
@@ -84,7 +88,7 @@ class tpControlDialogImpl : public tpControlDialogDef
 	public:
         tpControlDialogImpl( wxWindow *parent );
         void        SetDialogSize( void );
-        void        SetLatLon( double lat, double lon );
+        void        SetPositionFix(time_t fixTime, double lat, double lon );
         void        SetPanels(void);
         wxString    GetJSONSaveFile( void );
         void        SetJSONSaveFile( wxString SaveFile );

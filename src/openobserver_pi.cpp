@@ -280,7 +280,7 @@ int openobserver_pi::Init(void)
 //        WANTS_CONFIG              |
         INSTALLS_TOOLBOX_PAGE     |
         INSTALLS_CONTEXTMENU_ITEMS  |
-//        WANTS_NMEA_EVENTS         |
+        WANTS_NMEA_EVENTS         |
 //        WANTS_NMEA_SENTENCES        |
         //    USES_AUI_MANAGER            |
 //        WANTS_PREFERENCES         |
@@ -425,7 +425,7 @@ bool openobserver_pi::MouseEventHook( wxMouseEvent &event )
         if(event.LeftDown()) {
             m_click_lat = m_cursor_lat;
             m_click_lon = m_cursor_lon;
-            m_tpControlDialogImpl->SetLatLon( m_cursor_lat, m_cursor_lon );
+            // m_tpControlDialogImpl->SetLatLon( m_cursor_lat, m_cursor_lon );
             bret = TRUE;
         }
 
@@ -439,9 +439,14 @@ bool openobserver_pi::MouseEventHook( wxMouseEvent &event )
 
 void openobserver_pi::SetCursorLatLon(double lat, double lon)
 {
+    m_cursor_lat = lat;
+    m_cursor_lon = lon;
+}
+
+void openobserver_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
+{
     if(m_tpControlDialogImpl->IsShown()) {
-        m_cursor_lat = lat;
-        m_cursor_lon = lon;
+        m_tpControlDialogImpl->SetPositionFix(pfix.FixTime, pfix.Lat, pfix.Lon);
     }
 }
 
@@ -625,37 +630,37 @@ void openobserver_pi::GetODAPI()
         }
     }
 
-    wxString l_msg;
-    wxString l_avail;
-    wxString l_notavail;
-    l_msg.Printf(_("OD Version: Major: %i, Minor: %i, Patch: %i, ODAPI Version: Major: %i, Minor: %i\n"), m_iODVersionMajor, m_iODVersionMinor, m_iODVersionPatch, m_iODAPIVersionMajor, m_iODAPIVersionMinor);
-    if(m_bOD_FindPointInAnyBoundary) l_avail.Append(_("OD_FindPointInAnyBoundary\n"));
-    if(m_bODFindClosestBoundaryLineCrossing) l_avail.Append(_("OD_FindClosestBoundaryLineCrossing\n"));
-    if(m_bODFindFirstBoundaryLineCrossing) l_avail.Append(_("OD_FindFirstBoundaryLineCrossing\n"));
-    if(m_bODCreateBoundary) l_avail.Append(_("OD_CreateBoundary\n"));
-    if(m_bODCreateBoundaryPoint) l_avail.Append(_("OD_CreateBoundaryPoint\n"));
-    if(m_bODCreateTextPoint) l_avail.Append(_("OD_CreateTextPoint\n"));
-    if(m_bODAddPointIcon) l_avail.Append(_("OD_AddPointIcon\n"));
-    if(m_bODDeletePointIcon) l_avail.Append(_("OD_DeletePointIcon\n"));
-    if(l_avail.Length() > 0) {
-        l_msg.Append(_("The following ODAPI's are available: \n"));
-        l_msg.Append(l_avail);
-    }
+    // wxString l_msg;
+    // wxString l_avail;
+    // wxString l_notavail;
+    // l_msg.Printf(_("OD Version: Major: %i, Minor: %i, Patch: %i, ODAPI Version: Major: %i, Minor: %i\n"), m_iODVersionMajor, m_iODVersionMinor, m_iODVersionPatch, m_iODAPIVersionMajor, m_iODAPIVersionMinor);
+    // if(m_bOD_FindPointInAnyBoundary) l_avail.Append(_("OD_FindPointInAnyBoundary\n"));
+    // if(m_bODFindClosestBoundaryLineCrossing) l_avail.Append(_("OD_FindClosestBoundaryLineCrossing\n"));
+    // if(m_bODFindFirstBoundaryLineCrossing) l_avail.Append(_("OD_FindFirstBoundaryLineCrossing\n"));
+    // if(m_bODCreateBoundary) l_avail.Append(_("OD_CreateBoundary\n"));
+    // if(m_bODCreateBoundaryPoint) l_avail.Append(_("OD_CreateBoundaryPoint\n"));
+    // if(m_bODCreateTextPoint) l_avail.Append(_("OD_CreateTextPoint\n"));
+    // if(m_bODAddPointIcon) l_avail.Append(_("OD_AddPointIcon\n"));
+    // if(m_bODDeletePointIcon) l_avail.Append(_("OD_DeletePointIcon\n"));
+    // if(l_avail.Length() > 0) {
+    //     l_msg.Append(_("The following ODAPI's are available: \n"));
+    //     l_msg.Append(l_avail);
+    // }
 
-    if(!m_bOD_FindPointInAnyBoundary) l_notavail.Append(_("OD_FindPointInAnyBoundary\n"));
-    if(!m_bODFindClosestBoundaryLineCrossing) l_notavail.Append(_("OD_FindClosestBoundaryLineCrossing\n"));
-    if(!m_bODFindFirstBoundaryLineCrossing) l_notavail.Append(_("OD_FindFirstBoundaryLineCrossing\n"));
-    if(!m_bODCreateBoundary) l_notavail.Append(_("OD_CreateBoundary\n"));
-    if(!m_bODCreateBoundaryPoint) l_notavail.Append(_("OD_CreateBoundaryPoint\n"));
-    if(!m_bODCreateTextPoint) l_notavail.Append(_("OD_CreateTextPoint\n"));
-    if(!m_bODAddPointIcon) l_notavail.Append(_("OD_AddPointIcon\n"));
-    if(!m_bODDeletePointIcon) l_notavail.Append(_("OD_DeletePointIcon\n"));
-    if(l_notavail.Length() > 0) {
-        l_msg.Append(_("The following ODAPI's are not available:\n"));
-        l_msg.Append(l_notavail);
-    }
+    // if(!m_bOD_FindPointInAnyBoundary) l_notavail.Append(_("OD_FindPointInAnyBoundary\n"));
+    // if(!m_bODFindClosestBoundaryLineCrossing) l_notavail.Append(_("OD_FindClosestBoundaryLineCrossing\n"));
+    // if(!m_bODFindFirstBoundaryLineCrossing) l_notavail.Append(_("OD_FindFirstBoundaryLineCrossing\n"));
+    // if(!m_bODCreateBoundary) l_notavail.Append(_("OD_CreateBoundary\n"));
+    // if(!m_bODCreateBoundaryPoint) l_notavail.Append(_("OD_CreateBoundaryPoint\n"));
+    // if(!m_bODCreateTextPoint) l_notavail.Append(_("OD_CreateTextPoint\n"));
+    // if(!m_bODAddPointIcon) l_notavail.Append(_("OD_AddPointIcon\n"));
+    // if(!m_bODDeletePointIcon) l_notavail.Append(_("OD_DeletePointIcon\n"));
+    // if(l_notavail.Length() > 0) {
+    //     l_msg.Append(_("The following ODAPI's are not available:\n"));
+    //     l_msg.Append(l_notavail);
+    // }
 
-    OCPNMessageBox_PlugIn( m_parent_window, l_msg, _("OPENOBSERVER"), (long) wxYES );
+    // OCPNMessageBox_PlugIn( m_parent_window, l_msg, _("OPENOBSERVER"), (long) wxYES );
 
 }
 
