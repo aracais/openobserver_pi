@@ -29,6 +29,10 @@
 #include "wx/wx.h"
 #endif
 
+#include <wx/filedlg.h>
+#include <wx/wfstream.h>
+#include <wx/file.h>
+
 #include <wx/ffile.h>
 #include <wx/base64.h>
 #include <wx/mstream.h>
@@ -82,12 +86,60 @@ tpControlDialogImpl::tpControlDialogImpl( wxWindow* parent ) : tpControlDialogDe
 void tpControlDialogImpl::OnButtonClickNewObservation( wxCommandEvent& event )
 {
     m_ObservationsTable->InsertRows(0, 1);
+    m_ObservationsTable->SetCellValue(0, 0, m_ObservationsDate->GetValue());
+    m_ObservationsTable->SetCellValue(0, 1, m_ObservationsTime->GetValue());
+    m_ObservationsTable->SetCellValue(0, 2, m_ObservationsLat->GetValue());
+    m_ObservationsTable->SetCellValue(0, 3, m_ObservationsLon->GetValue());
 }
 
 void tpControlDialogImpl::OnButtonClickDeleteObservation( wxCommandEvent& event )
 {
     if (m_ObservationsTable->GetNumberRows() > 0)
         m_ObservationsTable->DeleteRows(0);
+}
+
+void tpControlDialogImpl::OnButtonClickExportObservations( wxCommandEvent& event )
+{
+    wxFileDialog exportFileDialog(this, _("Export observations to CSV file"), "", m_ObservationsDate->GetValue(), "CSV file (*.csv)|*.csv", wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
+ 
+    if (exportFileDialog.ShowModal() == wxID_CANCEL)
+        return;
+ 
+    // save the current contents in the file;
+    // this can be done with e.g. wxWidgets output streams:
+    wxFileOutputStream output_stream(exportFileDialog.GetPath());
+    if (!output_stream.IsOk())
+    {
+        wxLogError("Cannot save current contents in file '%s'.", exportFileDialog.GetPath());
+        return;
+    }
+
+    wxFile *file = output_stream.GetFile();
+
+    const int exportCols = m_ObservationsTable->GetNumberCols() - 2;
+    
+    for (int c=0; c < exportCols; ++c)
+    {
+        file->Write(m_ObservationsTable->GetColLabelValue(c));
+
+        if (c < (exportCols - 1))
+            file->Write(",");
+    }
+    file->Write("\n");
+
+    for (int r=0; r < m_ObservationsTable->GetNumberRows(); ++r)
+    {
+        for (int c=0; c < exportCols; ++c)
+        {
+            file->Write(m_ObservationsTable->GetCellValue(r, c));
+
+            if (c < (exportCols - 1))
+                file->Write(",");
+        }
+        file->Write("\n");
+    }
+
+    file->Close();
 }
 
 void tpControlDialogImpl::OnButtonClickCreateBoundaryODAPI( wxCommandEvent& event )

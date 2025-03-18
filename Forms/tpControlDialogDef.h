@@ -58,6 +58,7 @@ class tpControlDialogDef : public wxDialog
 		wxTextCtrl* m_ObservationsLon;
 		wxButton* m_ObservationsNew;
 		wxButton* m_ObservationsDelete;
+		wxButton* m_ObservationsExportObservations;
 		wxGrid* m_ObservationsTable;
 		wxPanel* m_panelGeneral;
 		wxCheckBox* m_checkBoxSaveJSONOnStartup;
@@ -179,6 +180,7 @@ class tpControlDialogDef : public wxDialog
 		// Virtual event handlers, override them in your derived class
 		virtual void OnButtonClickNewObservation( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickDeleteObservation( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClickExportObservations( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCheckBoxSaveJSONOnStartup( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCheckBoxDeleteFromConfig( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnFileChangeInputJSON( wxFileDirPickerEvent& event ) { event.Skip(); }
@@ -208,8 +210,8 @@ class tpControlDialogDef : public wxDialog
 	public:
 
 		tpControlDialogDef();
-		tpControlDialogDef( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Test Plugin Control Dialog"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 750,716 ), long style = wxCAPTION|wxCLOSE_BOX|wxDEFAULT_DIALOG_STYLE|wxSTAY_ON_TOP );
-		bool Create( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Test Plugin Control Dialog"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 750,716 ), long style = wxCAPTION|wxCLOSE_BOX|wxDEFAULT_DIALOG_STYLE|wxSTAY_ON_TOP );
+		tpControlDialogDef( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("OpenObserver"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 750,716 ), long style = wxCAPTION|wxCLOSE_BOX|wxDEFAULT_DIALOG_STYLE|wxSTAY_ON_TOP );
+		bool Create( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("OpenObserver"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 750,716 ), long style = wxCAPTION|wxCLOSE_BOX|wxDEFAULT_DIALOG_STYLE|wxSTAY_ON_TOP );
 
 		~tpControlDialogDef();
 

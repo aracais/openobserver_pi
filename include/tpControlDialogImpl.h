@@ -60,6 +60,7 @@ class tpControlDialogImpl : public tpControlDialogDef
 
         void OnButtonClickNewObservation( wxCommandEvent& event );
         void OnButtonClickDeleteObservation( wxCommandEvent& event );
+        void OnButtonClickExportObservations( wxCommandEvent& event );
 
         void OnButtonClickFonts( wxCommandEvent& event );
         void OnButtonClickCreateBoundaryODAPI( wxCommandEvent& event );
