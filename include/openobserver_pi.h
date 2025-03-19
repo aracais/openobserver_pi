@@ -25,8 +25,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
  ***************************************************************************
  */
-#ifndef _OPENOBSERVERPI_H_
-#define _OPENOBSERVERPI_H_
+
+#pragma once
 
 #ifdef __WXMSW__
 #ifdef _DEBUG
@@ -138,14 +138,11 @@ std::cout << x  << std::endl ; } while (0)
 #include <wx/fileconf.h>
 #include <wx/dynarray.h>
 
-#include "ODAPI.h"
 #include "globals.h"
 
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
 //----------------------------------------------------------------------------------------------------------
-
-//#define PI 3.14159265
 
 class openobserver_pi : public opencpn_plugin_118
 {
@@ -156,8 +153,6 @@ public:
 
     wxWindow            *m_parent_window;
     wxFileConfig        *m_pTPConfig;
-    wxTimer             *m_timer;
-
 
     //    The required PlugIn Methods
     int Init(void);
@@ -174,130 +169,39 @@ public:
     wxString GetCommonName();
     wxString GetShortDescription();
     wxString GetLongDescription();
-//    void SetColorScheme(PI_ColorScheme cs);
-    void GetOriginalColors();
-    void SetOriginalColors();
-
-    //    The required override PlugIn Methods
-    //     bool RenderOverlay(wxMemoryDC *pmdc, PlugIn_ViewPort *vp);
-    //      void SetCursorLatLon(double lat, double lon);
-
 
     int GetToolbarToolCount(void);
-    void ShowPreferencesDialog( wxWindow* parent );
     void OnToolbarToolCallback(int id);
     void OnToolbarToolDownCallback(int id);
     void OnToolbarToolUpCallback(int id);
-    void SetPluginMessage(wxString &message_id, wxString &message_body);
 
-    void loadLayouts(wxWindow * parent);
-//    void startLogbook();
-    void shutdown(bool menu);
     void LateInit(void);
     bool KeyboardEventHook( wxKeyEvent &event );
     bool MouseEventHook( wxMouseEvent &event );
     void SetCursorLatLon(double lat, double lon);
     void SetPositionFix(PlugIn_Position_Fix &pfix);
 
-    // OD Methods
-    void ProcessTimerEvent(wxTimerEvent& ev);
-    void PopupMenuHandler(wxCommandEvent& ev);
-
-    void SetToolbarTool( void );
     void ToggleToolbarIcon( void);
 
-    void GetODAPI( void );
-
-    void FindClosestBoundaryLineCrossing(FindClosestBoundaryLineCrossing_t *pFCPIAB);
-    bool CreateBoundaryPoint(CreateBoundaryPoint_t *pCBP);
-    bool CreateBoundary(CreateBoundary_t *pCB);
-    bool CreateTextPoint(CreateTextPoint_t *pCTP);
-    bool DeleteBoundaryPoint(DeleteBoundaryPoint_t *pDBP);
-    bool DeleteBoundary(DeleteBoundary_t *pDB);
-    bool DeleteTextPoint(DeleteTextPoint_t *pDTP);
-    void AddPointIcon(AddPointIcon_t *API);
-    void DeletePointIcon(DeletePointIcon_t *p_DPI);
-    bool ImportJSONFile(void);
-    void UpdateCloseAfterSave(bool bCloseAfterSave);
-    void UpdateAppendToFile(bool bAppendToFile);
-
-    wxGLContext     *m_pcontext;
-    wxMemoryDC      *pmdc;
-//    wxGLCanvas      *m_glcc;
-
-    int         nBlinkerTick;
-
-    void    appendOSDirSlash(wxString* pString);
+    void appendOSDirSlash(wxString* pString);
 
     tpicons *m_ptpicons;
-    tpControlDialogImpl    *m_tpControlDialogImpl;
+    ooControlDialogImpl *m_ooControlDialogImpl;
 
-    bool    eventsEnabled;
     bool    m_bReadyForRequests;
-    bool    m_bDoneODAPIVersionCall;
     int     m_iCallerId;
     bool    m_btpDialog;
     int     m_openobserver_button_id;
-    int     m_iODVersionMajor;
-    int     m_iODVersionMinor;
-    int     m_iODVersionPatch;
-    int     m_iODAPIVersionMajor;
-    int     m_iODAPIVersionMinor;
-    bool    m_bOD_FindPointInAnyBoundary;
-    bool    m_bODFindClosestBoundaryLineCrossing;
-    bool    m_bODFindFirstBoundaryLineCrossing;
-    bool    m_bODCreateBoundary;
-    bool    m_bODCreateBoundaryPoint;
-    bool    m_bODCreateTextPoint;
-    bool    m_bODDeleteBoundary;
-    bool    m_bODDeleteBoundaryPoint;
-    bool    m_bODDeleteTextPoint;
-    bool    m_bODAddPointIcon;
-    bool    m_bODDeletePointIcon;
-    wxFileName  m_fnInputJSON;
-    wxFileName  m_fnOutputJSON;
-    bool    m_bSaveIncommingJSONMessages;
-    bool    m_bRecreateConfig;
-    bool    m_bCloseSaveFileAfterEachWrite;
-    bool    m_bAppendToSaveFile;
-
 
 private:
-    void    OnTimer(wxTimerEvent& ev);
-
     void    SaveConfig( void );
     void    LoadConfig();
 
     void    MenuPrepend( wxMenu *menu, int id, wxString label);
     void    MenuAppend( wxMenu *menu, int id, wxString label);
-    void    FindSelectedObject( void );
-
-    PlugIn_ViewPort m_VP;
-
-    int     m_show_id;
-    int     m_hide_id;
-    bool    show;
-    int     m_config_button_id;
 
     double  m_cursor_lat;
     double  m_cursor_lon;
     double  m_click_lat;
     double  m_click_lon;
-
-    OD_FindPointInAnyBoundary           m_pOD_FindPointInAnyBoundary;
-    OD_FindClosestBoundaryLineCrossing  m_pODFindClosestBoundaryLineCrossing;
-    OD_FindFirstBoundaryLineCrossing    m_pODFindFirstBoundaryLineCrossing;
-    OD_CreateBoundary                   m_pODCreateBoundary;
-    OD_CreateBoundaryPoint              m_pODCreateBoundaryPoint;
-    OD_CreateTextPoint                  m_pODCreateTextPoint;
-    OD_DeleteBoundaryPoint              m_pODDeleteBoundaryPoint;
-    OD_DeleteBoundary                   m_pODDeleteBoundary;
-    OD_DeleteTextPoint                  m_pODDeleteTextPoint;
-    OD_AddPointIcon                     m_pODAddPointIcon;
-    OD_DeletePointIcon                  m_pODDeletePointIcon;
 };
-
-#endif
-
-
-

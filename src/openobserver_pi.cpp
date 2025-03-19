@@ -1,7 +1,7 @@
 /******************************************************************************
  * updated: 4-5-2012
  * Project:  OpenCPN
- * Purpose:  test Plugin
+ * Purpose:  OpenObserver Plugin
  * Author:   Jon Gough
  *
  ***************************************************************************
@@ -50,10 +50,8 @@
 #include "version.h"
 #include "wxWTranslateCatalog.h"
 
-#include "ODAPI.h"
-#include "tpJSON.h"
 #include "tpicons.h"
-#include "tpControlDialogImpl.h"
+#include "ooControlDialogImpl.h"
 
 #include "wx/jsonwriter.h"
 
@@ -71,39 +69,25 @@ static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double*)&lNaN)
 #endif
 
-openobserver_pi           *g_openobserver_pi;
+openobserver_pi         *g_openobserver_pi;
 wxString                *g_PrivateDataDir;
 
-wxString                *g_pHome_Locn;
 wxString                *g_pData;
 wxString                *g_SData_Locn;
 wxString                *g_pLayerDir;
 
-PlugIn_ViewPort         *g_pVP;
-PlugIn_ViewPort         g_VP;
 wxString                *g_tplocale;
 void                    *g_ppimgr;
 
-tpJSON                  *g_ptpJSON;
-ODAPI                   *g_ptpAPI;
-double                  g_dVar;
 int                     g_iLocaleDepth;
-wxString                *g_tpLocale;
-bool                    g_bSaveJSONOnStartup;
 
 wxFont                  *g_pFontTitle;
 wxFont                  *g_pFontData;
 wxFont                  *g_pFontLabel;
 wxFont                  *g_pFontSmall;
 
-wxString                g_ReceivedODAPIMessage;
-wxJSONValue             g_ReceivedODAPIJSONMsg;
-wxString                g_ReceivedJSONMessage;
-wxJSONValue             g_ReceivedJSONJSONMsg;
-
 // Needed for ocpndc.cpp to compile. Normally would be in glChartCanvas.cpp
 float g_GLMinSymbolLineWidth;
-
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -137,7 +121,6 @@ openobserver_pi::openobserver_pi(void *ppimgr)
 {
     // Create the PlugIn icons
     g_ppimgr = ppimgr;
-//    g_tp_pi_manager = (PlugInManager *) ppimgr;
     g_openobserver_pi = this;
 
     wxString *l_pDir = new wxString(*GetpPrivateApplicationDataLocation());
@@ -180,85 +163,44 @@ openobserver_pi::~openobserver_pi()
 
     delete g_pLayerDir;
     g_pLayerDir = NULL;
-
 }
 
 int openobserver_pi::Init(void)
 {
     g_tplocale = NULL;
     m_bReadyForRequests = false;
-    m_bDoneODAPIVersionCall = false;
     m_btpDialog = false;
-    m_tpControlDialogImpl = NULL;
+    m_ooControlDialogImpl = NULL;
     m_cursor_lat = 0.0;
     m_cursor_lon = 0.0;
     m_click_lat = 0.0;
     m_click_lon = 0.0;
-    m_bOD_FindPointInAnyBoundary = false;
-    m_bODFindClosestBoundaryLineCrossing = false;
-    m_bODFindFirstBoundaryLineCrossing = false;
-    m_bODCreateBoundary = false;
-    m_bODCreateBoundaryPoint = false;
-    m_bODCreateTextPoint = false;
-    m_bODAddPointIcon = false;
-    m_bODDeletePointIcon = false;
-    m_pOD_FindPointInAnyBoundary = NULL;
-    m_pODFindClosestBoundaryLineCrossing = NULL;
-    m_pODFindFirstBoundaryLineCrossing = NULL;
-    m_pODFindFirstBoundaryLineCrossing = NULL;
-    m_pODCreateBoundary = NULL;
-    m_pODCreateBoundaryPoint = NULL;
-    m_pODCreateTextPoint = NULL;
-    m_pODDeleteBoundary = NULL;
-    m_pODDeleteBoundaryPoint = NULL;
-    m_pODDeleteTextPoint = NULL;
-    m_pODAddPointIcon = NULL;
-    m_pODDeletePointIcon = NULL;
-    m_iODVersionMajor = 0;
-    m_iODVersionMinor = 0;
-    m_iODVersionPatch = 0;
-    m_iODAPIVersionMajor = 0;
-    m_iODAPIVersionMinor = 0;
-    m_bSaveIncommingJSONMessages = false;
-    m_fnOutputJSON = wxEmptyString;
-    m_fnInputJSON = wxEmptyString;
-    m_bCloseSaveFileAfterEachWrite = true;
-    m_bAppendToSaveFile = true;
-    m_bRecreateConfig = false;
 
     // Adds local language support for the plugin to OCPN
     AddLocaleCatalog( PLUGIN_CATALOG_NAME );
-
-    eventsEnabled = true;
 
     // Get a pointer to the opencpn display canvas, to use as a parent for windows created
     m_parent_window = GetOCPNCanvasWindow();
     m_pTPConfig = GetOCPNConfigObject();
 
-    m_tpControlDialogImpl = new tpControlDialogImpl(m_parent_window);
-    m_tpControlDialogImpl->Fit();
-    m_tpControlDialogImpl->Layout();
-    m_tpControlDialogImpl->Hide();
+    m_ooControlDialogImpl = new ooControlDialogImpl(m_parent_window);
+    m_ooControlDialogImpl->Fit();
+    m_ooControlDialogImpl->Layout();
+    m_ooControlDialogImpl->Hide();
     LoadConfig();
 
-    g_ptpJSON = new tpJSON;
-
-
 #ifdef PLUGIN_USE_SVG
-    m_openobserver_button_id  = InsertPlugInToolSVG(_("Test Plugin"), m_ptpicons->m_s_openobserver_grey_pi, m_ptpicons->m_s_openobserver_pi, m_ptpicons->m_s_openobserver_toggled_pi, wxITEM_CHECK,
-                                                  _("Test Plugin"), wxS(""), NULL, openobserver_POSITION, 0, this);
+    m_openobserver_button_id  = InsertPlugInToolSVG(_("OpenObserver Plugin"), m_ptpicons->m_s_openobserver_grey_pi, m_ptpicons->m_s_openobserver_pi, m_ptpicons->m_s_openobserver_toggled_pi, wxITEM_CHECK,
+                                                  _("OpenObserver Plugin"), wxS(""), NULL, openobserver_POSITION, 0, this);
 #else
-    m_openobserver_button_id  = InsertPlugInTool(_("Test Plugin"), &m_ptpicons->m_bm_openobserver_grey_pi, &m_ptpicons->m_bm_openobserver_pi, wxITEM_CHECK,
-                                             _("Test Plugin"), wxS(""), NULL, openobserver_POSITION, 0, this);
+    m_openobserver_button_id  = InsertPlugInTool(_("OpenObserver Plugin"), &m_ptpicons->m_bm_openobserver_grey_pi, &m_ptpicons->m_bm_openobserver_pi, wxITEM_CHECK,
+                                             _("OpenObserver Plugin"), wxS(""), NULL, openobserver_POSITION, 0, this);
 #endif
 
     //    In order to avoid an ASSERT on msw debug builds,
     //    we need to create a dummy menu to act as a surrogate parent of the created MenuItems
     //    The Items will be re-parented when added to the real context meenu
     wxMenu dummy_menu;
-
-    // Create an OCPN Draw event handler
-    //g_WVEventHandler = new WVEventHandler( g_openobserver_pi );
 
     // Get item into font list in options/user interface
     AddPersistentFontKey( wxT("tp_Label") );
@@ -269,9 +211,6 @@ int openobserver_pi::Init(void)
     g_pFontSmall = GetOCPNScaledFont_PlugIn( wxS("tp_Small") );
     wxColour l_fontcolour = GetFontColour_PlugIn( wxS("tp_Label") );
     l_fontcolour = GetFontColour_PlugIn( wxS("tp_Data") );
-
-    m_pOD_FindPointInAnyBoundary = NULL;
-    m_pODFindClosestBoundaryLineCrossing = NULL;
 
     return (
         WANTS_CURSOR_LATLON       |
@@ -301,11 +240,11 @@ void openobserver_pi::LateInit(void)
 
 bool openobserver_pi::DeInit(void)
 {
-    if(m_tpControlDialogImpl)
+    if(m_ooControlDialogImpl)
     {
-        m_tpControlDialogImpl->Close();
-        delete m_tpControlDialogImpl;
-        m_tpControlDialogImpl = NULL;
+        m_ooControlDialogImpl->Close();
+        delete m_ooControlDialogImpl;
+        m_ooControlDialogImpl = NULL;
     }
     if(m_pTPConfig) SaveConfig();
 
@@ -355,7 +294,6 @@ wxString openobserver_pi::GetShortDescription()
 wxString openobserver_pi::GetLongDescription()
 {
     return _(PLUGIN_LONG_DESCRIPTION);
-
 }
 
 int openobserver_pi::GetToolbarToolCount(void)
@@ -377,17 +315,6 @@ void openobserver_pi::OnToolbarToolDownCallback(int id)
 void openobserver_pi::OnToolbarToolUpCallback(int id)
 {
     m_ptpicons->SetScaleFactor();
-    return;
-}
-
-void openobserver_pi::ShowPreferencesDialog( wxWindow* parent )
-{
-
-}
-
-void openobserver_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
-{
-    g_ptpJSON->ProcessMessage(message_id, message_body);
     return;
 }
 
@@ -421,11 +348,10 @@ bool openobserver_pi::MouseEventHook( wxMouseEvent &event )
 {
     bool bret = FALSE;
 
-    if(m_tpControlDialogImpl->IsVisible()) {
+    if(m_ooControlDialogImpl->IsVisible()) {
         if(event.LeftDown()) {
             m_click_lat = m_cursor_lat;
             m_click_lon = m_cursor_lon;
-            // m_tpControlDialogImpl->SetLatLon( m_cursor_lat, m_cursor_lon );
             bret = TRUE;
         }
 
@@ -445,8 +371,8 @@ void openobserver_pi::SetCursorLatLon(double lat, double lon)
 
 void openobserver_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
 {
-    if(m_tpControlDialogImpl->IsShown()) {
-        m_tpControlDialogImpl->SetPositionFix(pfix.FixTime, pfix.Lat, pfix.Lon);
+    if (m_ooControlDialogImpl->IsShown()) {
+        m_ooControlDialogImpl->SetPositionFix(pfix.FixTime, pfix.Lat, pfix.Lon);
     }
 }
 
@@ -468,13 +394,11 @@ void openobserver_pi::ToggleToolbarIcon( void )
     if(m_btpDialog) {
         m_btpDialog = false;
         SetToolbarItemState( m_openobserver_button_id, false );
-        m_tpControlDialogImpl->Hide();
+        m_ooControlDialogImpl->Hide();
     } else {
         m_btpDialog = true;
         SetToolbarItemState( m_openobserver_button_id, true  );
-        if(!m_bDoneODAPIVersionCall) GetODAPI();
-        m_tpControlDialogImpl->SetPanels();
-        m_tpControlDialogImpl->Show();
+        m_ooControlDialogImpl->Show();
     }
 }
 
@@ -492,18 +416,19 @@ void openobserver_pi::SaveConfig()
 
     wxFileConfig *pConf = m_pTPConfig;
 
-    if(pConf) {
+    if(pConf) 
+    {
         pConf->SetPath( wxS( "/Settings/openobserver_pi" ) );
-        if(m_bRecreateConfig) {
-            pConf->DeleteGroup( "/Settings/openobserver_pi" );
-        } else {
-            pConf->Write( wxS( "SaveJSONOnStartup" ), g_bSaveJSONOnStartup );
-            pConf->Write( wxS( "JSONSaveFile" ), m_fnOutputJSON.GetFullPath());
-            pConf->Write( wxS( "JSONInputFile" ), m_fnInputJSON.GetFullPath());
-            pConf->Write( wxS( "CloseSaveFileAferEachWrite" ), m_bCloseSaveFileAfterEachWrite);
-            pConf->Write( wxS( "AppendToSaveFile" ), m_bAppendToSaveFile);
-            pConf->Write( wxS( "SaveIncommingJSONMessages" ), m_bSaveIncommingJSONMessages);
-        }
+        // if(m_bRecreateConfig) {
+        //     pConf->DeleteGroup( "/Settings/openobserver_pi" );
+        // } else {
+        //     pConf->Write( wxS( "SaveJSONOnStartup" ), g_bSaveJSONOnStartup );
+        //     pConf->Write( wxS( "JSONSaveFile" ), m_fnOutputJSON.GetFullPath());
+        //     pConf->Write( wxS( "JSONInputFile" ), m_fnInputJSON.GetFullPath());
+        //     pConf->Write( wxS( "CloseSaveFileAferEachWrite" ), m_bCloseSaveFileAfterEachWrite);
+        //     pConf->Write( wxS( "AppendToSaveFile" ), m_bAppendToSaveFile);
+        //     pConf->Write( wxS( "SaveIncommingJSONMessages" ), m_bSaveIncommingJSONMessages);
+        // }
     }
 }
 
@@ -522,258 +447,21 @@ void openobserver_pi::LoadConfig()
 
     if(pConf)
     {
-        wxString val;
         pConf->SetPath( wxS( "/Settings/openobserver_pi" ) );
-        wxString  l_wxsColour;
-        pConf->Read( wxS( "SaveJSONOnStartup"), &g_bSaveJSONOnStartup, false );
-        if(g_bSaveJSONOnStartup) m_tpControlDialogImpl->SetSaveJSONOnStartup(g_bSaveJSONOnStartup);
-        wxString l_filepath;
-        pConf->Read( wxS("JSONSaveFile"), &l_filepath, wxEmptyString);
-        m_fnOutputJSON.Assign(l_filepath);
-        if(m_fnOutputJSON != wxEmptyString) m_tpControlDialogImpl->SetJSONSaveFile(m_fnOutputJSON.GetFullPath());
-        pConf->Read( wxS( "JSONInputFile" ), &l_filepath, wxEmptyString);
-        m_fnInputJSON.Assign(l_filepath);
-        if(m_fnInputJSON != wxEmptyString) m_tpControlDialogImpl->SetJSONInputFile(m_fnInputJSON.GetFullPath());
-        pConf->Read( wxS( "CloseSaveFileAferEachWrite" ), &m_bCloseSaveFileAfterEachWrite, true);
-        m_tpControlDialogImpl->SetCloseFileAfterEachWrite(m_bCloseSaveFileAfterEachWrite);
-        pConf->Read( wxS( "AppendToSaveFile" ), &m_bAppendToSaveFile, true);
-        m_tpControlDialogImpl->SetAppendToSaveFile(m_bAppendToSaveFile);
-        pConf->Read( wxS( "SaveIncommingJSONMessages" ), &m_bSaveIncommingJSONMessages, false);
-        m_tpControlDialogImpl->SetIncommingJSONMessages(m_bSaveIncommingJSONMessages);
+        // pConf->Read( wxS( "SaveJSONOnStartup"), &g_bSaveJSONOnStartup, false );
+        // if(g_bSaveJSONOnStartup) m_ooControlDialogImpl->SetSaveJSONOnStartup(g_bSaveJSONOnStartup);
+        // wxString l_filepath;
+        // pConf->Read( wxS("JSONSaveFile"), &l_filepath, wxEmptyString);
+        // m_fnOutputJSON.Assign(l_filepath);
+        // if(m_fnOutputJSON != wxEmptyString) m_ooControlDialogImpl->SetJSONSaveFile(m_fnOutputJSON.GetFullPath());
+        // pConf->Read( wxS( "JSONInputFile" ), &l_filepath, wxEmptyString);
+        // m_fnInputJSON.Assign(l_filepath);
+        // if(m_fnInputJSON != wxEmptyString) m_ooControlDialogImpl->SetJSONInputFile(m_fnInputJSON.GetFullPath());
+        // pConf->Read( wxS( "CloseSaveFileAferEachWrite" ), &m_bCloseSaveFileAfterEachWrite, true);
+        // m_ooControlDialogImpl->SetCloseFileAfterEachWrite(m_bCloseSaveFileAfterEachWrite);
+        // pConf->Read( wxS( "AppendToSaveFile" ), &m_bAppendToSaveFile, true);
+        // m_ooControlDialogImpl->SetAppendToSaveFile(m_bAppendToSaveFile);
+        // pConf->Read( wxS( "SaveIncommingJSONMessages" ), &m_bSaveIncommingJSONMessages, false);
+        // m_ooControlDialogImpl->SetIncommingJSONMessages(m_bSaveIncommingJSONMessages);
     }
-}
-void openobserver_pi::GetODAPI()
-{
-    wxJSONValue jMsg;
-    wxJSONWriter writer;
-    wxString    MsgString;
-
-    jMsg[wxT("Source")] = wxT("OPENOBSERVER_PI");
-    jMsg[wxT("Type")] = wxT("Request");
-    jMsg[wxT("Msg")] = wxT("Version");
-    jMsg[wxT("MsgId")] = wxT("Version");
-    writer.Write( jMsg, MsgString );
-    SendPluginMessage( wxS("OCPN_DRAW_PI"), MsgString );
-    if(g_ReceivedODAPIMessage != wxEmptyString &&  g_ReceivedODAPIJSONMsg[wxT("MsgId")].AsString() == wxS("Version")) {
-        m_iODVersionMajor = g_ReceivedODAPIJSONMsg[wxS("Major")].AsInt();
-        m_iODVersionMinor = g_ReceivedODAPIJSONMsg[wxS("Minor")].AsInt();
-        m_iODVersionPatch = g_ReceivedODAPIJSONMsg[wxS("Patch")].AsInt();
-    }
-    m_bDoneODAPIVersionCall = true;
-
-    wxJSONValue jMsg1;
-    jMsg1[wxT("Source")] = wxT("OPENOBSERVER_PI");
-    jMsg1[wxT("Type")] = wxT("Request");
-    jMsg1[wxT("Msg")] = wxS("GetAPIAddresses");
-    jMsg1[wxT("MsgId")] = wxS("GetAPIAddresses");
-    writer.Write( jMsg1, MsgString );
-    SendPluginMessage( wxS("OCPN_DRAW_PI"), MsgString );
-    if(g_ReceivedODAPIMessage != wxEmptyString &&  g_ReceivedODAPIJSONMsg[wxT("MsgId")].AsString() == wxS("GetAPIAddresses")) {
-        m_iODAPIVersionMajor = g_ReceivedODAPIJSONMsg[_T("ODAPIVersionMajor")].AsInt();
-        m_iODAPIVersionMinor = g_ReceivedODAPIJSONMsg[_T("ODAPIVersionMinor")].AsInt();
-
-        wxString sptr = g_ReceivedODAPIJSONMsg[_T("OD_FindPointInAnyBoundary")].AsString();
-        if(sptr != _T("null")) {
-            sscanf(sptr.To8BitData().data(), "%p", &m_pOD_FindPointInAnyBoundary);
-            m_bOD_FindPointInAnyBoundary = true;
-        }
-
-        sptr = g_ReceivedODAPIJSONMsg[_T("OD_FindClosestBoundaryLineCrossing")].AsString();
-        if(sptr != _T("null")) {
-            sscanf(sptr.To8BitData().data(), "%p", &m_pODFindClosestBoundaryLineCrossing);
-            m_bODFindClosestBoundaryLineCrossing = true;
-        }
-        sptr = g_ReceivedODAPIJSONMsg[_T("OD_FindFirstBoundaryLineCrossing")].AsString();
-        if(sptr != _T("null")) {
-            sscanf(sptr.To8BitData().data(), "%p", &m_pODFindFirstBoundaryLineCrossing);
-            m_bODFindFirstBoundaryLineCrossing = true;
-        }
-        sptr = g_ReceivedODAPIJSONMsg[_T("OD_CreateBoundary")].AsString();
-        if(sptr != _T("null")) {
-            sscanf(sptr.To8BitData().data(), "%p", &m_pODCreateBoundary);
-            m_bODCreateBoundary = true;
-        }
-        sptr = g_ReceivedODAPIJSONMsg[_T("OD_CreateBoundaryPoint")].AsString();
-        if(sptr != _T("null")) {
-            sscanf(sptr.To8BitData().data(), "%p", &m_pODCreateBoundaryPoint);
-            m_bODCreateBoundaryPoint = true;
-        }
-        sptr = g_ReceivedODAPIJSONMsg[_T("OD_CreateTextPoint")].AsString();
-        if(sptr != _T("null")) {
-            sscanf(sptr.To8BitData().data(), "%p", &m_pODCreateTextPoint);
-            m_bODCreateTextPoint = true;
-        }
-        sptr = g_ReceivedODAPIJSONMsg[_T("OD_DeleteBoundary")].AsString();
-        if(sptr != _T("null")) {
-            sscanf(sptr.To8BitData().data(), "%p", &m_pODDeleteBoundary);
-            m_bODDeleteBoundary = true;
-        }
-        sptr = g_ReceivedODAPIJSONMsg[_T("OD_DeleteBoundaryPoint")].AsString();
-        if(sptr != _T("null")) {
-            sscanf(sptr.To8BitData().data(), "%p", &m_pODDeleteBoundaryPoint);
-            m_bODDeleteBoundaryPoint = true;
-        }
-        sptr = g_ReceivedODAPIJSONMsg[_T("OD_DeleteTextPoint")].AsString();
-        if(sptr != _T("null")) {
-            sscanf(sptr.To8BitData().data(), "%p", &m_pODDeleteTextPoint);
-            m_bODDeleteTextPoint = true;
-        }
-        sptr = g_ReceivedODAPIJSONMsg[_T("OD_AddPointIcon")].AsString();
-        if(sptr != _T("null")) {
-            sscanf(sptr.To8BitData().data(), "%p", &m_pODAddPointIcon);
-            m_bODAddPointIcon = true;
-        }
-        sptr = g_ReceivedODAPIJSONMsg[_T("OD_DeletePointIcon")].AsString();
-        if(sptr != _T("null")) {
-            sscanf(sptr.To8BitData().data(), "%p", &m_pODDeletePointIcon);
-            m_bODDeletePointIcon = true;
-        }
-    }
-
-    // wxString l_msg;
-    // wxString l_avail;
-    // wxString l_notavail;
-    // l_msg.Printf(_("OD Version: Major: %i, Minor: %i, Patch: %i, ODAPI Version: Major: %i, Minor: %i\n"), m_iODVersionMajor, m_iODVersionMinor, m_iODVersionPatch, m_iODAPIVersionMajor, m_iODAPIVersionMinor);
-    // if(m_bOD_FindPointInAnyBoundary) l_avail.Append(_("OD_FindPointInAnyBoundary\n"));
-    // if(m_bODFindClosestBoundaryLineCrossing) l_avail.Append(_("OD_FindClosestBoundaryLineCrossing\n"));
-    // if(m_bODFindFirstBoundaryLineCrossing) l_avail.Append(_("OD_FindFirstBoundaryLineCrossing\n"));
-    // if(m_bODCreateBoundary) l_avail.Append(_("OD_CreateBoundary\n"));
-    // if(m_bODCreateBoundaryPoint) l_avail.Append(_("OD_CreateBoundaryPoint\n"));
-    // if(m_bODCreateTextPoint) l_avail.Append(_("OD_CreateTextPoint\n"));
-    // if(m_bODAddPointIcon) l_avail.Append(_("OD_AddPointIcon\n"));
-    // if(m_bODDeletePointIcon) l_avail.Append(_("OD_DeletePointIcon\n"));
-    // if(l_avail.Length() > 0) {
-    //     l_msg.Append(_("The following ODAPI's are available: \n"));
-    //     l_msg.Append(l_avail);
-    // }
-
-    // if(!m_bOD_FindPointInAnyBoundary) l_notavail.Append(_("OD_FindPointInAnyBoundary\n"));
-    // if(!m_bODFindClosestBoundaryLineCrossing) l_notavail.Append(_("OD_FindClosestBoundaryLineCrossing\n"));
-    // if(!m_bODFindFirstBoundaryLineCrossing) l_notavail.Append(_("OD_FindFirstBoundaryLineCrossing\n"));
-    // if(!m_bODCreateBoundary) l_notavail.Append(_("OD_CreateBoundary\n"));
-    // if(!m_bODCreateBoundaryPoint) l_notavail.Append(_("OD_CreateBoundaryPoint\n"));
-    // if(!m_bODCreateTextPoint) l_notavail.Append(_("OD_CreateTextPoint\n"));
-    // if(!m_bODAddPointIcon) l_notavail.Append(_("OD_AddPointIcon\n"));
-    // if(!m_bODDeletePointIcon) l_notavail.Append(_("OD_DeletePointIcon\n"));
-    // if(l_notavail.Length() > 0) {
-    //     l_msg.Append(_("The following ODAPI's are not available:\n"));
-    //     l_msg.Append(l_notavail);
-    // }
-
-    // OCPNMessageBox_PlugIn( m_parent_window, l_msg, _("OPENOBSERVER"), (long) wxYES );
-
-}
-
-void openobserver_pi::FindClosestBoundaryLineCrossing(FindClosestBoundaryLineCrossing_t *pFCPBLC)
-{
-    if((*m_pODFindClosestBoundaryLineCrossing)(pFCPBLC)) {
-        delete pFCPBLC;
-    }
-    delete pFCPBLC;
-}
-
-bool openobserver_pi::CreateBoundaryPoint(CreateBoundaryPoint_t* pCBP)
-{
-    PlugIn_Waypoint wp(pCBP->lat, pCBP->lon, "fish", "fish", GetNewGUID());
-    AddSingleWaypoint(&wp);
-
-    bool l_bRet = true; //(*m_pODCreateBoundaryPoint)(pCBP);
-
-    DEBUGST("Boundary Point created: ");
-    DEBUGEND(l_bRet);
-    return true;
-}
-
-bool openobserver_pi::CreateBoundary(CreateBoundary_t* pCB)
-{
-    wxString l_GUID;
-    bool l_bRet = (*m_pODCreateBoundary)(pCB);
-    DEBUGST("Boundary GUID: ");
-    DEBUGEND(pCB->GUID);
-    return l_bRet;;
-}
-
-bool openobserver_pi::CreateTextPoint(CreateTextPoint_t* pCTP)
-{
-    wxString l_GUID;
-    bool l_bRet = (*m_pODCreateTextPoint)(pCTP);
-    DEBUGST("Text Point GUID: ");
-    DEBUGEND(l_GUID);
-    return true;
-}
-
-bool openobserver_pi::DeleteBoundaryPoint(DeleteBoundaryPoint_t* pDBP)
-{
-    bool l_bRet = (*m_pODDeleteBoundaryPoint)(pDBP);
-    DEBUGST("Boundary Point Deleted: ");
-    DEBUGEND(l_bRet);
-    return true;
-}
-
-bool openobserver_pi::DeleteBoundary(DeleteBoundary_t* pDB)
-{
-    bool l_bRet = (*m_pODDeleteBoundary)(pDB);
-    DEBUGST("Boundary deleted: ");
-    DEBUGEND(l_bRet);
-    return true;
-}
-
-bool openobserver_pi::DeleteTextPoint(DeleteTextPoint_t* pDTP)
-{
-    bool l_bRet = (*m_pODDeleteTextPoint)(pDTP);
-    DEBUGST("Text Point created: ");
-    DEBUGEND(l_bRet);
-    return true;
-}
-
-void openobserver_pi::AddPointIcon(AddPointIcon_t* pAPI)
-{
-    (*m_pODAddPointIcon)(pAPI);
-    return;
-}
-
-void openobserver_pi::DeletePointIcon(DeletePointIcon_t* pDPI)
-{
-    (*m_pODDeletePointIcon)(pDPI);
-    return;
-}
-
-bool openobserver_pi::ImportJSONFile()
-{
-    wxFFile l_ffile;
-    l_ffile.Open(m_fnInputJSON.GetFullPath(), "r");
-    if(!l_ffile.IsOpened()) {
-        OCPNMessageBox_PlugIn(NULL, m_fnInputJSON.GetFullPath(), _("File not found"), wxICON_EXCLAMATION | wxCANCEL);
-        return false;
-    }
-    wxString l_str;
-    l_ffile.ReadAll(&l_str);
-    wxFileInputStream l_input( m_fnInputJSON.GetFullPath() );
-    wxTextInputStream l_text( l_input );
-/*    for(size_t i = 0; i < l_str.Length();) {
-        //wxString l_ext = l_str.Mid(i, l_str_find)
-        //wxStringTokenizer tokenizer("first:second:third:fourth", ":");
-    }
-*/
-    wxJSONValue jMsg;
-    wxJSONWriter writer;
-    wxString    MsgString;
-
-    writer.Write( jMsg, MsgString );
-    SendPluginMessage( wxS("OCPN_DRAW_PI"), l_str );
-    return true;
-}
-
-void openobserver_pi::UpdateCloseAfterSave(bool bCloseAfterSave)
-{
-    if(m_bCloseSaveFileAfterEachWrite != bCloseAfterSave) {
-        m_bCloseSaveFileAfterEachWrite = bCloseAfterSave;
-        if(bCloseAfterSave) {
-            g_ptpJSON->CloseJSONOutputFile();
-        }
-    }
-}
-
-void openobserver_pi::UpdateAppendToFile(bool bAppendToFile)
-{
 }

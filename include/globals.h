@@ -29,7 +29,7 @@
 #define _TPGLOBALS_H_
 
 class tpicons;
-class tpControlDialogImpl;
+class ooControlDialogImpl;
 
 #define openobserver_POSITION -1
 #define ID_NONE -1

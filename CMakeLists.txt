@@ -19,7 +19,7 @@
 # - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx,                                       *
 # - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx                                       *
 # -----------------------------------------------------------------------------
-# Frontend2 Author: Jon Gough OpenObserver(TP) v1.0.328.0 05/02/2025 DD/MM/YYYY
+# Frontend2 Author: Jon Gough OpenObserver v1.0.328.0 05/02/2025 DD/MM/YYYY
 # format buildCI:yes useODAPI:yes validateJSON:yes
 # ---------------------------------------------------------------------------
 # -- When changing this file do NOT change the order of the sections.    -- ##
@@ -163,17 +163,20 @@ add_definitions(-DUSE_S57)
 
 # ---- Section Below - Add your project SET(SRCS and SET(HDRS  etc..
 
-set(SRCS src/tpControlDialogDef.cpp src/tpControlDialogImpl.cpp src/tpicons.cpp
-         src/tpJSON.cpp src/openobserver_pi.cpp src/tpUtils.cpp
+set(SRCS 
+    src/openobserver_pi.cpp
+    src/ooControlDialogDef.cpp 
+    src/ooControlDialogImpl.cpp
+    src/tpicons.cpp
+    src/tpUtils.cpp
 )
 
 set(HDRS
     include/openobserver_pi.h
+    include/ooControlDialogDef.h
+    include/ooControlDialogImpl.h
     include/tpicons.h
-    include/tpControlDialogDef.h
-    include/tpControlDialogImpl.h
     include/tpIconCombo.h
-    include/tpJSON.h
     include/tpUtils.h
 )
 
@@ -250,9 +253,6 @@ if (NOT OCPN_FLATPAK_CONFIG)
 
   add_subdirectory(opencpn-libs/tinyxml)
   target_link_libraries(${PACKAGE_NAME} ocpn::tinyxml)
-
-  add_subdirectory(opencpn-libs/odapi)
-  target_link_libraries(${PACKAGE_NAME} ocpn::odapi)
 
   add_subdirectory(opencpn-libs/jsonlib)
   target_link_libraries(${PACKAGE_NAME} ocpn::jsonlib)
