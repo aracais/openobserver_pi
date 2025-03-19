@@ -206,7 +206,7 @@ public:
     void SetToolbarTool( void );
     void ToggleToolbarIcon( void);
 
-    void    GetODAPI( void );
+    void GetODAPI( void );
 
     void FindClosestBoundaryLineCrossing(FindClosestBoundaryLineCrossing_t *pFCPIAB);
     bool CreateBoundaryPoint(CreateBoundaryPoint_t *pCBP);

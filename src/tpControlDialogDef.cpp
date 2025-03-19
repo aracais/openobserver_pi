@@ -80,7 +80,7 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	fgSizerObservations->Add( fgSizerObservationsLabels, 1, wxEXPAND, 5 );
 
 	wxFlexGridSizer* fgSizerObservationsButtons;
-	fgSizerObservationsButtons = new wxFlexGridSizer( 1, 3, 0, 0 );
+	fgSizerObservationsButtons = new wxFlexGridSizer( 1, 5, 0, 0 );
 	fgSizerObservationsButtons->SetFlexibleDirection( wxBOTH );
 	fgSizerObservationsButtons->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
@@ -93,27 +93,32 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	m_ObservationsExportObservations = new wxButton( m_panelObservationTable, wxID_ANY, _("Export CSV"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizerObservationsButtons->Add( m_ObservationsExportObservations, 0, wxALL, 5 );
 
+	m_ObservationsAddMarks = new wxButton( m_panelObservationTable, wxID_ANY, _("Add Marks"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizerObservationsButtons->Add( m_ObservationsAddMarks, 0, wxALL, 5 );
+
+	m_ObservationsDeleteMarks = new wxButton( m_panelObservationTable, wxID_ANY, _("Delete Marks"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizerObservationsButtons->Add( m_ObservationsDeleteMarks, 0, wxALL, 5 );
+
 
 	fgSizerObservations->Add( fgSizerObservationsButtons, 1, 0, 5 );
 
 	m_ObservationsTable = new wxGrid( m_panelObservationTable, wxID_ANY, wxDefaultPosition, wxSize( 740,500 ), 0 );
 
 	// Grid
-	m_ObservationsTable->CreateGrid( 0, 8 );
+	m_ObservationsTable->CreateGrid( 0, 7 );
 	m_ObservationsTable->EnableEditing( true );
 	m_ObservationsTable->EnableGridLines( true );
 	m_ObservationsTable->EnableDragGridSize( false );
 	m_ObservationsTable->SetMargins( 0, 0 );
 
 	// Columns
-	m_ObservationsTable->SetColSize( 0, 80 );
-	m_ObservationsTable->SetColSize( 1, 80 );
-	m_ObservationsTable->SetColSize( 2, 100 );
-	m_ObservationsTable->SetColSize( 3, 100 );
+	m_ObservationsTable->SetColSize( 0, 70 );
+	m_ObservationsTable->SetColSize( 1, 70 );
+	m_ObservationsTable->SetColSize( 2, 90 );
+	m_ObservationsTable->SetColSize( 3, 90 );
 	m_ObservationsTable->SetColSize( 4, 100 );
 	m_ObservationsTable->SetColSize( 5, 200 );
-	m_ObservationsTable->SetColSize( 6, 50 );
-	m_ObservationsTable->SetColSize( 7, 0 );
+	m_ObservationsTable->SetColSize( 6, 70 );
 	m_ObservationsTable->EnableDragColMove( false );
 	m_ObservationsTable->EnableDragColSize( true );
 	m_ObservationsTable->SetColLabelValue( 0, _("Date") );
@@ -122,8 +127,8 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	m_ObservationsTable->SetColLabelValue( 3, _("Lon") );
 	m_ObservationsTable->SetColLabelValue( 4, _("Species") );
 	m_ObservationsTable->SetColLabelValue( 5, _("Notes") );
-	m_ObservationsTable->SetColLabelValue( 6, _("Mark") );
-	m_ObservationsTable->SetColLabelValue( 7, _("Mark GUID") );
+	m_ObservationsTable->SetColLabelValue( 6, _("Mark GUID") );
+	m_ObservationsTable->SetColLabelSize( wxGRID_AUTOSIZE );
 	m_ObservationsTable->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
 
 	// Rows
@@ -132,8 +137,10 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	m_ObservationsTable->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
 
 	// Label Appearance
+	m_ObservationsTable->SetLabelFont( wxFont( 11, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
 
 	// Cell Defaults
+	m_ObservationsTable->SetDefaultCellFont( wxFont( 11, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 	m_ObservationsTable->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
 	fgSizerObservations->Add( m_ObservationsTable, 0, wxALL|wxEXPAND, 5 );
 
@@ -904,6 +911,8 @@ bool tpControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	m_ObservationsNew->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnButtonClickNewObservation ), NULL, this );
 	m_ObservationsDelete->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnButtonClickDeleteObservation ), NULL, this );
 	m_ObservationsExportObservations->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnButtonClickExportObservations ), NULL, this );
+	m_ObservationsAddMarks->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnButtonClickObservationsAddMarks ), NULL, this );
+	m_ObservationsDeleteMarks->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnButtonClickObservationsDeleteMarks ), NULL, this );
 	m_checkBoxSaveJSONOnStartup->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnCheckBoxSaveJSONOnStartup ), NULL, this );
 	m_checkBoxRecreateConfig->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnCheckBoxDeleteFromConfig ), NULL, this );
 	m_filePickerInputJSON->Connect( wxEVT_COMMAND_FILEPICKER_CHANGED, wxFileDirPickerEventHandler( tpControlDialogDef::OnFileChangeInputJSON ), NULL, this );
@@ -938,6 +947,8 @@ tpControlDialogDef::~tpControlDialogDef()
 	m_ObservationsNew->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnButtonClickNewObservation ), NULL, this );
 	m_ObservationsDelete->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnButtonClickDeleteObservation ), NULL, this );
 	m_ObservationsExportObservations->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnButtonClickExportObservations ), NULL, this );
+	m_ObservationsAddMarks->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnButtonClickObservationsAddMarks ), NULL, this );
+	m_ObservationsDeleteMarks->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnButtonClickObservationsDeleteMarks ), NULL, this );
 	m_checkBoxSaveJSONOnStartup->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnCheckBoxSaveJSONOnStartup ), NULL, this );
 	m_checkBoxRecreateConfig->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( tpControlDialogDef::OnCheckBoxDeleteFromConfig ), NULL, this );
 	m_filePickerInputJSON->Disconnect( wxEVT_COMMAND_FILEPICKER_CHANGED, wxFileDirPickerEventHandler( tpControlDialogDef::OnFileChangeInputJSON ), NULL, this );

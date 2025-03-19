@@ -116,7 +116,7 @@ void tpControlDialogImpl::OnButtonClickExportObservations( wxCommandEvent& event
 
     wxFile *file = output_stream.GetFile();
 
-    const int exportCols = m_ObservationsTable->GetNumberCols() - 2;
+    const int exportCols = m_ObservationsTable->GetNumberCols();
     
     for (int c=0; c < exportCols; ++c)
     {
@@ -140,6 +140,58 @@ void tpControlDialogImpl::OnButtonClickExportObservations( wxCommandEvent& event
     }
 
     file->Close();
+}
+
+void tpControlDialogImpl::OnButtonClickObservationsAddMarks( wxCommandEvent& event )
+{
+    const int dateCol = 0;
+    const int timeCol = 1;
+    const int latCol = 2;
+    const int lonCol = 3;
+    const int speciesCol = 4;
+    const int notesCol = 5;
+    const int markGUIDCol = 6;
+
+    for (int r=0; r < m_ObservationsTable->GetNumberRows(); ++r)
+    {
+        if (m_ObservationsTable->GetCellValue(r, markGUIDCol).IsEmpty())
+        {
+            wxDateTime datetime;
+            datetime.ParseISODate(m_ObservationsTable->GetCellValue(r, dateCol));
+            datetime.ParseISOTime(m_ObservationsTable->GetCellValue(r, timeCol));
+            double lat = fromDMM_Plugin(m_ObservationsTable->GetCellValue(r, latCol));
+            double lon = fromDMM_Plugin(m_ObservationsTable->GetCellValue(r, lonCol));
+            wxString name = m_ObservationsTable->GetCellValue(r, speciesCol) + " (OO)";
+            wxString description = m_ObservationsTable->GetCellValue(r, notesCol);
+            wxString guid = GetNewGUID();
+
+            // add waypoint
+            PlugIn_Waypoint wp(lat, lon, "fish", name, guid);
+            wp.m_MarkDescription = description;
+            wp.m_CreateTime = datetime;
+            AddSingleWaypoint(&wp);
+
+            // store guid in table
+            m_ObservationsTable->SetCellValue(r, markGUIDCol, guid);
+        }
+    }
+}
+
+void tpControlDialogImpl::OnButtonClickObservationsDeleteMarks( wxCommandEvent& event )
+{
+    const int markGUIDCol = 6;
+    for (int r=0; r < m_ObservationsTable->GetNumberRows(); ++r)
+    {
+        wxString guid = m_ObservationsTable->GetCellValue(r, markGUIDCol);
+        if (guid.IsEmpty()) continue;
+
+        // delete waypoint
+        DeleteSingleWaypoint(guid);
+
+        // remove guid from table
+        guid.Clear();
+        m_ObservationsTable->SetCellValue(r, markGUIDCol, guid);
+    }
 }
 
 void tpControlDialogImpl::OnButtonClickCreateBoundaryODAPI( wxCommandEvent& event )

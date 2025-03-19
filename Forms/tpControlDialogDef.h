@@ -59,6 +59,8 @@ class tpControlDialogDef : public wxDialog
 		wxButton* m_ObservationsNew;
 		wxButton* m_ObservationsDelete;
 		wxButton* m_ObservationsExportObservations;
+		wxButton* m_ObservationsAddMarks;
+		wxButton* m_ObservationsDeleteMarks;
 		wxGrid* m_ObservationsTable;
 		wxPanel* m_panelGeneral;
 		wxCheckBox* m_checkBoxSaveJSONOnStartup;
@@ -181,6 +183,8 @@ class tpControlDialogDef : public wxDialog
 		virtual void OnButtonClickNewObservation( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickDeleteObservation( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickExportObservations( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClickObservationsAddMarks( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClickObservationsDeleteMarks( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCheckBoxSaveJSONOnStartup( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCheckBoxDeleteFromConfig( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnFileChangeInputJSON( wxFileDirPickerEvent& event ) { event.Skip(); }
