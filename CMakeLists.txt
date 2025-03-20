@@ -55,10 +55,10 @@ set(TITLE_NAME "openobserver")
 set(PACKAGE_CONTACT "Alex Mansfield")
 set(PACKAGE "openobserver")
 set(SHORT_DESCRIPTION
-    "Plugin to test examples of the ODAPI and JSON interface for ODRAW"
+    "Plugin to record marine observations"
 )
 set(LONG_DESCRIPTION
-    "openobserver Plugin is used to test out the ODraw API and demonstrate how to use it successfully from another plugin"
+    "The OpenObserver Plugin is used to record any kind of marine observations."
 )
 
 set(VERSION_MAJOR "0")

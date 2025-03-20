@@ -63,41 +63,26 @@ tpicons::~tpicons()
 void tpicons::initialize_images(void)
 {
     wxFileName fn;
-//#ifdef __WXOSX__
-// Not in this case - the icons are part of the plugin package, not it's configuration data, so they have nothing to do in the user's preferences directory
-//    wxStandardPathsBase& std_path = wxStandardPathsBase::Get();
-//    fn.SetPath(std_path.GetUserConfigDir());  // should be ~/Library/Preferences
-//    fn.AppendDir(_T("opencpn"));
-//    fn.AppendDir( wxT("plugins") );
-//    fn.AppendDir(wxT("openobserver_pi"));
-//#else
-//    fn.SetPath(*GetpSharedDataLocation());
-    //const char *sPluginName = "openobserver_pi";
-    //fn.SetPath(GetPluginDataDir(sPluginName));
-    //const char *sPluginName = "openobserver_pi";
     fn.SetPath(GetPluginDataDir("openobserver_pi"));
-    //    fn.AppendDir( wxT("plugins") );
-//    fn.AppendDir(wxT("openobserver_pi"));
     fn.AppendDir(wxT("data"));
     g_SData_Locn = new wxString(fn.GetFullPath().c_str());
-//#endif
     wxString s = _("openobserver_pi data location");
     wxLogMessage( wxT("%s: %s"), s.c_str(), fn.GetFullPath().c_str());
 
     m_failedBitmapLoad = false;
 
 #ifdef PLUGIN_USE_SVG
-    fn.SetFullName(wxT("openobserver.svg"));
+    fn.SetFullName(wxT("openobserver-icon-v1.1-inactive.svg"));
     m_s_openobserver_pi = fn.GetFullPath();
     m_bm_openobserver_pi = LoadSVG( fn.GetFullPath() );
-    fn.SetFullName(wxT("openobservergrey.svg"));
+    fn.SetFullName(wxT("openobserver-icon-v1.1-dark.svg"));
     m_s_openobserver_grey_pi = fn.GetFullPath();
     m_bm_openobserver_grey_pi = LoadSVG( fn.GetFullPath() );
-    fn.SetFullName(wxT("openobserver-toggled.svg"));
+    fn.SetFullName(wxT("openobserver-icon-v1.1-active.svg"));
     m_s_openobserver_toggled_pi = fn.GetFullPath();
     m_bm_openobserver_toggled_pi = LoadSVG( fn.GetFullPath() );
 #else
-    fn.SetFullName(wxT("openobserver.png"));
+    fn.SetFullName(wxT("openobserver-icon-v1.0-inactive.png"));
     m_p_bm_openobserver_pi = new wxBitmap( fn.GetFullPath(), wxBITMAP_TYPE_PNG );
     if(!m_p_bm_openobserver_pi->IsOk())  m_failedBitmapLoad = true;
 #endif
@@ -126,40 +111,11 @@ wxBitmap tpicons::LoadSVG( const wxString filename, unsigned int width, unsigned
 
     return l__Bitmap;
 }
-
-wxBitmap tpicons::ScaleIcon( wxBitmap bitmap, const wxString filename, double sf )
-{
-    int w = bitmap.GetWidth();
-    int h = bitmap.GetHeight();
-    w *= sf;
-    h *= sf;
-
-    wxBitmap svgbm = GetBitmapFromSVGFile(filename, w, h);
-    if(svgbm.GetWidth() > 0 && svgbm.GetHeight() > 0)
-        return svgbm;
-    return wxBitmap(32 * sf, 32 * sf); //scalled default blank bitmap
-}
 #endif // PLUGIN_USE_SVG
-
-wxBitmap *tpicons::ScaleIcon( wxBitmap bitmap, double sf )
-{
-    wxImage scaled_image = bitmap.ConvertToImage();
-    return new wxBitmap(scaled_image.Scale(scaled_image.GetWidth() * sf, scaled_image.GetHeight() * sf, wxIMAGE_QUALITY_HIGH));
-}
 
 bool tpicons::ScaleIcons()
 {
     if(!SetScaleFactor()) return false;
-
-
-#ifdef PLUGIN_USE_SVG
-
-    // Dont scale the OD manager as that should be done by the OCPN toolbar
-    //m_bm_openobserver_pi = ScaleIcon( m_p_svgd_openobserver_pi, m_p_img_openobserver_pi, m_dScaleFactor );
-    //m_bm_openobserver_grey_pi = ScaleIcon( m_p_svgd_openobserver_grey_pi, m_p_img_openobserver_grey_pi, m_dScaleFactor );
-
-#else
-#endif // PLUGIN_USE_SVG
 
     CreateSchemeIcons();
 
@@ -208,13 +164,14 @@ void tpicons::CreateSchemeIcons()
     m_bm_day_openobserver_grey_pi = m_bm_openobserver_grey_pi;
     m_bm_day_openobserver_toggled_pi = m_bm_openobserver_toggled_pi;
     m_bm_day_openobserver_pi = m_bm_openobserver_pi;
+
     m_bm_dusk_openobserver_grey_pi = BuildDimmedToolBitmap(m_bm_openobserver_grey_pi, 128);
     m_bm_dusk_openobserver_pi = BuildDimmedToolBitmap(m_bm_openobserver_pi, 128);
     m_bm_dusk_openobserver_toggled_pi = BuildDimmedToolBitmap(m_bm_openobserver_toggled_pi, 128);
+
     m_bm_night_openobserver_grey_pi = BuildDimmedToolBitmap(m_bm_openobserver_grey_pi, 32);
     m_bm_night_openobserver_pi = BuildDimmedToolBitmap(m_bm_openobserver_pi, 32);
     m_bm_night_openobserver_toggled_pi = BuildDimmedToolBitmap(m_bm_openobserver_toggled_pi, 32);
-
 }
 
 wxBitmap tpicons::BuildDimmedToolBitmap(wxBitmap bmp_normal, unsigned char dim_ratio)

@@ -23,8 +23,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
-#ifndef TPICONS_H
-#define TPICONS_H 1
+#pragma once
 
 #include <wx/wxprec.h>
 #ifndef WX_PRECOMP
@@ -32,9 +31,6 @@
 #endif
 
 #include "ocpn_plugin.h"
-
-//forward declare
-class wxSVGDocument;
 
 class tpicons
 {
@@ -44,9 +40,8 @@ public:
 
     void    initialize_images(void);
     bool    ScaleIcons(void);
-    wxSize  GetIconSize(void);
     bool    SetScaleFactor(void);
-    void    SetColourScheme( PI_ColorScheme cs );
+    void    SetColourScheme(PI_ColorScheme cs);
     void    ChangeScheme(void);
 
     wxBitmap    m_bm_openobserver_pi;
@@ -60,13 +55,11 @@ public:
     bool        m_bUpdateIcons;
 
 private:
-    wxBitmap    *ScaleIcon( wxBitmap bitmap, double sf );
     void        CreateSchemeIcons(void);
     wxBitmap    BuildDimmedToolBitmap(wxBitmap bmp_normal, unsigned char dim_ratio);
 
 #ifdef PLUGIN_USE_SVG
     wxBitmap    LoadSVG( const wxString filename, unsigned int width = -1, unsigned int height = -1 );
-    wxBitmap    ScaleIcon( wxBitmap bitmap, const wxString filename, double sf );
 #endif
     wxBitmap    m_bm_day_openobserver_pi;
     wxBitmap    m_bm_day_openobserver_toggled_pi;
@@ -87,6 +80,4 @@ private:
     int         m_iDisplayScaleFactor;
     int         m_iToolScaleFactor;
     int         m_iImageRefSize;
-
 };
-#endif /* TPICONS_H*/
