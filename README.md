@@ -21,7 +21,7 @@ NOTE this is currently a work in progress and should be considered 'Alpha/Beta'.
 
 The build process can be used in a few ways:
   1. A standard cmake/make process on the command line
-  2. Run a batch file to create a 'Plugin Manager' installable. An example is `build-local-package-example.sh` which basically runs a script that is used on circleci locally and creates the installable files in the build directory
+  2. Run a batch file to create a 'Plugin Manager' installable. An example is `build-local-package.sh` which basically runs a script that is used on circleci locally and creates the installable files in the build directory
   3. Run 'circleci local' which will run what circleci does in the cloud locally for non-ORB based environment, and example being shown in `run-circleci-local.txt`
   4. Run a build process on pushing/merging a change on github, and when creating a new tag/version
 
@@ -31,7 +31,7 @@ The build process can be used in a few ways:
 The simplest way to produce a package that can be imported with the "Import plugin..." button in the OpenCPN plugin manager is to run the following
 
 ```
-rm build -rf; mkdir build; cd build; bash ../build-local-package-example.sh
+rm build -rf; mkdir build; cd build; bash ../build-local-package.sh
 ```
 
 Notice: You can of course also run the steps inside that script manually. However, in that case be aware that `make package` does not actually
