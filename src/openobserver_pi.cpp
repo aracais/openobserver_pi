@@ -320,9 +320,9 @@ void openobserver_pi::OnToolbarToolUpCallback(int id)
 
 bool openobserver_pi::KeyboardEventHook( wxKeyEvent &event )
 {
-    bool bret = FALSE;
+    bool bret = false;
 
-    if( event.GetKeyCode() < 128 )            //ascii
+    if( event.GetKeyCode() < 128 ) // ASCII
     {
         int key_char = event.GetKeyCode();
 
@@ -330,13 +330,13 @@ bool openobserver_pi::KeyboardEventHook( wxKeyEvent &event )
             key_char -= 64;
 
         switch( key_char ) {
-            case WXK_CONTROL_W:                      // Ctrl W
+            case WXK_CONTROL_W: // Ctrl W
                 if ( event.ShiftDown() ) { // Shift-Ctrl-W
                     if(event.GetEventType() == wxEVT_KEY_DOWN) {
                         OnToolbarToolDownCallback( m_openobserver_button_id);
                     }
-                    bret = TRUE;
-                } else bret = FALSE;
+                    bret = true;
+                } else bret = false;
                 break;
         }
     }
@@ -346,21 +346,14 @@ bool openobserver_pi::KeyboardEventHook( wxKeyEvent &event )
 
 bool openobserver_pi::MouseEventHook( wxMouseEvent &event )
 {
-    bool bret = FALSE;
-
     if(m_ooControlDialogImpl->IsVisible()) {
         if(event.LeftDown()) {
             m_click_lat = m_cursor_lat;
             m_click_lon = m_cursor_lon;
-            bret = TRUE;
-        }
-
-        if(event.LeftUp()) {
-            bret = TRUE;
         }
     }
 
-    return bret;
+    return false;
 }
 
 void openobserver_pi::SetCursorLatLon(double lat, double lon)
@@ -405,7 +398,7 @@ void openobserver_pi::ToggleToolbarIcon( void )
 void openobserver_pi::SaveConfig()
 {
     #ifndef __WXMSW__
-    wxString *l_locale = new wxString(wxSetlocale(LC_NUMERIC, NULL));
+    wxSetlocale(LC_NUMERIC, NULL);
     #if wxCHECK_VERSION(3,0,0)  && !defined(_WXMSW_)
     //#if wxCHECK_VERSION(3,0,0)
     wxSetlocale(LC_NUMERIC, "C");
@@ -418,6 +411,7 @@ void openobserver_pi::SaveConfig()
 
     if(pConf) 
     {
+        // section in the main OpenCPN setting file (Mac ~/Library/preferences/opencpn/opencpn.ini)
         pConf->SetPath( wxS( "/Settings/openobserver_pi" ) );
         // if(m_bRecreateConfig) {
         //     pConf->DeleteGroup( "/Settings/openobserver_pi" );
@@ -435,7 +429,7 @@ void openobserver_pi::SaveConfig()
 void openobserver_pi::LoadConfig()
 {
     #ifndef __WXMSW__
-    wxString *l_locale = new wxString(wxSetlocale(LC_NUMERIC, NULL));
+    wxSetlocale(LC_NUMERIC, NULL);
     #if wxCHECK_VERSION(3,0,0)
     wxSetlocale(LC_NUMERIC, "C");
     #else
