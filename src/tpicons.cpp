@@ -39,9 +39,6 @@
 
 
 extern wxString *g_SData_Locn;
-extern wxString *g_pHome_locn;
-extern wxString *g_pData;
-extern wxString *g_pImage;
 
 tpicons::tpicons()
 {
@@ -60,6 +57,7 @@ tpicons::~tpicons()
     delete g_SData_Locn;
     g_SData_Locn = NULL;
 }
+
 void tpicons::initialize_images(void)
 {
     wxFileName fn;

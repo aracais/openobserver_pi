@@ -30,8 +30,12 @@
 #endif
 
 #include <wx/filedlg.h>
+#include <wx/msgdlg.h>
+#include <wx/sstream.h>
 #include <wx/wfstream.h>
 #include <wx/file.h>
+
+#include <wx/xml/xml.h>
 
 #include <wx/base64.h>
 #include <wx/mstream.h>
@@ -47,9 +51,10 @@
 
 #include <wx/fontdlg.h>
 
-extern openobserver_pi    *g_openobserver_pi;
+extern openobserver_pi *g_openobserver_pi;
+extern wxString *g_pData;
 
-ooControlDialogImpl::ooControlDialogImpl( wxWindow* parent ) : ooControlDialogDef( parent )
+ooControlDialogImpl::ooControlDialogImpl(wxWindow* parent) : ooControlDialogDef(parent)
 {
 #if wxCHECK_VERSION(3,0,0)
     SetLayoutAdaptationMode(wxDIALOG_ADAPTATION_MODE_ENABLED);
@@ -59,6 +64,26 @@ ooControlDialogImpl::ooControlDialogImpl( wxWindow* parent ) : ooControlDialogDe
     m_ObservationsTable->SetDefaultEditor(editor);
     wxGridCellAutoWrapStringRenderer *renderer = new wxGridCellAutoWrapStringRenderer();
     m_ObservationsTable->SetDefaultRenderer(renderer);
+
+    // restore observations
+    wxFileName backup(*g_pData, "observations.xml");
+    wxString backup_filename = backup.GetFullPath();
+    read_observations_from_xml(backup_filename);
+}
+
+ooControlDialogImpl::~ooControlDialogImpl()
+{
+    wxFileName backup(*g_pData, "observations.xml");
+    wxString backup_filename = backup.GetFullPath();
+    wxFileOutputStream output_stream(backup_filename);
+    
+    if (!output_stream.IsOk())
+    {
+        wxLogError("Could not save observations to file '%s'.", backup_filename);
+        return;
+    }
+
+    save_observations_to_xml(output_stream.GetFile());
 }
 
 void ooControlDialogImpl::OnButtonClickNewObservation( wxCommandEvent& event )
@@ -92,13 +117,16 @@ void ooControlDialogImpl::OnButtonClickExportObservations( wxCommandEvent& event
         return;
     }
 
-    wxFile *file = output_stream.GetFile();
+    save_observations_to_csv(output_stream.GetFile());
+}
 
+void ooControlDialogImpl::save_observations_to_csv(wxFile *file)
+{
     const int exportCols = m_ObservationsTable->GetNumberCols();
     
     for (int c=0; c < exportCols; ++c)
     {
-        file->Write(m_ObservationsTable->GetColLabelValue(c));
+        file->Write("\"" + m_ObservationsTable->GetColLabelValue(c) + "\"");
 
         if (c < (exportCols - 1))
             file->Write(",");
@@ -109,7 +137,7 @@ void ooControlDialogImpl::OnButtonClickExportObservations( wxCommandEvent& event
     {
         for (int c=0; c < exportCols; ++c)
         {
-            file->Write(m_ObservationsTable->GetCellValue(r, c));
+            file->Write("\"" + m_ObservationsTable->GetCellValue(r, c) + "\"");
 
             if (c < (exportCols - 1))
                 file->Write(",");
@@ -118,6 +146,77 @@ void ooControlDialogImpl::OnButtonClickExportObservations( wxCommandEvent& event
     }
 
     file->Close();
+}
+
+void ooControlDialogImpl::save_observations_to_xml(wxFile *file)
+{
+    const int C = m_ObservationsTable->GetNumberCols();
+    const int R = m_ObservationsTable->GetNumberRows();
+
+    wxXmlDocument xmlDoc;    
+    wxXmlNode* observations = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, "observations");
+    observations->AddAttribute("creator", "OpenObserver for OpenCPN");
+    xmlDoc.SetRoot(observations);
+    
+    for (int r=0; r<R; ++r) {
+        wxXmlNode* observation = new wxXmlNode (observations, wxXML_ELEMENT_NODE, "observation");
+        observation->AddAttribute("id", wxString::Format(wxT("%i"), r));
+
+        for (int c=0; c<C; ++c) {
+            wxXmlNode* field = new wxXmlNode(observation, wxXML_ELEMENT_NODE, "field");
+            field->AddAttribute("id", wxString::Format(wxT("%i"), c));
+            field->AddChild(new wxXmlNode(wxXML_TEXT_NODE, "",  m_ObservationsTable->GetCellValue(r, c)));
+        }
+    }
+    
+    // write the output to a wxString
+    wxStringOutputStream stream;
+    xmlDoc.Save(stream);
+
+    // write the string to the file
+    file->Write(stream.GetString());    
+}
+
+void ooControlDialogImpl::read_observations_from_xml(wxString& filename)
+{
+    wxXmlDocument xmlDoc;
+    if (!xmlDoc.Load(filename)) {
+        wxMessageBox("Error loading observations file " + filename + ".", "Error", wxOK, this);
+        return;
+    }
+
+    if (xmlDoc.GetRoot()->GetName() != "observations") {
+        wxMessageBox("Error loading observations file: no observations found.", "Error", wxOK, this);
+        return;
+    }
+
+    const int C = m_ObservationsTable->GetNumberCols();
+    wxXmlNode *observation = xmlDoc.GetRoot()->GetChildren();
+    while (observation)
+    {
+        int r = -1;
+        if (observation->GetAttribute("id").ToInt(&r) && (r>=0)) {
+
+            // expand number of rows as needed to accommodate observations
+            if (r >= m_ObservationsTable->GetNumberRows()) {
+                m_ObservationsTable->AppendRows(r - m_ObservationsTable->GetNumberRows() + 1);
+            }
+
+            wxXmlNode *field = observation->GetChildren();
+            while (field) {
+                if (field->GetChildren()) {
+                    int c = -1;
+                    if (field->GetAttribute("id").ToInt(&c) && (c>=0) && (c<C)) {
+                        m_ObservationsTable->SetCellValue(r, c, field->GetChildren()->GetContent());
+                    }
+                }
+
+                field = field->GetNext();
+            }
+        }
+
+        observation = observation->GetNext();
+    }
 }
 
 void ooControlDialogImpl::OnButtonClickObservationsAddMarks( wxCommandEvent& event )

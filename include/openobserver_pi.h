@@ -151,9 +151,6 @@ public:
     openobserver_pi(void *ppimgr);
     ~openobserver_pi();
 
-    wxWindow            *m_parent_window;
-    wxFileConfig        *m_pTPConfig;
-
     //    The required PlugIn Methods
     int Init(void);
     bool DeInit(void);
@@ -183,7 +180,15 @@ public:
 
     void ToggleToolbarIcon( void);
 
-    void appendOSDirSlash(wxString* pString);
+private:
+    void    SaveConfig();
+    void    LoadConfig();
+
+    void    MenuPrepend(wxMenu *menu, int id, wxString label);
+    void    MenuAppend(wxMenu *menu, int id, wxString label);
+
+    wxWindow            *m_parent_window;
+    wxFileConfig        *m_pConfig;
 
     tpicons *m_ptpicons;
     ooControlDialogImpl *m_ooControlDialogImpl;
@@ -192,13 +197,6 @@ public:
     int     m_iCallerId;
     bool    m_btpDialog;
     int     m_openobserver_button_id;
-
-private:
-    void    SaveConfig( void );
-    void    LoadConfig();
-
-    void    MenuPrepend( wxMenu *menu, int id, wxString label);
-    void    MenuAppend( wxMenu *menu, int id, wxString label);
 
     double  m_cursor_lat;
     double  m_cursor_lon;

@@ -89,6 +89,14 @@ wxFont                  *g_pFontSmall;
 // Needed for ocpndc.cpp to compile. Normally would be in glChartCanvas.cpp
 float g_GLMinSymbolLineWidth;
 
+void appendOSDirSlash(wxString* pString)
+{
+    wxChar sep = wxFileName::GetPathSeparator();
+
+    if (pString->Last() != sep)
+        pString->Append(sep);
+}
+
 // the class factories, used to create and destroy instances of the PlugIn
 
 extern "C" DECL_EXP opencpn_plugin* create_pi(void *ppimgr)
@@ -116,34 +124,37 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 //
 //---------------------------------------------------------------------------------------------------------
 
-openobserver_pi::openobserver_pi(void *ppimgr)
-:opencpn_plugin_118(ppimgr)
+openobserver_pi::openobserver_pi(void *ppimgr) : opencpn_plugin_118(ppimgr)
 {
     // Create the PlugIn icons
     g_ppimgr = ppimgr;
     g_openobserver_pi = this;
 
     wxString *l_pDir = new wxString(*GetpPrivateApplicationDataLocation());
-    appendOSDirSlash( l_pDir );
+    appendOSDirSlash(l_pDir);
+
     l_pDir->Append(_T("plugins"));
-    appendOSDirSlash( l_pDir );
-    if ( !wxDir::Exists(*l_pDir))
-        wxMkdir( *l_pDir );
-    l_pDir->Append(_T("openobserver_pi"));
-    appendOSDirSlash( l_pDir );
-    if ( !wxDir::Exists(*l_pDir))
-        wxMkdir( *l_pDir );
-    g_PrivateDataDir = new wxString;
-    g_PrivateDataDir->Append(*l_pDir);
-    g_pData = new wxString(*l_pDir);
-    g_pData->append( wxS("data") );
-    appendOSDirSlash( g_pData );
-    if ( !wxDir::Exists(*g_pData))
-        wxMkdir( *g_pData );
-    g_pLayerDir = new wxString;
-    g_pLayerDir->Append(*l_pDir);
-    g_pLayerDir->Append( wxT("Layers") );
-    appendOSDirSlash( g_pLayerDir );
+    appendOSDirSlash(l_pDir);
+    if (!wxDir::Exists(*l_pDir))
+        wxMkdir(*l_pDir);
+
+    g_PrivateDataDir = new wxString(*l_pDir);
+    g_PrivateDataDir->Append(_T("openobserver_pi"));
+    appendOSDirSlash(g_PrivateDataDir);
+    if (!wxDir::Exists(*g_PrivateDataDir))
+        wxMkdir(*g_PrivateDataDir);
+
+    g_pData = new wxString(*g_PrivateDataDir);
+    g_pData->append(wxS("data"));
+    appendOSDirSlash(g_pData);
+    if (!wxDir::Exists(*g_pData))
+        wxMkdir(*g_pData);
+
+    g_pLayerDir = new wxString(*g_PrivateDataDir);
+    g_pLayerDir->Append(wxT("Layers"));
+    appendOSDirSlash(g_pLayerDir);
+    if (!wxDir::Exists(*g_pLayerDir))
+        wxMkdir(*g_pLayerDir);
 
     m_ptpicons = new tpicons();
 
@@ -177,11 +188,11 @@ int openobserver_pi::Init(void)
     m_click_lon = 0.0;
 
     // Adds local language support for the plugin to OCPN
-    AddLocaleCatalog( PLUGIN_CATALOG_NAME );
+    AddLocaleCatalog(PLUGIN_CATALOG_NAME);
 
     // Get a pointer to the opencpn display canvas, to use as a parent for windows created
     m_parent_window = GetOCPNCanvasWindow();
-    m_pTPConfig = GetOCPNConfigObject();
+    m_pConfig = GetOCPNConfigObject();
 
     m_ooControlDialogImpl = new ooControlDialogImpl(m_parent_window);
     m_ooControlDialogImpl->Fit();
@@ -246,7 +257,7 @@ bool openobserver_pi::DeInit(void)
         delete m_ooControlDialogImpl;
         m_ooControlDialogImpl = NULL;
     }
-    if(m_pTPConfig) SaveConfig();
+    if(m_pConfig) SaveConfig();
 
     return true;
 }
@@ -374,14 +385,6 @@ wxBitmap *openobserver_pi::GetPlugInBitmap()
     return &m_ptpicons->m_bm_openobserver_pi;
 }
 
-void openobserver_pi::appendOSDirSlash(wxString* pString)
-{
-    wxChar sep = wxFileName::GetPathSeparator();
-
-    if (pString->Last() != sep)
-        pString->Append(sep);
-}
-
 void openobserver_pi::ToggleToolbarIcon( void )
 {
     if(m_btpDialog) {
@@ -407,21 +410,19 @@ void openobserver_pi::SaveConfig()
     #endif
     #endif
 
-    wxFileConfig *pConf = m_pTPConfig;
-
-    if(pConf) 
+    if(m_pConfig) 
     {
         // section in the main OpenCPN setting file (Mac ~/Library/preferences/opencpn/opencpn.ini)
-        pConf->SetPath( wxS( "/Settings/openobserver_pi" ) );
+        m_pConfig->SetPath( wxS( "/Settings/openobserver_pi" ) );
         // if(m_bRecreateConfig) {
-        //     pConf->DeleteGroup( "/Settings/openobserver_pi" );
+        //     m_pConfig->DeleteGroup( "/Settings/openobserver_pi" );
         // } else {
-        //     pConf->Write( wxS( "SaveJSONOnStartup" ), g_bSaveJSONOnStartup );
-        //     pConf->Write( wxS( "JSONSaveFile" ), m_fnOutputJSON.GetFullPath());
-        //     pConf->Write( wxS( "JSONInputFile" ), m_fnInputJSON.GetFullPath());
-        //     pConf->Write( wxS( "CloseSaveFileAferEachWrite" ), m_bCloseSaveFileAfterEachWrite);
-        //     pConf->Write( wxS( "AppendToSaveFile" ), m_bAppendToSaveFile);
-        //     pConf->Write( wxS( "SaveIncommingJSONMessages" ), m_bSaveIncommingJSONMessages);
+        //     m_pConfig->Write( wxS( "SaveJSONOnStartup" ), g_bSaveJSONOnStartup );
+        //     m_pConfig->Write( wxS( "JSONSaveFile" ), m_fnOutputJSON.GetFullPath());
+        //     m_pConfig->Write( wxS( "JSONInputFile" ), m_fnInputJSON.GetFullPath());
+        //     m_pConfig->Write( wxS( "CloseSaveFileAferEachWrite" ), m_bCloseSaveFileAfterEachWrite);
+        //     m_pConfig->Write( wxS( "AppendToSaveFile" ), m_bAppendToSaveFile);
+        //     m_pConfig->Write( wxS( "SaveIncommingJSONMessages" ), m_bSaveIncommingJSONMessages);
         // }
     }
 }
@@ -437,25 +438,23 @@ void openobserver_pi::LoadConfig()
     #endif
     #endif
 
-    wxFileConfig *pConf = m_pTPConfig;
-
-    if(pConf)
+    if(m_pConfig)
     {
-        pConf->SetPath( wxS( "/Settings/openobserver_pi" ) );
-        // pConf->Read( wxS( "SaveJSONOnStartup"), &g_bSaveJSONOnStartup, false );
+        m_pConfig->SetPath( wxS( "/Settings/openobserver_pi" ) );
+        // m_pConfig->Read( wxS( "SaveJSONOnStartup"), &g_bSaveJSONOnStartup, false );
         // if(g_bSaveJSONOnStartup) m_ooControlDialogImpl->SetSaveJSONOnStartup(g_bSaveJSONOnStartup);
         // wxString l_filepath;
-        // pConf->Read( wxS("JSONSaveFile"), &l_filepath, wxEmptyString);
+        // m_pConfig->Read( wxS("JSONSaveFile"), &l_filepath, wxEmptyString);
         // m_fnOutputJSON.Assign(l_filepath);
         // if(m_fnOutputJSON != wxEmptyString) m_ooControlDialogImpl->SetJSONSaveFile(m_fnOutputJSON.GetFullPath());
-        // pConf->Read( wxS( "JSONInputFile" ), &l_filepath, wxEmptyString);
+        // m_pConfig->Read( wxS( "JSONInputFile" ), &l_filepath, wxEmptyString);
         // m_fnInputJSON.Assign(l_filepath);
         // if(m_fnInputJSON != wxEmptyString) m_ooControlDialogImpl->SetJSONInputFile(m_fnInputJSON.GetFullPath());
-        // pConf->Read( wxS( "CloseSaveFileAferEachWrite" ), &m_bCloseSaveFileAfterEachWrite, true);
+        // m_pConfig->Read( wxS( "CloseSaveFileAferEachWrite" ), &m_bCloseSaveFileAfterEachWrite, true);
         // m_ooControlDialogImpl->SetCloseFileAfterEachWrite(m_bCloseSaveFileAfterEachWrite);
-        // pConf->Read( wxS( "AppendToSaveFile" ), &m_bAppendToSaveFile, true);
+        // m_pConfig->Read( wxS( "AppendToSaveFile" ), &m_bAppendToSaveFile, true);
         // m_ooControlDialogImpl->SetAppendToSaveFile(m_bAppendToSaveFile);
-        // pConf->Read( wxS( "SaveIncommingJSONMessages" ), &m_bSaveIncommingJSONMessages, false);
+        // m_pConfig->Read( wxS( "SaveIncommingJSONMessages" ), &m_bSaveIncommingJSONMessages, false);
         // m_ooControlDialogImpl->SetIncommingJSONMessages(m_bSaveIncommingJSONMessages);
     }
 }

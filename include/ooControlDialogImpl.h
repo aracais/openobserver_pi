@@ -33,16 +33,17 @@
 
 #include "ooControlDialogDef.h"
 
-//    Constants for buttons
-
-// forward class definition
-class wxFontDialog;
-
 ///////////////////////////////////////////////////////////////////////////////
 /// Class ooControlDialogImpl
 ///////////////////////////////////////////////////////////////////////////////
 class ooControlDialogImpl : public ooControlDialogDef
 {
+        public:
+        ooControlDialogImpl(wxWindow *parent);
+        ~ooControlDialogImpl();
+
+        void SetPositionFix(time_t fixTime, double lat, double lon );
+
 	protected:
         void ooControlCloseClick( wxCommandEvent& event );
 
@@ -52,7 +53,8 @@ class ooControlDialogImpl : public ooControlDialogDef
         void OnButtonClickObservationsAddMarks( wxCommandEvent& event );
         void OnButtonClickObservationsDeleteMarks( wxCommandEvent& event );
 
-	public:
-        ooControlDialogImpl( wxWindow *parent );
-        void SetPositionFix(time_t fixTime, double lat, double lon );
+	private:
+        void save_observations_to_csv(wxFile *file);
+        void save_observations_to_xml(wxFile *file);
+        void read_observations_from_xml(wxString& filename);
 };
