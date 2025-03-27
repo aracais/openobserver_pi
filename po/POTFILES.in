@@ -3,9 +3,10 @@ src/ooControlDialogDef.cpp
 src/ooControlDialogImpl.cpp
 src/tpicons.cpp
 src/tpUtils.cpp
-include/openobserver_pi.h
-include/ooControlDialogDef.h
-include/ooControlDialogImpl.h
-include/tpicons.h
-include/tpIconCombo.h
-include/tpUtils.h
+src/openobserver_pi.h
+src/ooControlDialogDef.h
+src/ooControlDialogImpl.h
+src/tpicons.h
+src/tpIconCombo.h
+src/tpUtils.h
+src/globals.h

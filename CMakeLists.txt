@@ -172,12 +172,13 @@ set(SRCS
 )
 
 set(HDRS
-    include/openobserver_pi.h
-    include/ooControlDialogDef.h
-    include/ooControlDialogImpl.h
-    include/tpicons.h
-    include/tpIconCombo.h
-    include/tpUtils.h
+    src/openobserver_pi.h
+    src/ooControlDialogDef.h
+    src/ooControlDialogImpl.h
+    src/tpicons.h
+    src/tpIconCombo.h
+    src/tpUtils.h
+    src/globals.h
 )
 
 add_definitions(-DPLUGIN_USE_SVG)
@@ -224,12 +225,6 @@ endif (QT_ANDROID)
 # =============================================================
 
 set(SRC ${SRCS} ${HDRS})
-
-# =============================================================
-# Modify/configure 'Include' Directories below for the Plugin
-# =============================================================
-
-include_directories(BEFORE ${PROJECT_SOURCE_DIR}/include)
 
 # Change target_sources to match your project needs.
 # ==============================================================
