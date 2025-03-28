@@ -67,19 +67,21 @@ ooControlDialogImpl::ooControlDialogImpl(wxWindow* parent) : ooControlDialogDef(
 
     // restore observations
     wxFileName backup(*g_pData, "observations.xml");
-    wxString backup_filename = backup.GetFullPath();
-    read_observations_from_xml(backup_filename);
+    m_BackupFilename = backup.GetFullPath();
+    read_observations_from_xml(m_BackupFilename);
+
+    // start timer to backup observations every 30 seconds
+    m_BackupTimer.Bind(wxEVT_TIMER, &ooControlDialogImpl::OnBackupTimer, this, m_BackupTimer.GetId());
+    m_BackupTimer.Start(30000); // 30'000 ms = 30 s
 }
 
 ooControlDialogImpl::~ooControlDialogImpl()
 {
-    wxFileName backup(*g_pData, "observations.xml");
-    wxString backup_filename = backup.GetFullPath();
-    wxFileOutputStream output_stream(backup_filename);
+    wxFileOutputStream output_stream(m_BackupFilename);
     
     if (!output_stream.IsOk())
     {
-        wxLogError("Could not save observations to file '%s'.", backup_filename);
+        wxLogError("Could not save observations to file '%s'.", m_BackupFilename);
         return;
     }
 
@@ -108,16 +110,27 @@ void ooControlDialogImpl::OnButtonClickExportObservations( wxCommandEvent& event
     if (exportFileDialog.ShowModal() == wxID_CANCEL)
         return;
  
-    // save the current contents in the file;
-    // this can be done with e.g. wxWidgets output streams:
     wxFileOutputStream output_stream(exportFileDialog.GetPath());
     if (!output_stream.IsOk())
     {
-        wxLogError("Cannot save current contents in file '%s'.", exportFileDialog.GetPath());
+        wxMessageBox("Unable to save observations to file " + exportFileDialog.GetPath() + ".", "Error", wxOK, this);
         return;
     }
 
     save_observations_to_csv(output_stream.GetFile());
+}
+
+void ooControlDialogImpl::OnBackupTimer(wxTimerEvent& event)
+{
+    wxFileOutputStream output_stream(m_BackupFilename);
+    
+    if (!output_stream.IsOk())
+    {
+        wxLogError("Could not save observations to file '%s'.", m_BackupFilename);
+        return;
+    }
+
+    save_observations_to_xml(output_stream.GetFile());
 }
 
 void ooControlDialogImpl::save_observations_to_csv(wxFile *file)

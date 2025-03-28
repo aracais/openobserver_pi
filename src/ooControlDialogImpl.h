@@ -55,7 +55,12 @@ class ooControlDialogImpl : public ooControlDialogDef
         void OnButtonClickObservationsDeleteMarks( wxCommandEvent& event );
 
 	private:
+        void OnBackupTimer(wxTimerEvent& event);
+
         void save_observations_to_csv(wxFile *file);
         void save_observations_to_xml(wxFile *file);
         void read_observations_from_xml(wxString& filename);
+
+        wxString m_BackupFilename;
+        wxTimer m_BackupTimer;
 };
