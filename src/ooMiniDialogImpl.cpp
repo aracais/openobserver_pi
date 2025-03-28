@@ -1,13 +1,11 @@
-/******************************************************************************
- * $Id: openobserver_pi.h,v 1.0 2015/01/28 01:54:37 jongough Exp $
+/**************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenCPN General Drawing Plugin
- * Author:   Jon Gough
+ * Purpose:  OpenObserver Plugin Mini Dialog
+ * Author:   Alex Mansfield
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,33 +20,40 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
- */
-#ifndef _TPGLOBALS_H_
-#define _TPGLOBALS_H_
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
-class tpicons;
-class ooControlDialogImpl;
-class ooMiniDialogImpl;
+#include "wx/wxprec.h"
 
-#define openobserver_POSITION -1
-#define ID_NONE -1
-//    Constants for right click menus
-
-#define SELTYPE_UNKNOWN             0x0001
-#define SELTYPE_ODPOINT             0x0002
-#define SELTYPE_PATHSEGMENT         0x0004
-#define SELTYPE_PATHCREATE          0x0008
-#define SELTYPE_BOUNDARYLIST        0x0010
-#define SELTYPE_PIL                 0x0020
-#define TYPE_PATHMGR_PATH_DLG       0x0040
-#define TYPE_PATHMGR_POINT_DLG      0x0080
-#define TYPE_PATHMGR_LAYER_DLG      0x0100
-
-
-// Needed for ocpndc.cpp to compile. Normally would be in glChartCanvas.cpp
-extern float g_GLMinSymbolLineWidth;
-
-
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
 #endif
+
+#include "ooMiniDialogImpl.h"
+#include "openobserver_pi.h"
+
+
+extern openobserver_pi *g_openobserver_pi;
+
+ooMiniDialogImpl::ooMiniDialogImpl(wxWindow* parent) : ooMiniDialogDef(parent)
+{
+#if wxCHECK_VERSION(3,0,0)
+    SetLayoutAdaptationMode(wxDIALOG_ADAPTATION_MODE_ENABLED);
+#endif // wxCHECK_VERSION(3,0,0)
+}
+
+ooMiniDialogImpl::~ooMiniDialogImpl()
+{
+}
+
+void ooMiniDialogImpl::ooMiniOpenMainWindowClick(wxCommandEvent& event)
+{
+    g_openobserver_pi->ToggleWindow();
+}
+
+void ooMiniDialogImpl::ooMiniCloseClick(wxCommandEvent& event)
+{
+    g_openobserver_pi->ToggleToolbarIcon();
+}
+
+

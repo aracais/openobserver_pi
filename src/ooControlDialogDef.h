@@ -57,6 +57,7 @@ class ooControlDialogDef : public wxDialog
 		wxButton* m_ObservationsAddMarks;
 		wxButton* m_ObservationsDeleteMarks;
 		wxGrid* m_ObservationsTable;
+		wxButton* m_buttonOpenMiniWindow;
 		wxButton* m_buttonClose;
 
 		// Virtual event handlers, override them in your derived class
@@ -65,6 +66,7 @@ class ooControlDialogDef : public wxDialog
 		virtual void OnButtonClickExportObservations( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickObservationsAddMarks( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickObservationsDeleteMarks( wxCommandEvent& event ) { event.Skip(); }
+		virtual void ooControlOpenMiniWindowClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void ooControlCloseClick( wxCommandEvent& event ) { event.Skip(); }
 
 

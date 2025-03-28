@@ -167,6 +167,8 @@ set(SRCS
     src/openobserver_pi.cpp
     src/ooControlDialogDef.cpp 
     src/ooControlDialogImpl.cpp
+    src/ooMiniDialogDef.cpp 
+    src/ooMiniDialogImpl.cpp
     src/tpicons.cpp
     src/tpUtils.cpp
 )
@@ -175,6 +177,8 @@ set(HDRS
     src/openobserver_pi.h
     src/ooControlDialogDef.h
     src/ooControlDialogImpl.h
+    src/ooMiniDialogDef.h
+    src/ooMiniDialogImpl.h
     src/tpicons.h
     src/tpIconCombo.h
     src/tpUtils.h

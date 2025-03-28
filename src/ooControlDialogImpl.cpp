@@ -271,14 +271,17 @@ void ooControlDialogImpl::OnButtonClickObservationsDeleteMarks( wxCommandEvent& 
     }
 }
 
-void ooControlDialogImpl::ooControlCloseClick( wxCommandEvent& event )
+void ooControlDialogImpl::ooControlOpenMiniWindowClick(wxCommandEvent& event)
 {
-    g_openobserver_pi->ToggleToolbarIcon();
-
-    Show(false);
+    g_openobserver_pi->ToggleWindow();
 }
 
-void ooControlDialogImpl::SetPositionFix( time_t fixTime, double lat, double lon )
+void ooControlDialogImpl::ooControlCloseClick(wxCommandEvent& event)
+{
+    g_openobserver_pi->ToggleToolbarIcon();
+}
+
+void ooControlDialogImpl::SetPositionFix(time_t fixTime, double lat, double lon)
 {
     char dateString[16];
     std::strftime(dateString, 16, "%F", gmtime(&fixTime));

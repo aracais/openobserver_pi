@@ -178,7 +178,8 @@ public:
     void SetCursorLatLon(double lat, double lon);
     void SetPositionFix(PlugIn_Position_Fix &pfix);
 
-    void ToggleToolbarIcon( void);
+    void ToggleToolbarIcon();
+    void ToggleWindow();
 
 private:
     void    SaveConfig();
@@ -192,10 +193,11 @@ private:
 
     tpicons *m_ptpicons;
     ooControlDialogImpl *m_ooControlDialogImpl;
+    ooMiniDialogImpl *m_ooMiniDialogImpl;
 
     bool    m_bReadyForRequests;
     int     m_iCallerId;
-    bool    m_btpDialog;
+    bool    m_bShowMainDialog;
     int     m_openobserver_button_id;
 
     double  m_cursor_lat;

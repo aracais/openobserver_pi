@@ -52,6 +52,7 @@
 
 #include "tpicons.h"
 #include "ooControlDialogImpl.h"
+#include "ooMiniDialogImpl.h"
 
 #include "wx/jsonwriter.h"
 
@@ -178,10 +179,11 @@ openobserver_pi::~openobserver_pi()
 
 int openobserver_pi::Init(void)
 {
-    g_tplocale = NULL;
+    g_tplocale = nullptr;
     m_bReadyForRequests = false;
-    m_btpDialog = false;
-    m_ooControlDialogImpl = NULL;
+    m_bShowMainDialog = true;
+    m_ooControlDialogImpl = nullptr;
+    m_ooMiniDialogImpl = nullptr;
     m_cursor_lat = 0.0;
     m_cursor_lon = 0.0;
     m_click_lat = 0.0;
@@ -198,6 +200,12 @@ int openobserver_pi::Init(void)
     m_ooControlDialogImpl->Fit();
     m_ooControlDialogImpl->Layout();
     m_ooControlDialogImpl->Hide();
+
+    m_ooMiniDialogImpl = new ooMiniDialogImpl(m_parent_window);
+    m_ooMiniDialogImpl->Fit();
+    m_ooMiniDialogImpl->Layout();
+    m_ooMiniDialogImpl->Hide();
+
     LoadConfig();
 
 #ifdef PLUGIN_USE_SVG
@@ -255,7 +263,13 @@ bool openobserver_pi::DeInit(void)
     {
         m_ooControlDialogImpl->Close();
         delete m_ooControlDialogImpl;
-        m_ooControlDialogImpl = NULL;
+        m_ooControlDialogImpl = nullptr;
+    }
+    if(m_ooMiniDialogImpl)
+    {
+        m_ooMiniDialogImpl->Close();
+        delete m_ooMiniDialogImpl;
+        m_ooMiniDialogImpl = nullptr;
     }
     if(m_pConfig) SaveConfig();
 
@@ -357,11 +371,9 @@ bool openobserver_pi::KeyboardEventHook( wxKeyEvent &event )
 
 bool openobserver_pi::MouseEventHook( wxMouseEvent &event )
 {
-    if(m_ooControlDialogImpl->IsVisible()) {
-        if(event.LeftDown()) {
-            m_click_lat = m_cursor_lat;
-            m_click_lon = m_cursor_lon;
-        }
+    if (event.LeftDown()) {
+        m_click_lat = m_cursor_lat;
+        m_click_lon = m_cursor_lon;
     }
 
     return false;
@@ -375,9 +387,7 @@ void openobserver_pi::SetCursorLatLon(double lat, double lon)
 
 void openobserver_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
 {
-    if (m_ooControlDialogImpl->IsShown()) {
-        m_ooControlDialogImpl->SetPositionFix(pfix.FixTime, pfix.Lat, pfix.Lon);
-    }
+    m_ooControlDialogImpl->SetPositionFix(pfix.FixTime, pfix.Lat, pfix.Lon);
 }
 
 wxBitmap *openobserver_pi::GetPlugInBitmap()
@@ -385,16 +395,35 @@ wxBitmap *openobserver_pi::GetPlugInBitmap()
     return &m_ptpicons->m_bm_openobserver_pi;
 }
 
-void openobserver_pi::ToggleToolbarIcon( void )
+void openobserver_pi::ToggleToolbarIcon()
 {
-    if(m_btpDialog) {
-        m_btpDialog = false;
-        SetToolbarItemState( m_openobserver_button_id, false );
+    if ((m_ooControlDialogImpl && m_ooControlDialogImpl->IsShown()) ||
+        (m_ooMiniDialogImpl && m_ooMiniDialogImpl->IsShown())) {
+        SetToolbarItemState(m_openobserver_button_id, false);
         m_ooControlDialogImpl->Hide();
+        m_ooMiniDialogImpl->Hide();
     } else {
-        m_btpDialog = true;
-        SetToolbarItemState( m_openobserver_button_id, true  );
+        SetToolbarItemState(m_openobserver_button_id, true);
+        if (m_bShowMainDialog) {
+            m_ooMiniDialogImpl->Hide();
+            m_ooControlDialogImpl->Show();
+        } else {
+            m_ooControlDialogImpl->Hide();
+            m_ooMiniDialogImpl->Show();
+        }
+    }
+}
+
+void openobserver_pi::ToggleWindow()
+{
+    if (m_ooControlDialogImpl && m_ooControlDialogImpl->IsShown()) {
+        m_ooControlDialogImpl->Hide();
+        m_ooMiniDialogImpl->Show();
+        m_bShowMainDialog = false;
+    } else {
+        m_ooMiniDialogImpl->Hide();
         m_ooControlDialogImpl->Show();
+        m_bShowMainDialog = true;
     }
 }
 
