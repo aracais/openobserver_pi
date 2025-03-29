@@ -46,7 +46,7 @@ public:
         ooControlDialogImpl(wxWindow *parent);
         ~ooControlDialogImpl();
 
-        void CreateObservationsTable(ooObservations *table);
+        void CreateObservationsTable(ooObservations *observations);
 
         void SetPositionFix(time_t fixTime, double lat, double lon);
 
@@ -66,15 +66,12 @@ private:
         void OnBackupTimer(wxTimerEvent& event);
         void OnObservationDurationTimer(wxTimerEvent& event);
 
-        void save_observations_to_csv(wxFile *file);
-        void save_observations_to_xml(wxFile *file);
-        void read_observations_from_xml(wxString& filename);
-
         wxString m_BackupFilename;
         wxTimer m_BackupTimer;
 
         wxTimer m_ObservationDurationTimer;
         wxStopWatch m_ObservationDurationStopWatch;
 
+        ooObservations * m_Observations;
         wxGrid* m_ObservationsTable;
 };

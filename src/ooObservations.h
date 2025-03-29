@@ -26,6 +26,7 @@
 
 #pragma once
 
+#include <wx/file.h>
 #include <wx/grid.h>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -38,6 +39,10 @@ public:
     ~ooObservations();
 
     wxGridSizesInfo GetColSizes() const;
+
+    void SaveToCSV(wxFile *file);
+    void SaveToXML(wxFile *file);
+    bool ReadFromXML(wxString& filename);
 
 private:
     wxGridSizesInfo m_col_sizes;

@@ -54,7 +54,8 @@
 extern openobserver_pi *g_openobserver_pi;
 extern wxString *g_pData;
 
-ooControlDialogImpl::ooControlDialogImpl(wxWindow* parent) : ooControlDialogDef(parent), m_ObservationsTable(nullptr)
+ooControlDialogImpl::ooControlDialogImpl(wxWindow* parent) 
+    : ooControlDialogDef(parent), m_Observations(nullptr), m_ObservationsTable(nullptr)
 {
 #if wxCHECK_VERSION(3,0,0)
     SetLayoutAdaptationMode(wxDIALOG_ADAPTATION_MODE_ENABLED);
@@ -83,16 +84,17 @@ ooControlDialogImpl::~ooControlDialogImpl()
         return;
     }
 
-    save_observations_to_xml(output_stream.GetFile());
+    m_Observations->SaveToXML(output_stream.GetFile());
 
 }
 
 void ooControlDialogImpl::CreateObservationsTable(ooObservations *observations)
 {
-    m_ObservationsTable = new wxGrid( m_panelObservations, wxID_ANY, wxDefaultPosition, wxSize( 740,465 ), 0 );
+    m_Observations = observations;
 
-    m_ObservationsTable->AssignTable(observations);
-    m_ObservationsTable->SetColSizes(observations->GetColSizes());
+    m_ObservationsTable = new wxGrid(m_panelObservations, wxID_ANY, wxDefaultPosition, wxSize(740, 465), 0);
+    m_ObservationsTable->AssignTable(m_Observations);
+    m_ObservationsTable->SetColSizes(m_Observations->GetColSizes());
 
 	// Grid
 	m_ObservationsTable->EnableEditing( true );
@@ -117,15 +119,21 @@ void ooControlDialogImpl::CreateObservationsTable(ooObservations *observations)
 	// Cell Defaults
 	m_ObservationsTable->SetDefaultCellFont( wxFont( 11, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
 	m_ObservationsTable->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
-	m_fgSizerObservations->Add( m_ObservationsTable, 0, wxALL|wxEXPAND, 5 );
 
     wxGridCellAutoWrapStringEditor *editor = new wxGridCellAutoWrapStringEditor();
     m_ObservationsTable->SetDefaultEditor(editor);
+    
     wxGridCellAutoWrapStringRenderer *renderer = new wxGridCellAutoWrapStringRenderer();
     m_ObservationsTable->SetDefaultRenderer(renderer);
 
+    // m_ObservationsTable is a wxGrid, ultimately derived from wxWindow
+	m_fgSizerObservations->Add(m_ObservationsTable, 0, wxALL|wxEXPAND, 5);
+
     // restore observations
-    read_observations_from_xml(m_BackupFilename);
+    if (!m_Observations->ReadFromXML(m_BackupFilename))
+    {
+        wxMessageBox("Error loading observations file " + m_BackupFilename + ".", "Error", wxOK, this);
+    }
 
     // start timer to backup observations every 30 seconds
     m_BackupTimer.Start(30000); // 30'000 ms = 30 s
@@ -215,7 +223,7 @@ void ooControlDialogImpl::OnButtonClickExportObservations( wxCommandEvent& event
         return;
     }
 
-    save_observations_to_csv(output_stream.GetFile());
+    m_Observations->SaveToCSV(output_stream.GetFile());
 }
 
 void ooControlDialogImpl::OnBackupTimer(wxTimerEvent& event)
@@ -230,7 +238,7 @@ void ooControlDialogImpl::OnBackupTimer(wxTimerEvent& event)
         return;
     }
 
-    save_observations_to_xml(output_stream.GetFile());
+    m_Observations->SaveToXML(output_stream.GetFile());
 }
 
 void ooControlDialogImpl::OnObservationDurationTimer(wxTimerEvent& event)
@@ -245,112 +253,6 @@ void ooControlDialogImpl::OnObservationDurationTimer(wxTimerEvent& event)
     std::sprintf(durationString, "%02u:%02u:%02u", hours, minutes, seconds);
     
     m_ObservationDuration->SetValue(durationString);
-}
-
-void ooControlDialogImpl::save_observations_to_csv(wxFile *file)
-{
-    if (!m_ObservationsTable) return;
-
-    const int C = m_ObservationsTable->GetNumberCols();
-    const int R = m_ObservationsTable->GetNumberRows();
-    
-    for (int c=0; c<C; ++c)
-    {
-        file->Write("\"" + m_ObservationsTable->GetColLabelValue(c) + "\"");
-
-        if (c<(C - 1))
-            file->Write(",");
-    }
-    file->Write("\n");
-
-    for (int r=0; r<R; ++r)
-    {
-        for (int c=0; c<C; ++c)
-        {
-            file->Write("\"" + m_ObservationsTable->GetCellValue(r, c) + "\"");
-
-            if (c<(C - 1))
-                file->Write(",");
-        }
-        file->Write("\n");
-    }
-
-    file->Close();
-}
-
-void ooControlDialogImpl::save_observations_to_xml(wxFile *file)
-{
-    if (!m_ObservationsTable) return;
-
-    const int C = m_ObservationsTable->GetNumberCols();
-    const int R = m_ObservationsTable->GetNumberRows();
-
-    wxXmlDocument xmlDoc;    
-    wxXmlNode* observations = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, "observations");
-    observations->AddAttribute("creator", "OpenObserver for OpenCPN");
-    xmlDoc.SetRoot(observations);
-    
-    for (int r=0; r<R; ++r) {
-        wxXmlNode* observation = new wxXmlNode (observations, wxXML_ELEMENT_NODE, "observation");
-        observation->AddAttribute("id", wxString::Format(wxT("%i"), r));
-
-        for (int c=0; c<C; ++c) {
-            wxXmlNode* field = new wxXmlNode(observation, wxXML_ELEMENT_NODE, "field");
-            field->AddAttribute("id", wxString::Format(wxT("%i"), c));
-            field->AddChild(new wxXmlNode(wxXML_TEXT_NODE, "",  m_ObservationsTable->GetCellValue(r, c)));
-        }
-    }
-    
-    // write the output to a wxString
-    wxStringOutputStream stream;
-    xmlDoc.Save(stream);
-
-    // write the string to the file
-    file->Write(stream.GetString());    
-}
-
-void ooControlDialogImpl::read_observations_from_xml(wxString& filename)
-{
-    if (!m_ObservationsTable) return;
-
-    wxXmlDocument xmlDoc;
-    if (!xmlDoc.Load(filename)) {
-        wxMessageBox("Error loading observations file " + filename + ".", "Error", wxOK, this);
-        return;
-    }
-
-    if (xmlDoc.GetRoot()->GetName() != "observations") {
-        wxMessageBox("Error loading observations file: no observations found.", "Error", wxOK, this);
-        return;
-    }
-
-    const int C = m_ObservationsTable->GetNumberCols();
-    wxXmlNode *observation = xmlDoc.GetRoot()->GetChildren();
-    while (observation)
-    {
-        int r = -1;
-        if (observation->GetAttribute("id").ToInt(&r) && (r>=0)) {
-
-            // expand number of rows as needed to accommodate observations
-            if (r >= m_ObservationsTable->GetNumberRows()) {
-                m_ObservationsTable->AppendRows(r - m_ObservationsTable->GetNumberRows() + 1);
-            }
-
-            wxXmlNode *field = observation->GetChildren();
-            while (field) {
-                if (field->GetChildren()) {
-                    int c = -1;
-                    if (field->GetAttribute("id").ToInt(&c) && (c>=0) && (c<C)) {
-                        m_ObservationsTable->SetCellValue(r, c, field->GetChildren()->GetContent());
-                    }
-                }
-
-                field = field->GetNext();
-            }
-        }
-
-        observation = observation->GetNext();
-    }
 }
 
 void ooControlDialogImpl::OnButtonClickObservationsAddMarks( wxCommandEvent& event )
