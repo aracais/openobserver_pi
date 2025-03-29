@@ -45,8 +45,8 @@ class ooControlDialogImpl : public ooControlDialogDef
         void SetPositionFix(time_t fixTime, double lat, double lon);
 
 	protected:
+        void ooControlStartStopObservationClick(wxCommandEvent& event);
         void ooControlOpenMiniWindowClick(wxCommandEvent& event);
-        void ooControlCloseClick(wxCommandEvent& event);
 
         void OnButtonClickNewObservation( wxCommandEvent& event );
         void OnButtonClickDeleteObservation( wxCommandEvent& event );
@@ -54,8 +54,11 @@ class ooControlDialogImpl : public ooControlDialogDef
         void OnButtonClickObservationsAddMarks( wxCommandEvent& event );
         void OnButtonClickObservationsDeleteMarks( wxCommandEvent& event );
 
+        void ooControlCloseClick(wxCommandEvent& event);
+
 	private:
         void OnBackupTimer(wxTimerEvent& event);
+        void OnObservationDurationTimer(wxTimerEvent& event);
 
         void save_observations_to_csv(wxFile *file);
         void save_observations_to_xml(wxFile *file);
@@ -63,4 +66,7 @@ class ooControlDialogImpl : public ooControlDialogDef
 
         wxString m_BackupFilename;
         wxTimer m_BackupTimer;
+
+        wxTimer m_ObservationDurationTimer;
+        wxStopWatch m_ObservationDurationStopWatch;
 };

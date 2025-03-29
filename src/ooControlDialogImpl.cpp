@@ -73,6 +73,8 @@ ooControlDialogImpl::ooControlDialogImpl(wxWindow* parent) : ooControlDialogDef(
     // start timer to backup observations every 30 seconds
     m_BackupTimer.Bind(wxEVT_TIMER, &ooControlDialogImpl::OnBackupTimer, this, m_BackupTimer.GetId());
     m_BackupTimer.Start(30000); // 30'000 ms = 30 s
+
+    m_ObservationDurationTimer.Bind(wxEVT_TIMER, &ooControlDialogImpl::OnObservationDurationTimer, this, m_ObservationDurationTimer.GetId());
 }
 
 ooControlDialogImpl::~ooControlDialogImpl()
@@ -86,6 +88,53 @@ ooControlDialogImpl::~ooControlDialogImpl()
     }
 
     save_observations_to_xml(output_stream.GetFile());
+}
+
+void ooControlDialogImpl::SetPositionFix(time_t fixTime, double lat, double lon)
+{
+    char dateString[16];
+    std::strftime(dateString, 16, "%F", gmtime(&fixTime));
+    char timeString[16];
+    std::strftime(timeString, 16, "%T", gmtime(&fixTime));
+
+    m_ObservationsDate->SetValue(dateString);
+    m_ObservationsTime->SetValue(timeString);
+    m_ObservationsLat->SetValue(toSDMM_PlugIn(1, lat));
+    m_ObservationsLon->SetValue(toSDMM_PlugIn(2, lon));
+}
+
+void ooControlDialogImpl::ooControlStartStopObservationClick(wxCommandEvent& event)
+{
+    if (!m_ObservationDurationTimer.IsRunning()) 
+    {
+        // start observation
+        m_StartStopObservation->SetLabel("Stop Observation");
+
+        // start duration stopwatch
+        m_ObservationDurationStopWatch.Start(0);
+
+        // start timer to update observation duration
+        m_ObservationDurationTimer.Start(100); // 100 ms = 0.1 s
+
+        // create new observation in table and fill start date, time and position
+        m_ObservationsTable->InsertRows(0, 1);
+        m_ObservationsTable->SetCellValue(0, 0, m_ObservationsDate->GetValue());
+        m_ObservationsTable->SetCellValue(0, 1, m_ObservationsTime->GetValue());
+        m_ObservationsTable->SetCellValue(0, 2, m_ObservationsLat->GetValue());
+        m_ObservationsTable->SetCellValue(0, 3, m_ObservationsLon->GetValue());
+    } else {
+        // stop observation
+        m_StartStopObservation->SetLabel("Start Observation");
+
+        m_ObservationDurationStopWatch.Pause();
+        m_ObservationDurationTimer.Stop();
+
+        // fill observation stop date, time and position
+        // m_ObservationsTable->SetCellValue(0, 0, m_ObservationsDate->GetValue());
+        // m_ObservationsTable->SetCellValue(0, 1, m_ObservationsTime->GetValue());
+        // m_ObservationsTable->SetCellValue(0, 2, m_ObservationsLat->GetValue());
+        // m_ObservationsTable->SetCellValue(0, 3, m_ObservationsLon->GetValue());
+    }
 }
 
 void ooControlDialogImpl::OnButtonClickNewObservation( wxCommandEvent& event )
@@ -133,26 +182,41 @@ void ooControlDialogImpl::OnBackupTimer(wxTimerEvent& event)
     save_observations_to_xml(output_stream.GetFile());
 }
 
+void ooControlDialogImpl::OnObservationDurationTimer(wxTimerEvent& event)
+{
+    const long duration_ms = m_ObservationDurationStopWatch.Time();
+
+    const unsigned int hours = duration_ms / 3600000;
+    const unsigned int minutes = (duration_ms % 3600000) / 60000;
+    const unsigned int seconds = (duration_ms % 60000) / 1000;
+
+    char durationString[16];
+    std::sprintf(durationString, "%02u:%02u:%02u", hours, minutes, seconds);
+    
+    m_ObservationDuration->SetValue(durationString);
+}
+
 void ooControlDialogImpl::save_observations_to_csv(wxFile *file)
 {
-    const int exportCols = m_ObservationsTable->GetNumberCols();
+    const int C = m_ObservationsTable->GetNumberCols();
+    const int R = m_ObservationsTable->GetNumberRows();
     
-    for (int c=0; c < exportCols; ++c)
+    for (int c=0; c<C; ++c)
     {
         file->Write("\"" + m_ObservationsTable->GetColLabelValue(c) + "\"");
 
-        if (c < (exportCols - 1))
+        if (c<(C - 1))
             file->Write(",");
     }
     file->Write("\n");
 
-    for (int r=0; r < m_ObservationsTable->GetNumberRows(); ++r)
+    for (int r=0; r<R; ++r)
     {
-        for (int c=0; c < exportCols; ++c)
+        for (int c=0; c<C; ++c)
         {
             file->Write("\"" + m_ObservationsTable->GetCellValue(r, c) + "\"");
 
-            if (c < (exportCols - 1))
+            if (c<(C - 1))
                 file->Write(",");
         }
         file->Write("\n");
@@ -292,17 +356,4 @@ void ooControlDialogImpl::ooControlOpenMiniWindowClick(wxCommandEvent& event)
 void ooControlDialogImpl::ooControlCloseClick(wxCommandEvent& event)
 {
     g_openobserver_pi->ToggleToolbarIcon();
-}
-
-void ooControlDialogImpl::SetPositionFix(time_t fixTime, double lat, double lon)
-{
-    char dateString[16];
-    std::strftime(dateString, 16, "%F", gmtime(&fixTime));
-    char timeString[16];
-    std::strftime(timeString, 16, "%T", gmtime(&fixTime));
-
-    m_ObservationsDate->SetValue(dateString);
-    m_ObservationsTime->SetValue(timeString);
-    m_ObservationsLat->SetValue(toSDMM_PlugIn(1, lat));
-    m_ObservationsLon->SetValue(toSDMM_PlugIn(2, lon));
 }

@@ -151,7 +151,7 @@ public:
     openobserver_pi(void *ppimgr);
     ~openobserver_pi();
 
-    // The required PlugIn Methods
+    //    The required PlugIn Methods
     int Init(void);
     bool DeInit(void);
 

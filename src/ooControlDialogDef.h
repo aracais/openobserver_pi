@@ -19,10 +19,11 @@
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
+#include <wx/button.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/sizer.h>
-#include <wx/button.h>
+#include <wx/statline.h>
 #include <wx/grid.h>
 #include <wx/notebook.h>
 #include <wx/dialog.h>
@@ -43,6 +44,12 @@ class ooControlDialogDef : public wxDialog
 		wxNotebook* m_notebookControl;
 		wxPanel* m_panelProject;
 		wxPanel* m_panelObservations;
+		wxButton* m_StartStopObservation;
+		wxStaticText* m_ObservationsDurationLabel;
+		wxTextCtrl* m_ObservationDuration;
+		wxButton* m_buttonOpenMiniWindow;
+		wxStaticLine* m_staticline1;
+		wxStaticText* m_ObservationsDateLabel1;
 		wxStaticText* m_ObservationsDateLabel;
 		wxTextCtrl* m_ObservationsDate;
 		wxStaticText* m_ObservationsTimeLabel;
@@ -51,22 +58,23 @@ class ooControlDialogDef : public wxDialog
 		wxTextCtrl* m_ObservationsLat;
 		wxStaticText* m_ObservationsLonLabel;
 		wxTextCtrl* m_ObservationsLon;
+		wxStaticLine* m_staticline11;
 		wxButton* m_ObservationsNew;
 		wxButton* m_ObservationsDelete;
-		wxButton* m_ObservationsExportObservations;
 		wxButton* m_ObservationsAddMarks;
 		wxButton* m_ObservationsDeleteMarks;
+		wxButton* m_ObservationsExportObservations;
 		wxGrid* m_ObservationsTable;
-		wxButton* m_buttonOpenMiniWindow;
 		wxButton* m_buttonClose;
 
 		// Virtual event handlers, override them in your derived class
+		virtual void ooControlStartStopObservationClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void ooControlOpenMiniWindowClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickNewObservation( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickDeleteObservation( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnButtonClickExportObservations( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickObservationsAddMarks( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickObservationsDeleteMarks( wxCommandEvent& event ) { event.Skip(); }
-		virtual void ooControlOpenMiniWindowClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClickExportObservations( wxCommandEvent& event ) { event.Skip(); }
 		virtual void ooControlCloseClick( wxCommandEvent& event ) { event.Skip(); }
 
 
