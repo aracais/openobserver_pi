@@ -1,4 +1,5 @@
 src/openobserver_pi.cpp
+src/ooObservations.cpp
 src/ooControlDialogDef.cpp
 src/ooControlDialogImpl.cpp
 src/ooMiniDialogDef.cpp
@@ -6,6 +7,7 @@ src/ooMiniDialogImpl.cpp
 src/tpicons.cpp
 src/tpUtils.cpp
 src/openobserver_pi.h
+src/ooObservations.h
 src/ooControlDialogDef.h
 src/ooControlDialogImpl.h
 src/ooMiniDialogDef.h

@@ -1,13 +1,11 @@
-/******************************************************************************
- * $Id: openobserver_pi.h,v 1.0 2015/01/28 01:54:37 jongough Exp $
+/**************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenCPN General Drawing Plugin
- * Author:   Jon Gough
+ * Purpose:  OpenObserver Plugin Observations
+ * Author:   Alex Mansfield
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
- *   $EMAIL$   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,34 +20,38 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
- */
-#ifndef _TPGLOBALS_H_
-#define _TPGLOBALS_H_
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
-class tpicons;
-class ooControlDialogImpl;
-class ooMiniDialogImpl;
-class ooObservations;
+#include "ooObservations.h"
 
-#define openobserver_POSITION -1
-#define ID_NONE -1
-//    Constants for right click menus
+ooObservations::ooObservations() : wxGridStringTable(0, 7)
+{
+    SetColLabelValue( 0, _("Date") );
+	SetColLabelValue( 1, _("Time (UTC)") );
+	SetColLabelValue( 2, _("Lat") );
+	SetColLabelValue( 3, _("Lon") );
+	SetColLabelValue( 4, _("Species") );
+	SetColLabelValue( 5, _("Notes") );
+	SetColLabelValue( 6, _("Mark GUID") );
 
-#define SELTYPE_UNKNOWN             0x0001
-#define SELTYPE_ODPOINT             0x0002
-#define SELTYPE_PATHSEGMENT         0x0004
-#define SELTYPE_PATHCREATE          0x0008
-#define SELTYPE_BOUNDARYLIST        0x0010
-#define SELTYPE_PIL                 0x0020
-#define TYPE_PATHMGR_PATH_DLG       0x0040
-#define TYPE_PATHMGR_POINT_DLG      0x0080
-#define TYPE_PATHMGR_LAYER_DLG      0x0100
+    wxArrayInt allColSizes;
+    allColSizes.Add(70);
+    allColSizes.Add(70);
+    allColSizes.Add(90);
+    allColSizes.Add(90);
+    allColSizes.Add(100);
+    allColSizes.Add(200);
+    allColSizes.Add(70);
 
+    m_col_sizes = wxGridSizesInfo(70, allColSizes);
+}
 
-// Needed for ocpndc.cpp to compile. Normally would be in glChartCanvas.cpp
-extern float g_GLMinSymbolLineWidth;
+ooObservations::~ooObservations()
+{
+}
 
-
-#endif
+wxGridSizesInfo ooObservations::GetColSizes() const
+{
+    return m_col_sizes;
+}

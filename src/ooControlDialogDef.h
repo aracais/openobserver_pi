@@ -24,7 +24,6 @@
 #include <wx/textctrl.h>
 #include <wx/sizer.h>
 #include <wx/statline.h>
-#include <wx/grid.h>
 #include <wx/notebook.h>
 #include <wx/dialog.h>
 
@@ -44,6 +43,7 @@ class ooControlDialogDef : public wxDialog
 		wxNotebook* m_notebookControl;
 		wxPanel* m_panelProject;
 		wxPanel* m_panelObservations;
+		wxFlexGridSizer* m_fgSizerObservations;
 		wxButton* m_StartStopObservation;
 		wxStaticText* m_ObservationsDurationLabel;
 		wxTextCtrl* m_ObservationDuration;
@@ -64,7 +64,6 @@ class ooControlDialogDef : public wxDialog
 		wxButton* m_ObservationsAddMarks;
 		wxButton* m_ObservationsDeleteMarks;
 		wxButton* m_ObservationsExportObservations;
-		wxGrid* m_ObservationsTable;
 		wxButton* m_buttonClose;
 
 		// Virtual event handlers, override them in your derived class

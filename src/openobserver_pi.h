@@ -192,6 +192,7 @@ private:
     wxFileConfig        *m_pConfig;
 
     tpicons *m_ptpicons;
+    ooObservations *m_ooObservations;
     ooControlDialogImpl *m_ooControlDialogImpl;
     ooMiniDialogImpl *m_ooMiniDialogImpl;
 

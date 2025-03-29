@@ -51,6 +51,7 @@
 #include "wxWTranslateCatalog.h"
 
 #include "tpicons.h"
+#include "ooObservations.h"
 #include "ooControlDialogImpl.h"
 #include "ooMiniDialogImpl.h"
 
@@ -196,7 +197,10 @@ int openobserver_pi::Init(void)
     m_parent_window = GetOCPNCanvasWindow();
     m_pConfig = GetOCPNConfigObject();
 
+    m_ooObservations = new ooObservations();
+
     m_ooControlDialogImpl = new ooControlDialogImpl(m_parent_window);
+    m_ooControlDialogImpl->CreateObservationsTable(m_ooObservations);
     m_ooControlDialogImpl->Fit();
     m_ooControlDialogImpl->Layout();
     m_ooControlDialogImpl->Hide();
@@ -259,19 +263,19 @@ void openobserver_pi::LateInit(void)
 
 bool openobserver_pi::DeInit(void)
 {
-    if(m_ooControlDialogImpl)
+    if (m_ooControlDialogImpl)
     {
         m_ooControlDialogImpl->Close();
         delete m_ooControlDialogImpl;
         m_ooControlDialogImpl = nullptr;
     }
-    if(m_ooMiniDialogImpl)
+    if (m_ooMiniDialogImpl)
     {
         m_ooMiniDialogImpl->Close();
         delete m_ooMiniDialogImpl;
         m_ooMiniDialogImpl = nullptr;
     }
-    if(m_pConfig) SaveConfig();
+    if (m_pConfig) SaveConfig();
 
     return true;
 }

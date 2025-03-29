@@ -40,10 +40,9 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	m_panelProject = new wxPanel( m_notebookControl, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	m_notebookControl->AddPage( m_panelProject, _("Project"), false );
 	m_panelObservations = new wxPanel( m_notebookControl, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-	wxFlexGridSizer* fgSizerObservations;
-	fgSizerObservations = new wxFlexGridSizer( 6, 1, 0, 0 );
-	fgSizerObservations->SetFlexibleDirection( wxBOTH );
-	fgSizerObservations->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+	m_fgSizerObservations = new wxFlexGridSizer( 6, 1, 0, 0 );
+	m_fgSizerObservations->SetFlexibleDirection( wxBOTH );
+	m_fgSizerObservations->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	wxBoxSizer* bSizerTopButtons;
 	bSizerTopButtons = new wxBoxSizer( wxHORIZONTAL );
@@ -64,10 +63,10 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	bSizerTopButtons->Add( m_buttonOpenMiniWindow, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 
-	fgSizerObservations->Add( bSizerTopButtons, 1, wxEXPAND, 5 );
+	m_fgSizerObservations->Add( bSizerTopButtons, 1, wxEXPAND, 5 );
 
 	m_staticline1 = new wxStaticLine( m_panelObservations, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-	fgSizerObservations->Add( m_staticline1, 0, wxEXPAND | wxALL, 5 );
+	m_fgSizerObservations->Add( m_staticline1, 0, wxEXPAND | wxALL, 5 );
 
 	wxBoxSizer* bSizer6;
 	bSizer6 = new wxBoxSizer( wxVERTICAL );
@@ -113,10 +112,10 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	bSizer6->Add( fgSizerObservationsLabels, 1, wxEXPAND, 5 );
 
 
-	fgSizerObservations->Add( bSizer6, 1, wxEXPAND, 5 );
+	m_fgSizerObservations->Add( bSizer6, 1, wxEXPAND, 5 );
 
 	m_staticline11 = new wxStaticLine( m_panelObservations, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-	fgSizerObservations->Add( m_staticline11, 0, wxEXPAND | wxALL, 5 );
+	m_fgSizerObservations->Add( m_staticline11, 0, wxEXPAND | wxALL, 5 );
 
 	wxFlexGridSizer* fgSizerObservationsButtons;
 	fgSizerObservationsButtons = new wxFlexGridSizer( 1, 5, 0, 0 );
@@ -139,54 +138,12 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	fgSizerObservationsButtons->Add( m_ObservationsExportObservations, 0, wxALL, 5 );
 
 
-	fgSizerObservations->Add( fgSizerObservationsButtons, 1, 0, 5 );
-
-	m_ObservationsTable = new wxGrid( m_panelObservations, wxID_ANY, wxDefaultPosition, wxSize( 740,465 ), 0 );
-
-	// Grid
-	m_ObservationsTable->CreateGrid( 0, 7 );
-	m_ObservationsTable->EnableEditing( true );
-	m_ObservationsTable->EnableGridLines( true );
-	m_ObservationsTable->EnableDragGridSize( false );
-	m_ObservationsTable->SetMargins( 0, 0 );
-
-	// Columns
-	m_ObservationsTable->SetColSize( 0, 70 );
-	m_ObservationsTable->SetColSize( 1, 70 );
-	m_ObservationsTable->SetColSize( 2, 90 );
-	m_ObservationsTable->SetColSize( 3, 90 );
-	m_ObservationsTable->SetColSize( 4, 100 );
-	m_ObservationsTable->SetColSize( 5, 200 );
-	m_ObservationsTable->SetColSize( 6, 70 );
-	m_ObservationsTable->EnableDragColMove( false );
-	m_ObservationsTable->EnableDragColSize( true );
-	m_ObservationsTable->SetColLabelValue( 0, _("Date") );
-	m_ObservationsTable->SetColLabelValue( 1, _("Time (UTC)") );
-	m_ObservationsTable->SetColLabelValue( 2, _("Lat") );
-	m_ObservationsTable->SetColLabelValue( 3, _("Lon") );
-	m_ObservationsTable->SetColLabelValue( 4, _("Species") );
-	m_ObservationsTable->SetColLabelValue( 5, _("Notes") );
-	m_ObservationsTable->SetColLabelValue( 6, _("Mark GUID") );
-	m_ObservationsTable->SetColLabelSize( wxGRID_AUTOSIZE );
-	m_ObservationsTable->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
-
-	// Rows
-	m_ObservationsTable->EnableDragRowSize( false );
-	m_ObservationsTable->SetRowLabelSize( 0 );
-	m_ObservationsTable->SetRowLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
-
-	// Label Appearance
-	m_ObservationsTable->SetLabelFont( wxFont( 11, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, wxEmptyString ) );
-
-	// Cell Defaults
-	m_ObservationsTable->SetDefaultCellFont( wxFont( 11, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxEmptyString ) );
-	m_ObservationsTable->SetDefaultCellAlignment( wxALIGN_LEFT, wxALIGN_TOP );
-	fgSizerObservations->Add( m_ObservationsTable, 0, wxALL|wxEXPAND, 5 );
+	m_fgSizerObservations->Add( fgSizerObservationsButtons, 1, 0, 5 );
 
 
-	m_panelObservations->SetSizer( fgSizerObservations );
+	m_panelObservations->SetSizer( m_fgSizerObservations );
 	m_panelObservations->Layout();
-	fgSizerObservations->Fit( m_panelObservations );
+	m_fgSizerObservations->Fit( m_panelObservations );
 	m_notebookControl->AddPage( m_panelObservations, _("Observations"), true );
 
 	fgSizer3->Add( m_notebookControl, 0, wxEXPAND | wxALL, 5 );

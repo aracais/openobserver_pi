@@ -165,6 +165,7 @@ add_definitions(-DUSE_S57)
 
 set(SRCS 
     src/openobserver_pi.cpp
+    src/ooObservations.cpp
     src/ooControlDialogDef.cpp 
     src/ooControlDialogImpl.cpp
     src/ooMiniDialogDef.cpp 
@@ -175,6 +176,7 @@ set(SRCS
 
 set(HDRS
     src/openobserver_pi.h
+    src/ooObservations.h
     src/ooControlDialogDef.h
     src/ooControlDialogImpl.h
     src/ooMiniDialogDef.h
