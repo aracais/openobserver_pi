@@ -55,24 +55,27 @@ extern openobserver_pi *g_openobserver_pi;
 extern wxString *g_pData;
 
 ooControlDialogImpl::ooControlDialogImpl(wxWindow* parent) 
-    : ooControlDialogDef(parent), m_Observations(nullptr), m_ObservationsTable(nullptr)
+    : ooControlDialogDef(parent), m_MiniPanel(nullptr), m_Observations(nullptr), m_ObservationsTable(nullptr)
 {
 #if wxCHECK_VERSION(3,0,0)
     SetLayoutAdaptationMode(wxDIALOG_ADAPTATION_MODE_ENABLED);
 #endif // wxCHECK_VERSION(3,0,0)
+
+    m_MiniPanel = new ooMiniPanel(m_panelObservations);
+    bSizerTopButtons->Add(m_MiniPanel, 1, wxEXPAND, 5);
+    m_panelObservations->Layout();
+	m_fgSizerObservations->Fit(m_panelObservations);
 
     wxFileName backup(*g_pData, "observations.xml");
     m_BackupFilename = backup.GetFullPath();
 
     // bind timers
     m_BackupTimer.Bind(wxEVT_TIMER, &ooControlDialogImpl::OnBackupTimer, this, m_BackupTimer.GetId());
-    m_ObservationDurationTimer.Bind(wxEVT_TIMER, &ooControlDialogImpl::OnObservationDurationTimer, this, m_ObservationDurationTimer.GetId());
 }
 
 ooControlDialogImpl::~ooControlDialogImpl()
 {
     m_BackupTimer.Stop();
-    m_ObservationDurationTimer.Stop();
 
     if (!m_Observations) return;
 
@@ -152,31 +155,6 @@ void ooControlDialogImpl::SetPositionFix(time_t fixTime, double lat, double lon)
     m_ObservationsLon->SetValue(toSDMM_PlugIn(2, lon));
 }
 
-void ooControlDialogImpl::ooControlStartStopObservationClick(wxCommandEvent& event)
-{
-    if (!m_Observations) return;
-
-    if (!m_ObservationDurationTimer.IsRunning()) 
-    {
-        m_StartStopObservation->SetLabel("Stop Observation");
-
-        // start observation
-        m_Observations->StartObservation();
-
-        // start timer to update observation duration
-        m_ObservationDurationTimer.Start(100); // 100 ms = 0.1 s
-    } else {
-        // stop observation
-        m_StartStopObservation->SetLabel("Start Observation");  
-
-        m_Observations->StopObservation();
-
-        m_ObservationDurationTimer.Stop();
-    }
-
-    m_ObservationsTable->ForceRefresh();
-}
-
 void ooControlDialogImpl::OnButtonClickNewObservation( wxCommandEvent& event )
 {
     if (!m_Observations) return;
@@ -226,22 +204,6 @@ void ooControlDialogImpl::OnBackupTimer(wxTimerEvent& event)
     m_Observations->SaveToXML(output_stream.GetFile());
 }
 
-void ooControlDialogImpl::OnObservationDurationTimer(wxTimerEvent& event)
-{
-    if (!m_Observations) return;
-
-    const long duration_ms = m_Observations->GetObservationDuration();
-
-    const unsigned int hours = duration_ms / 3600000;
-    const unsigned int minutes = (duration_ms % 3600000) / 60000;
-    const unsigned int seconds = (duration_ms % 60000) / 1000;
-
-    char durationString[16];
-    std::sprintf(durationString, "%02u:%02u:%02u", hours, minutes, seconds);
-    
-    m_ObservationDuration->SetValue(durationString);
-}
-
 void ooControlDialogImpl::OnButtonClickObservationsAddMarks( wxCommandEvent& event )
 {
     if (!m_Observations) return;
@@ -258,11 +220,6 @@ void ooControlDialogImpl::OnButtonClickObservationsDeleteMarks( wxCommandEvent& 
     m_Observations->DeleteMarks();
 
     m_ObservationsTable->ForceRefresh();
-}
-
-void ooControlDialogImpl::ooControlOpenMiniWindowClick(wxCommandEvent& event)
-{
-    g_openobserver_pi->ToggleWindow();
 }
 
 void ooControlDialogImpl::ooControlCloseClick(wxCommandEvent& event)

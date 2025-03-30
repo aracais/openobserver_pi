@@ -33,6 +33,8 @@
 
 #include "ooMiniDialogDef.h"
 
+#include "ooMiniPanel.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 /// Class ooMiniDialogImpl
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,6 +45,7 @@ class ooMiniDialogImpl : public ooMiniDialogDef
         ~ooMiniDialogImpl();
 
         protected:
-        void ooMiniOpenMainWindowClick(wxCommandEvent& event);
         void ooMiniDialogDefOnClose(wxCloseEvent& event);
+
+        ooMiniPanel *m_MiniPanel;
 };

@@ -170,6 +170,7 @@ set(SRCS
     src/ooControlDialogImpl.cpp
     src/ooMiniDialogDef.cpp 
     src/ooMiniDialogImpl.cpp
+    src/ooMiniPanel.cpp
     src/tpicons.cpp
     src/tpUtils.cpp
 )
@@ -181,6 +182,7 @@ set(HDRS
     src/ooControlDialogImpl.h
     src/ooMiniDialogDef.h
     src/ooMiniDialogImpl.h
+    src/ooMiniPanel.h
     src/tpicons.h
     src/tpIconCombo.h
     src/tpUtils.h

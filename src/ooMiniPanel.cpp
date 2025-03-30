@@ -1,0 +1,152 @@
+/**************************************************************************
+ *
+ * Project:  OpenCPN
+ * Purpose:  OpenObserver Plugin Mini Panel
+ * Author:   Alex Mansfield
+ *
+ ***************************************************************************
+ *   Copyright (C) 2010 by David S. Register                               *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
+
+#include "wx/wxprec.h"
+
+#ifndef WX_PRECOMP
+#include "wx/wx.h"
+#endif
+
+#include "ooMiniPanel.h"
+
+#include "ooObservations.h"
+#include "openobserver_pi.h"
+
+extern openobserver_pi* g_openobserver_pi;
+
+ooMiniPanel::ooMiniPanel() : wxPanel() {}
+
+ooMiniPanel::ooMiniPanel(wxWindow* parent, wxWindowID id, const wxString& msg,
+                         const wxPoint& pos, const wxSize& size, long style,
+                         const wxString& name)
+    : wxPanel() {
+  Create(parent, id, msg, pos, size, style, name);
+}
+
+bool ooMiniPanel::Create(wxWindow* parent, wxWindowID id, const wxString& msg,
+                         const wxPoint& pos, const wxSize& size, long style,
+                         const wxString& name) {
+  if (!wxPanel::Create(parent, id, pos, size, style, name)) return false;
+
+  wxBoxSizer* bSizerTopButtons = new wxBoxSizer(wxHORIZONTAL);
+
+  m_StartStopObservation =
+      new wxButton(this, wxID_ANY, _("Start Observation"), wxDefaultPosition,
+                   wxDefaultSize, 0);
+
+  m_StartStopObservation->SetDefault();
+  bSizerTopButtons->Add(m_StartStopObservation, 0,
+                        wxALIGN_CENTER_VERTICAL | wxALL, 5);
+
+  m_ObservationsDurationLabel =
+      new wxStaticText(this, wxID_ANY, _("Observation Duration"),
+                       wxDefaultPosition, wxDefaultSize, 0);
+  m_ObservationsDurationLabel->Wrap(-1);
+  bSizerTopButtons->Add(m_ObservationsDurationLabel, 0,
+                        wxALIGN_CENTER_VERTICAL | wxALL, 5);
+
+  m_ObservationDuration =
+      new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition,
+                     wxDefaultSize, wxTE_READONLY);
+  bSizerTopButtons->Add(m_ObservationDuration, 0,
+                        wxALIGN_CENTER_VERTICAL | wxALL, 5);
+
+  m_buttonOpenMiniWindow = new wxButton(this, wxID_ANY, _("&Minimize Window"),
+                                        wxDefaultPosition, wxDefaultSize, 0);
+  bSizerTopButtons->Add(m_buttonOpenMiniWindow, 0,
+                        wxALIGN_CENTER_VERTICAL | wxALL, 5);
+
+  this->SetSizerAndFit(bSizerTopButtons);
+  bSizerTopButtons->SetSizeHints(this);
+
+  m_StartStopObservation->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(ooMiniPanel::ooControlStartStopObservationClick),
+      NULL, this);
+  m_buttonOpenMiniWindow->Connect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(ooMiniPanel::ooControlOpenMiniWindowClick), NULL,
+      this);
+
+  m_ObservationDurationTimer.Bind(wxEVT_TIMER,
+                                  &ooMiniPanel::OnObservationDurationTimer,
+                                  this, m_ObservationDurationTimer.GetId());
+
+    return true;
+}
+
+ooMiniPanel::~ooMiniPanel() {
+  m_StartStopObservation->Disconnect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(ooMiniPanel::ooControlStartStopObservationClick),
+      NULL, this);
+  m_buttonOpenMiniWindow->Disconnect(
+      wxEVT_COMMAND_BUTTON_CLICKED,
+      wxCommandEventHandler(ooMiniPanel::ooControlOpenMiniWindowClick), NULL,
+      this);
+
+  m_ObservationDurationTimer.Stop();
+}
+
+void ooMiniPanel::ooControlStartStopObservationClick(wxCommandEvent& event) {
+  if (!g_openobserver_pi->m_ooObservations) return;
+
+  if (!m_ObservationDurationTimer.IsRunning()) {
+    m_StartStopObservation->SetLabel("Stop Observation");
+
+    // start observation
+    g_openobserver_pi->m_ooObservations->StartObservation();
+
+    // start timer to update observation duration
+    m_ObservationDurationTimer.Start(100);  // 100 ms = 0.1 s
+  } else {
+    // stop observation
+    m_StartStopObservation->SetLabel("Start Observation");
+
+    g_openobserver_pi->m_ooObservations->StopObservation();
+
+    m_ObservationDurationTimer.Stop();
+  }
+}
+
+void ooMiniPanel::ooControlOpenMiniWindowClick(wxCommandEvent& event) {
+  g_openobserver_pi->ToggleWindow();
+}
+
+void ooMiniPanel::OnObservationDurationTimer(wxTimerEvent& event) {
+  if (!g_openobserver_pi->m_ooObservations) return;
+
+  const long duration_ms =
+      g_openobserver_pi->m_ooObservations->GetObservationDuration();
+
+  const unsigned int hours = duration_ms / 3600000;
+  const unsigned int minutes = (duration_ms % 3600000) / 60000;
+  const unsigned int seconds = (duration_ms % 60000) / 1000;
+
+  char durationString[16];
+  std::sprintf(durationString, "%02u:%02u:%02u", hours, minutes, seconds);
+
+  m_ObservationDuration->SetValue(durationString);
+}

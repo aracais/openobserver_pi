@@ -35,6 +35,7 @@
 
 #include "ooControlDialogDef.h"
 
+#include "ooMiniPanel.h"
 #include "ooObservations.h"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,9 +52,6 @@ public:
         void SetPositionFix(time_t fixTime, double lat, double lon);
 
 protected:
-        void ooControlStartStopObservationClick(wxCommandEvent& event);
-        void ooControlOpenMiniWindowClick(wxCommandEvent& event);
-
         void OnButtonClickNewObservation( wxCommandEvent& event );
         void OnButtonClickDeleteObservation( wxCommandEvent& event );
         void OnButtonClickExportObservations( wxCommandEvent& event );
@@ -65,12 +63,11 @@ protected:
 
 private:
         void OnBackupTimer(wxTimerEvent& event);
-        void OnObservationDurationTimer(wxTimerEvent& event);
+
+        ooMiniPanel *m_MiniPanel;
 
         wxString m_BackupFilename;
         wxTimer m_BackupTimer;
-
-        wxTimer m_ObservationDurationTimer;
 
         ooObservations * m_Observations;
         wxGrid* m_ObservationsTable;

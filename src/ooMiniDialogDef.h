@@ -10,17 +10,13 @@
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
-#include <wx/button.h>
-#include <wx/string.h>
-#include <wx/bitmap.h>
-#include <wx/image.h>
-#include <wx/icon.h>
+#include <wx/sizer.h>
 #include <wx/gdicmn.h>
+#include <wx/string.h>
+#include <wx/dialog.h>
 #include <wx/font.h>
 #include <wx/colour.h>
 #include <wx/settings.h>
-#include <wx/sizer.h>
-#include <wx/dialog.h>
 
 #include "wxWTranslateCatalog.h"
 
@@ -35,11 +31,10 @@ class ooMiniDialogDef : public wxDialog
 
 	protected:
 		wxBoxSizer* m_boxSizer;
-		wxButton* m_buttonOpenMainWindow;
+		wxFlexGridSizer* m_fgSizer;
 
 		// Virtual event handlers, override them in your derived class
 		virtual void ooMiniDialogDefOnClose( wxCloseEvent& event ) { event.Skip(); }
-		virtual void ooMiniOpenMainWindowClick( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:

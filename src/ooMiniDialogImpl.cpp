@@ -30,25 +30,24 @@
 #endif
 
 #include "ooMiniDialogImpl.h"
+
 #include "openobserver_pi.h"
 
 
 extern openobserver_pi *g_openobserver_pi;
 
-ooMiniDialogImpl::ooMiniDialogImpl(wxWindow* parent) : ooMiniDialogDef(parent)
+ooMiniDialogImpl::ooMiniDialogImpl(wxWindow* parent) : ooMiniDialogDef(parent), m_MiniPanel(nullptr)
 {
 #if wxCHECK_VERSION(3,0,0)
     SetLayoutAdaptationMode(wxDIALOG_ADAPTATION_MODE_ENABLED);
 #endif // wxCHECK_VERSION(3,0,0)
+
+    m_MiniPanel = new ooMiniPanel(this);
+    m_fgSizer->Add(m_MiniPanel, 1, wxEXPAND, 5);
 }
 
 ooMiniDialogImpl::~ooMiniDialogImpl()
 {
-}
-
-void ooMiniDialogImpl::ooMiniOpenMainWindowClick(wxCommandEvent& event)
-{
-    g_openobserver_pi->ToggleWindow();
 }
 
 void ooMiniDialogImpl::ooMiniDialogDefOnClose(wxCloseEvent& event)

@@ -19,11 +19,11 @@
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
-#include <wx/button.h>
-#include <wx/stattext.h>
-#include <wx/textctrl.h>
 #include <wx/sizer.h>
 #include <wx/statline.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+#include <wx/button.h>
 #include <wx/notebook.h>
 #include <wx/dialog.h>
 
@@ -44,10 +44,7 @@ class ooControlDialogDef : public wxDialog
 		wxPanel* m_panelProject;
 		wxPanel* m_panelObservations;
 		wxFlexGridSizer* m_fgSizerObservations;
-		wxButton* m_StartStopObservation;
-		wxStaticText* m_ObservationsDurationLabel;
-		wxTextCtrl* m_ObservationDuration;
-		wxButton* m_buttonOpenMiniWindow;
+		wxBoxSizer* bSizerTopButtons;
 		wxStaticLine* m_staticline1;
 		wxStaticText* m_ObservationsDateLabel1;
 		wxStaticText* m_ObservationsDateLabel;
@@ -68,8 +65,6 @@ class ooControlDialogDef : public wxDialog
 
 		// Virtual event handlers, override them in your derived class
 		virtual void ooControlDialogDefOnClose( wxCloseEvent& event ) { event.Skip(); }
-		virtual void ooControlStartStopObservationClick( wxCommandEvent& event ) { event.Skip(); }
-		virtual void ooControlOpenMiniWindowClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickNewObservation( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickDeleteObservation( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickObservationsAddMarks( wxCommandEvent& event ) { event.Skip(); }

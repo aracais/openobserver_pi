@@ -44,23 +44,7 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	m_fgSizerObservations->SetFlexibleDirection( wxBOTH );
 	m_fgSizerObservations->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	wxBoxSizer* bSizerTopButtons;
 	bSizerTopButtons = new wxBoxSizer( wxHORIZONTAL );
-
-	m_StartStopObservation = new wxButton( m_panelObservations, wxID_ANY, _("Start Observation"), wxDefaultPosition, wxDefaultSize, 0 );
-
-	m_StartStopObservation->SetDefault();
-	bSizerTopButtons->Add( m_StartStopObservation, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-	m_ObservationsDurationLabel = new wxStaticText( m_panelObservations, wxID_ANY, _("Observation Duration"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_ObservationsDurationLabel->Wrap( -1 );
-	bSizerTopButtons->Add( m_ObservationsDurationLabel, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-	m_ObservationDuration = new wxTextCtrl( m_panelObservations, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
-	bSizerTopButtons->Add( m_ObservationDuration, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-
-	m_buttonOpenMiniWindow = new wxButton( m_panelObservations, wxID_ANY, _("&Minimize Window"), wxDefaultPosition, wxDefaultSize, 0 );
-	bSizerTopButtons->Add( m_buttonOpenMiniWindow, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
 
 
 	m_fgSizerObservations->Add( bSizerTopButtons, 1, wxEXPAND, 5 );
@@ -176,8 +160,6 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 
 	// Connect Events
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( ooControlDialogDef::ooControlDialogDefOnClose ) );
-	m_StartStopObservation->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::ooControlStartStopObservationClick ), NULL, this );
-	m_buttonOpenMiniWindow->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::ooControlOpenMiniWindowClick ), NULL, this );
 	m_ObservationsNew->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickNewObservation ), NULL, this );
 	m_ObservationsDelete->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickDeleteObservation ), NULL, this );
 	m_ObservationsAddMarks->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickObservationsAddMarks ), NULL, this );
@@ -192,8 +174,6 @@ ooControlDialogDef::~ooControlDialogDef()
 {
 	// Disconnect Events
 	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( ooControlDialogDef::ooControlDialogDefOnClose ) );
-	m_StartStopObservation->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::ooControlStartStopObservationClick ), NULL, this );
-	m_buttonOpenMiniWindow->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::ooControlOpenMiniWindowClick ), NULL, this );
 	m_ObservationsNew->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickNewObservation ), NULL, this );
 	m_ObservationsDelete->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickDeleteObservation ), NULL, this );
 	m_ObservationsAddMarks->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickObservationsAddMarks ), NULL, this );

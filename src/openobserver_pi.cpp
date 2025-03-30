@@ -126,7 +126,7 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 //
 //---------------------------------------------------------------------------------------------------------
 
-openobserver_pi::openobserver_pi(void *ppimgr) : opencpn_plugin_118(ppimgr)
+openobserver_pi::openobserver_pi(void *ppimgr) : opencpn_plugin_118(ppimgr), m_ooObservations(nullptr)
 {
     // Create the PlugIn icons
     g_ppimgr = ppimgr;
@@ -404,8 +404,9 @@ wxBitmap *openobserver_pi::GetPlugInBitmap()
 
 void openobserver_pi::ToggleToolbarIcon()
 {
-    if ((m_ooControlDialogImpl && m_ooControlDialogImpl->IsShown()) ||
-        (m_ooMiniDialogImpl && m_ooMiniDialogImpl->IsShown())) {
+    if (!m_ooControlDialogImpl || !m_ooMiniDialogImpl) return;
+
+    if (m_ooControlDialogImpl->IsShown() || m_ooMiniDialogImpl->IsShown()) {
         SetToolbarItemState(m_openobserver_button_id, false);
         m_ooControlDialogImpl->Hide();
         m_ooMiniDialogImpl->Hide();
@@ -423,7 +424,9 @@ void openobserver_pi::ToggleToolbarIcon()
 
 void openobserver_pi::ToggleWindow()
 {
-    if (m_ooControlDialogImpl && m_ooControlDialogImpl->IsShown()) {
+    if (!m_ooControlDialogImpl || !m_ooMiniDialogImpl) return;
+
+    if (m_ooControlDialogImpl->IsShown()) {
         m_ooControlDialogImpl->Hide();
         m_ooMiniDialogImpl->Show();
         m_bShowMainDialog = false;
