@@ -74,7 +74,7 @@ ooControlDialogImpl::~ooControlDialogImpl()
     m_BackupTimer.Stop();
     m_ObservationDurationTimer.Stop();
 
-    if (!m_ObservationsTable) return;
+    if (!m_Observations) return;
 
     wxFileOutputStream output_stream(m_BackupFilename);
     
@@ -154,62 +154,47 @@ void ooControlDialogImpl::SetPositionFix(time_t fixTime, double lat, double lon)
 
 void ooControlDialogImpl::ooControlStartStopObservationClick(wxCommandEvent& event)
 {
-    if (!m_ObservationsTable) return;
+    if (!m_Observations) return;
 
     if (!m_ObservationDurationTimer.IsRunning()) 
     {
-        // start observation
         m_StartStopObservation->SetLabel("Stop Observation");
 
-        // start duration stopwatch
-        m_ObservationDurationStopWatch.Start(0);
+        // start observation
+        m_Observations->StartObservation();
 
         // start timer to update observation duration
         m_ObservationDurationTimer.Start(100); // 100 ms = 0.1 s
-
-        // create new observation in table and fill start date, time and position
-        m_ObservationsTable->InsertRows(0, 1);
-        m_ObservationsTable->SetCellValue(0, 0, m_ObservationsDate->GetValue());
-        m_ObservationsTable->SetCellValue(0, 1, m_ObservationsTime->GetValue());
-        m_ObservationsTable->SetCellValue(0, 2, m_ObservationsLat->GetValue());
-        m_ObservationsTable->SetCellValue(0, 3, m_ObservationsLon->GetValue());
     } else {
         // stop observation
-        m_StartStopObservation->SetLabel("Start Observation");
+        m_StartStopObservation->SetLabel("Start Observation");  
 
-        m_ObservationDurationStopWatch.Pause();
+        m_Observations->StopObservation();
+
         m_ObservationDurationTimer.Stop();
-
-        // fill observation stop date, time and position
-        // m_ObservationsTable->SetCellValue(0, 0, m_ObservationsDate->GetValue());
-        // m_ObservationsTable->SetCellValue(0, 1, m_ObservationsTime->GetValue());
-        // m_ObservationsTable->SetCellValue(0, 2, m_ObservationsLat->GetValue());
-        // m_ObservationsTable->SetCellValue(0, 3, m_ObservationsLon->GetValue());
     }
+
+    m_ObservationsTable->ForceRefresh();
 }
 
 void ooControlDialogImpl::OnButtonClickNewObservation( wxCommandEvent& event )
 {
-    if (!m_ObservationsTable) return;
+    if (!m_Observations) return;
 
-    m_ObservationsTable->InsertRows(0, 1);
-    m_ObservationsTable->SetCellValue(0, 0, m_ObservationsDate->GetValue());
-    m_ObservationsTable->SetCellValue(0, 1, m_ObservationsTime->GetValue());
-    m_ObservationsTable->SetCellValue(0, 2, m_ObservationsLat->GetValue());
-    m_ObservationsTable->SetCellValue(0, 3, m_ObservationsLon->GetValue());
+    m_Observations->InsertRows(0, 1);
 }
 
 void ooControlDialogImpl::OnButtonClickDeleteObservation( wxCommandEvent& event )
 {
-    if (!m_ObservationsTable) return;
+    if (!m_Observations) return;
 
-    if (m_ObservationsTable->GetNumberRows() > 0)
-        m_ObservationsTable->DeleteRows(0);
+    if (m_Observations->GetNumberRows() > 0)
+        m_Observations->DeleteRows(0);
 }
 
 void ooControlDialogImpl::OnButtonClickExportObservations( wxCommandEvent& event )
 {
-    if (!m_ObservationsTable) return;
+    if (!m_Observations) return;
 
     wxFileDialog exportFileDialog(this, _("Export observations to CSV file"), "", m_ObservationsDate->GetValue(), "CSV file (*.csv)|*.csv", wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
  
@@ -228,7 +213,7 @@ void ooControlDialogImpl::OnButtonClickExportObservations( wxCommandEvent& event
 
 void ooControlDialogImpl::OnBackupTimer(wxTimerEvent& event)
 {
-    if (!m_ObservationsTable) return;
+    if (!m_Observations) return;
 
     wxFileOutputStream output_stream(m_BackupFilename);
     
@@ -243,7 +228,9 @@ void ooControlDialogImpl::OnBackupTimer(wxTimerEvent& event)
 
 void ooControlDialogImpl::OnObservationDurationTimer(wxTimerEvent& event)
 {
-    const long duration_ms = m_ObservationDurationStopWatch.Time();
+    if (!m_Observations) return;
+
+    const long duration_ms = m_Observations->GetObservationDuration();
 
     const unsigned int hours = duration_ms / 3600000;
     const unsigned int minutes = (duration_ms % 3600000) / 60000;
@@ -257,58 +244,20 @@ void ooControlDialogImpl::OnObservationDurationTimer(wxTimerEvent& event)
 
 void ooControlDialogImpl::OnButtonClickObservationsAddMarks( wxCommandEvent& event )
 {
-    if (!m_ObservationsTable) return;
+    if (!m_Observations) return;
 
-    const int dateCol = 0;
-    const int timeCol = 1;
-    const int latCol = 2;
-    const int lonCol = 3;
-    const int speciesCol = 4;
-    const int notesCol = 5;
-    const int markGUIDCol = 6;
+    m_Observations->AddMarks();
 
-    for (int r=0; r < m_ObservationsTable->GetNumberRows(); ++r)
-    {
-        if (m_ObservationsTable->GetCellValue(r, markGUIDCol).IsEmpty())
-        {
-            wxDateTime datetime;
-            datetime.ParseISODate(m_ObservationsTable->GetCellValue(r, dateCol));
-            datetime.ParseISOTime(m_ObservationsTable->GetCellValue(r, timeCol));
-            double lat = fromDMM_Plugin(m_ObservationsTable->GetCellValue(r, latCol));
-            double lon = fromDMM_Plugin(m_ObservationsTable->GetCellValue(r, lonCol));
-            wxString name = m_ObservationsTable->GetCellValue(r, speciesCol) + " (OO)";
-            wxString description = m_ObservationsTable->GetCellValue(r, notesCol);
-            wxString guid = GetNewGUID();
-
-            // add waypoint
-            PlugIn_Waypoint wp(lat, lon, "fish", name, guid);
-            wp.m_MarkDescription = description;
-            wp.m_CreateTime = datetime;
-            AddSingleWaypoint(&wp);
-
-            // store guid in table
-            m_ObservationsTable->SetCellValue(r, markGUIDCol, guid);
-        }
-    }
+    m_ObservationsTable->ForceRefresh();
 }
 
 void ooControlDialogImpl::OnButtonClickObservationsDeleteMarks( wxCommandEvent& event )
 {
-    if (!m_ObservationsTable) return;
+    if (!m_Observations) return;
 
-    const int markGUIDCol = 6;
-    for (int r=0; r < m_ObservationsTable->GetNumberRows(); ++r)
-    {
-        wxString guid = m_ObservationsTable->GetCellValue(r, markGUIDCol);
-        if (guid.IsEmpty()) continue;
+    m_Observations->DeleteMarks();
 
-        // delete waypoint
-        DeleteSingleWaypoint(guid);
-
-        // remove guid from table
-        guid.Clear();
-        m_ObservationsTable->SetCellValue(r, markGUIDCol, guid);
-    }
+    m_ObservationsTable->ForceRefresh();
 }
 
 void ooControlDialogImpl::ooControlOpenMiniWindowClick(wxCommandEvent& event)
@@ -317,6 +266,11 @@ void ooControlDialogImpl::ooControlOpenMiniWindowClick(wxCommandEvent& event)
 }
 
 void ooControlDialogImpl::ooControlCloseClick(wxCommandEvent& event)
+{
+    g_openobserver_pi->ToggleToolbarIcon();
+}
+
+void ooControlDialogImpl::ooControlDialogDefOnClose(wxCloseEvent& event)
 {
     g_openobserver_pi->ToggleToolbarIcon();
 }

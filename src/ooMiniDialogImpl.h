@@ -44,5 +44,5 @@ class ooMiniDialogImpl : public ooMiniDialogDef
 
         protected:
         void ooMiniOpenMainWindowClick(wxCommandEvent& event);
-        void ooMiniCloseClick(wxCommandEvent& event);
+        void ooMiniDialogDefOnClose(wxCloseEvent& event);
 };

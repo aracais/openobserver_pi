@@ -39,9 +39,6 @@ bool ooMiniDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString& t
 	m_buttonOpenMainWindow = new wxButton( this, wxID_ANY, _("Open &Main Window"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fgSizer->Add( m_buttonOpenMainWindow, 0, wxALL, 5 );
 
-	m_buttonClose = new wxButton( this, wxID_ANY, _("&Close"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_fgSizer->Add( m_buttonClose, 0, wxALL, 5 );
-
 
 	m_boxSizer->Add( m_fgSizer, 1, wxEXPAND, 5 );
 
@@ -53,8 +50,8 @@ bool ooMiniDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString& t
 	this->Centre( wxBOTH );
 
 	// Connect Events
+	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( ooMiniDialogDef::ooMiniDialogDefOnClose ) );
 	m_buttonOpenMainWindow->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooMiniDialogDef::ooMiniOpenMainWindowClick ), NULL, this );
-	m_buttonClose->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooMiniDialogDef::ooMiniCloseClick ), NULL, this );
 
 	return true;
 }
@@ -62,7 +59,7 @@ bool ooMiniDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString& t
 ooMiniDialogDef::~ooMiniDialogDef()
 {
 	// Disconnect Events
+	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( ooMiniDialogDef::ooMiniDialogDefOnClose ) );
 	m_buttonOpenMainWindow->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooMiniDialogDef::ooMiniOpenMainWindowClick ), NULL, this );
-	m_buttonClose->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooMiniDialogDef::ooMiniCloseClick ), NULL, this );
 
 }

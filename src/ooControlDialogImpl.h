@@ -61,6 +61,7 @@ protected:
         void OnButtonClickObservationsDeleteMarks( wxCommandEvent& event );
 
         void ooControlCloseClick(wxCommandEvent& event);
+        void ooControlDialogDefOnClose(wxCloseEvent& event);
 
 private:
         void OnBackupTimer(wxTimerEvent& event);
@@ -70,7 +71,6 @@ private:
         wxTimer m_BackupTimer;
 
         wxTimer m_ObservationDurationTimer;
-        wxStopWatch m_ObservationDurationStopWatch;
 
         ooObservations * m_Observations;
         wxGrid* m_ObservationsTable;

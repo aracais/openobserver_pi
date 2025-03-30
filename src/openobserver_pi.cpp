@@ -391,7 +391,10 @@ void openobserver_pi::SetCursorLatLon(double lat, double lon)
 
 void openobserver_pi::SetPositionFix(PlugIn_Position_Fix &pfix)
 {
-    m_ooControlDialogImpl->SetPositionFix(pfix.FixTime, pfix.Lat, pfix.Lon);
+    if (m_ooObservations)
+        m_ooObservations->SetPositionFix(pfix.FixTime, pfix.Lat, pfix.Lon);
+    if (m_ooControlDialogImpl)
+        m_ooControlDialogImpl->SetPositionFix(pfix.FixTime, pfix.Lat, pfix.Lon);
 }
 
 wxBitmap *openobserver_pi::GetPlugInBitmap()

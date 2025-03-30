@@ -36,11 +36,10 @@ class ooMiniDialogDef : public wxDialog
 	protected:
 		wxBoxSizer* m_boxSizer;
 		wxButton* m_buttonOpenMainWindow;
-		wxButton* m_buttonClose;
 
 		// Virtual event handlers, override them in your derived class
+		virtual void ooMiniDialogDefOnClose( wxCloseEvent& event ) { event.Skip(); }
 		virtual void ooMiniOpenMainWindowClick( wxCommandEvent& event ) { event.Skip(); }
-		virtual void ooMiniCloseClick( wxCommandEvent& event ) { event.Skip(); }
 
 
 	public:

@@ -51,9 +51,7 @@ void ooMiniDialogImpl::ooMiniOpenMainWindowClick(wxCommandEvent& event)
     g_openobserver_pi->ToggleWindow();
 }
 
-void ooMiniDialogImpl::ooMiniCloseClick(wxCommandEvent& event)
+void ooMiniDialogImpl::ooMiniDialogDefOnClose(wxCloseEvent& event)
 {
     g_openobserver_pi->ToggleToolbarIcon();
 }
-
-

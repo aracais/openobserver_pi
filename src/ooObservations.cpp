@@ -28,7 +28,9 @@
 #include <wx/sstream.h>
 #include <wx/xml/xml.h>
 
-ooObservations::ooObservations() : wxGridStringTable(0, 7)
+#include "ocpn_plugin.h"
+
+ooObservations::ooObservations() : wxGridStringTable(0, 7), m_IsObserving(false)
 {
     SetColLabelValue( 0, _("Date") );
 	SetColLabelValue( 1, _("Time (UTC)") );
@@ -57,6 +59,109 @@ ooObservations::~ooObservations()
 wxGridSizesInfo ooObservations::GetColSizes() const
 {
     return m_col_sizes;
+}
+
+void ooObservations::SetPositionFix(time_t fixTime, double lat, double lon)
+{
+    m_position_fix_time = fixTime;
+    m_position_fix_lat = lat;
+    m_position_fix_lon = lon;
+}
+
+void ooObservations::StartObservation()
+{
+    if (m_IsObserving) return;
+
+    // start duration stopwatch
+    m_ObservationDurationStopWatch.Start(0);
+
+    // get start date and time
+    char dateString[16];
+    std::strftime(dateString, 16, "%F", gmtime(&m_position_fix_time));
+    char timeString[16];
+    std::strftime(timeString, 16, "%T", gmtime(&m_position_fix_time));
+
+    // create new observation in table and fill start date, time and position
+    InsertRows(0, 1);
+    SetValue(0, 0, dateString);
+    SetValue(0, 1, timeString);
+    SetValue(0, 2, toSDMM_PlugIn(1, m_position_fix_lat));
+    SetValue(0, 3, toSDMM_PlugIn(2, m_position_fix_lon));
+
+    m_IsObserving = true;
+}
+
+void ooObservations::StopObservation()
+{
+    if (!m_IsObserving) return;
+
+    m_ObservationDurationStopWatch.Pause();
+
+    SetValue(0, 4, wxString::Format(wxT("%li"), m_ObservationDurationStopWatch.Time()));
+
+    m_IsObserving = false;
+}
+
+long ooObservations::GetObservationDuration()
+{
+    return m_ObservationDurationStopWatch.Time();
+}
+
+void ooObservations::AddMarks()
+{
+    const int dateCol = 0;
+    const int timeCol = 1;
+    const int latCol = 2;
+    const int lonCol = 3;
+    const int speciesCol = 4;
+    const int notesCol = 5;
+    const int markGUIDCol = 6;
+
+    const int R = GetNumberRows();
+
+    for (int r=0; r<R; ++r)
+    {
+        if (GetValue(r, markGUIDCol).IsEmpty())
+        {
+            wxDateTime datetime;
+            datetime.ParseISODate(GetValue(r, dateCol));
+            datetime.ParseISOTime(GetValue(r, timeCol));
+            const double lat = fromDMM_Plugin(GetValue(r, latCol));
+            const double lon = fromDMM_Plugin(GetValue(r, lonCol));
+            wxString name = GetValue(r, speciesCol) + " (OO)";
+            wxString description = GetValue(r, notesCol);
+            wxString guid = GetNewGUID();
+
+            // add waypoint
+            PlugIn_Waypoint wp(lat, lon, "fish", name, guid);
+            wp.m_MarkDescription = description;
+            wp.m_CreateTime = datetime;
+            AddSingleWaypoint(&wp);
+
+            // store guid in table
+            SetValue(r, markGUIDCol, guid);
+        }
+    }
+}
+
+void ooObservations::DeleteMarks()
+{
+    const int markGUIDCol = 6;
+
+    const int R = GetNumberRows();
+
+    for (int r=0; r<R; ++r)
+    {
+        wxString guid = GetValue(r, markGUIDCol);
+        if (guid.IsEmpty()) continue;
+
+        // delete waypoint
+        DeleteSingleWaypoint(guid);
+
+        // remove guid from table
+        guid.Clear();
+        SetValue(r, markGUIDCol, guid);
+    }
 }
 
 void ooObservations::SaveToCSV(wxFile *file)
