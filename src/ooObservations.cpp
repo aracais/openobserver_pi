@@ -264,3 +264,11 @@ bool ooObservations::ReadFromXML(wxString& filename)
 
     return true;
 }
+
+wxArrayString ooObservations::GetObservationFieldTypes()
+{
+    wxArrayString observationFieldTypes;
+    observationFieldTypes.Add("A");
+    observationFieldTypes.Add("B");
+    return observationFieldTypes;
+}

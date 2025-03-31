@@ -57,6 +57,8 @@ public:
     void SaveToXML(wxFile *file);
     bool ReadFromXML(wxString& filename);
 
+    static wxArrayString GetObservationFieldTypes();
+
 private:
     wxGridSizesInfo m_col_sizes;
 

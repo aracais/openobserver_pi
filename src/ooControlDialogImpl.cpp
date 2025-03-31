@@ -68,6 +68,12 @@ ooControlDialogImpl::ooControlDialogImpl(wxWindow* parent)
     m_panelObservations->Layout();
 	m_fgSizerObservations->Fit(m_panelObservations);
 
+    for (int c=0; c<m_gridProject->GetNumberCols(); ++c)
+    {
+        wxGridCellChoiceEditor *observationFieldTypeEditor = new wxGridCellChoiceEditor(ooObservations::GetObservationFieldTypes());
+        m_gridProject->SetCellEditor(1, c, observationFieldTypeEditor);
+    }
+
     wxFileName backup(*g_pData, "observations.xml");
     m_BackupFilename = backup.GetFullPath();
 
@@ -184,6 +190,9 @@ void ooControlDialogImpl::OnButtonClickProjectNewColumn(wxCommandEvent& event)
 {
     m_gridProject->InsertCols(0, 1);
     m_gridProject->SetColLabelValue(0, "");
+
+    wxGridCellChoiceEditor *observationFieldTypeEditor = new wxGridCellChoiceEditor(ooObservations::GetObservationFieldTypes());
+    m_gridProject->SetCellEditor(1, 0, observationFieldTypeEditor);
 }
 
 void ooControlDialogImpl::OnButtonClickProjectDeleteColumn(wxCommandEvent& event)

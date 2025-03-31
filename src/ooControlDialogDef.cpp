@@ -56,7 +56,7 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 
 	fgSizerProjectButtons->Add( m_ProjectNewColumn, 0, wxALL, 5 );
 
-	m_ProjectDeleteColumn = new wxButton( m_panelProject, wxID_ANY, _("Delete Column"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ProjectDeleteColumn = new wxButton( m_panelProject, wxID_ANY, _("Delete First Column"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_ProjectDeleteColumn->Enable( false );
 
 	fgSizerProjectButtons->Add( m_ProjectDeleteColumn, 0, wxALL, 5 );
@@ -173,7 +173,7 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	m_ObservationsNew = new wxButton( m_panelObservations, wxID_ANY, _("New Row"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizerObservationsButtons->Add( m_ObservationsNew, 0, wxALL, 5 );
 
-	m_ObservationsDelete = new wxButton( m_panelObservations, wxID_ANY, _("Delete Row"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ObservationsDelete = new wxButton( m_panelObservations, wxID_ANY, _("Delete Top Row"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizerObservationsButtons->Add( m_ObservationsDelete, 0, wxALL, 5 );
 
 	m_ObservationsAddMarks = new wxButton( m_panelObservations, wxID_ANY, _("Add Marks"), wxDefaultPosition, wxDefaultSize, 0 );
