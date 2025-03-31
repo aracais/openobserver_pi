@@ -52,6 +52,10 @@ public:
         void SetPositionFix(time_t fixTime, double lat, double lon);
 
 protected:
+        void OnButtonClickProjectEditSave(wxCommandEvent& event);
+	void OnButtonClickProjectNewColumn(wxCommandEvent& event);
+        void OnButtonClickProjectDeleteColumn(wxCommandEvent& event);
+
         void OnButtonClickNewObservation( wxCommandEvent& event );
         void OnButtonClickDeleteObservation( wxCommandEvent& event );
         void OnButtonClickExportObservations( wxCommandEvent& event );

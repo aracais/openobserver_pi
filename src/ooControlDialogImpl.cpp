@@ -164,6 +164,34 @@ void ooControlDialogImpl::SetPositionFix(time_t fixTime, double lat, double lon)
     m_ObservationsLon->SetValue(toSDMM_PlugIn(2, lon));
 }
 
+void ooControlDialogImpl::OnButtonClickProjectEditSave(wxCommandEvent& event)
+{
+    if (m_gridProject->IsEnabled()) 
+    {
+        m_ProjectEditSave->SetLabel("Edit");
+        m_gridProject->Disable();
+        m_ProjectNewColumn->Disable();
+        m_ProjectDeleteColumn->Disable();
+    } else {
+        m_ProjectEditSave->SetLabel("Save");
+        m_gridProject->Enable();
+        m_ProjectNewColumn->Enable();
+        m_ProjectDeleteColumn->Enable();
+    }
+}
+
+void ooControlDialogImpl::OnButtonClickProjectNewColumn(wxCommandEvent& event)
+{
+    m_gridProject->InsertCols(0, 1);
+    m_gridProject->SetColLabelValue(0, "");
+}
+
+void ooControlDialogImpl::OnButtonClickProjectDeleteColumn(wxCommandEvent& event)
+{
+    if (m_gridProject->GetNumberCols() > 0)
+        m_gridProject->DeleteCols(0);
+}
+
 void ooControlDialogImpl::OnButtonClickNewObservation( wxCommandEvent& event )
 {
     if (!m_Observations) return;

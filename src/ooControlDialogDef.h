@@ -10,20 +10,21 @@
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/intl.h>
-#include <wx/panel.h>
-#include <wx/gdicmn.h>
-#include <wx/font.h>
-#include <wx/colour.h>
-#include <wx/settings.h>
+#include <wx/button.h>
 #include <wx/string.h>
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
+#include <wx/gdicmn.h>
+#include <wx/font.h>
+#include <wx/colour.h>
+#include <wx/settings.h>
 #include <wx/sizer.h>
+#include <wx/grid.h>
+#include <wx/panel.h>
 #include <wx/statline.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
-#include <wx/button.h>
 #include <wx/notebook.h>
 #include <wx/dialog.h>
 
@@ -42,6 +43,10 @@ class ooControlDialogDef : public wxDialog
 		wxBoxSizer* m_SizerControl;
 		wxNotebook* m_notebookControl;
 		wxPanel* m_panelProject;
+		wxButton* m_ProjectEditSave;
+		wxButton* m_ProjectNewColumn;
+		wxButton* m_ProjectDeleteColumn;
+		wxGrid* m_gridProject;
 		wxPanel* m_panelObservations;
 		wxFlexGridSizer* m_fgSizerObservations;
 		wxBoxSizer* bSizerTopButtons;
@@ -65,6 +70,9 @@ class ooControlDialogDef : public wxDialog
 
 		// Virtual event handlers, override them in your derived class
 		virtual void ooControlDialogDefOnClose( wxCloseEvent& event ) { event.Skip(); }
+		virtual void OnButtonClickProjectEditSave( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClickProjectNewColumn( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnButtonClickProjectDeleteColumn( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickNewObservation( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickDeleteObservation( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickObservationsAddMarks( wxCommandEvent& event ) { event.Skip(); }
