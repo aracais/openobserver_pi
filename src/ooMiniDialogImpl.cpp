@@ -43,11 +43,14 @@ ooMiniDialogImpl::ooMiniDialogImpl(wxWindow* parent) : ooMiniDialogDef(parent), 
 #endif // wxCHECK_VERSION(3,0,0)
 
     m_MiniPanel = new ooMiniPanel(this);
+    m_MiniPanel->SetToggleWindowButtonLabel("Maximize");
+    this->Connect(wxEVT_SHOW, wxShowEventHandler(ooMiniPanel::OnShow), NULL, m_MiniPanel);
     m_fgSizer->Add(m_MiniPanel, 1, wxEXPAND, 5);
 }
 
 ooMiniDialogImpl::~ooMiniDialogImpl()
 {
+    this->Disconnect(wxEVT_SHOW, wxShowEventHandler(ooMiniPanel::OnShow), NULL, m_MiniPanel);
 }
 
 void ooMiniDialogImpl::ooMiniDialogDefOnClose(wxCloseEvent& event)

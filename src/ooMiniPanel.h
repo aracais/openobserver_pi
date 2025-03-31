@@ -48,16 +48,23 @@ public:
               const wxSize& size = wxDefaultSize, long style = wxTAB_TRAVERSAL,
               const wxString& name = wxS("ooMiniPanel"));
 
-protected:
-  void ooControlStartStopObservationClick(wxCommandEvent& event);
-  void ooControlOpenMiniWindowClick(wxCommandEvent& event);
+  void SetToggleWindowButtonLabel(const wxString& label);
 
-  void OnObservationDurationTimer(wxTimerEvent& event);
+  void OnShow(wxShowEvent& event);
 
   wxButton* m_StartStopObservation;
+
+protected:
+  void UpdateObservationStatus();
+
+  void ooControlStartStopObservationClick(wxCommandEvent& event);
+  void OnToggleWindowClick(wxCommandEvent& event);
+  
+  void OnObservationDurationTimer(wxTimerEvent& event);
+
   wxStaticText* m_ObservationsDurationLabel;
   wxTextCtrl* m_ObservationDuration;
-  wxButton* m_buttonOpenMiniWindow;
+  wxButton* m_buttonToggleWindow;
 
   wxTimer m_ObservationDurationTimer;
 };

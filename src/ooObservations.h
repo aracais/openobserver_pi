@@ -46,6 +46,8 @@ public:
     void StartObservation();
     void StopObservation();
 
+    bool IsObserving() const;
+
     long GetObservationDuration();
 
     void AddMarks();

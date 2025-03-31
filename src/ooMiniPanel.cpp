@@ -73,9 +73,9 @@ bool ooMiniPanel::Create(wxWindow* parent, wxWindowID id, const wxString& msg,
   bSizerTopButtons->Add(m_ObservationDuration, 0,
                         wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
-  m_buttonOpenMiniWindow = new wxButton(this, wxID_ANY, _("&Minimize Window"),
+  m_buttonToggleWindow = new wxButton(this, wxID_ANY, _("Toggle Window"),
                                         wxDefaultPosition, wxDefaultSize, 0);
-  bSizerTopButtons->Add(m_buttonOpenMiniWindow, 0,
+  bSizerTopButtons->Add(m_buttonToggleWindow, 0,
                         wxALIGN_CENTER_VERTICAL | wxALL, 5);
 
   this->SetSizerAndFit(bSizerTopButtons);
@@ -85,9 +85,10 @@ bool ooMiniPanel::Create(wxWindow* parent, wxWindowID id, const wxString& msg,
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(ooMiniPanel::ooControlStartStopObservationClick),
       NULL, this);
-  m_buttonOpenMiniWindow->Connect(
+
+  m_buttonToggleWindow->Connect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(ooMiniPanel::ooControlOpenMiniWindowClick), NULL,
+      wxCommandEventHandler(ooMiniPanel::OnToggleWindowClick), NULL,
       this);
 
   m_ObservationDurationTimer.Bind(wxEVT_TIMER,
@@ -102,37 +103,58 @@ ooMiniPanel::~ooMiniPanel() {
       wxEVT_COMMAND_BUTTON_CLICKED,
       wxCommandEventHandler(ooMiniPanel::ooControlStartStopObservationClick),
       NULL, this);
-  m_buttonOpenMiniWindow->Disconnect(
+
+  m_buttonToggleWindow->Disconnect(
       wxEVT_COMMAND_BUTTON_CLICKED,
-      wxCommandEventHandler(ooMiniPanel::ooControlOpenMiniWindowClick), NULL,
+      wxCommandEventHandler(ooMiniPanel::OnToggleWindowClick), NULL,
       this);
 
   m_ObservationDurationTimer.Stop();
 }
 
+void ooMiniPanel::SetToggleWindowButtonLabel(const wxString& label)
+{
+  m_buttonToggleWindow->SetLabel(label);
+}
+
 void ooMiniPanel::ooControlStartStopObservationClick(wxCommandEvent& event) {
+  // allow other handlers
+  event.Skip();
+
   if (!g_openobserver_pi->m_ooObservations) return;
 
-  if (!m_ObservationDurationTimer.IsRunning()) {
-    m_StartStopObservation->SetLabel("Stop Observation");
-
+  if (g_openobserver_pi->m_ooObservations->IsObserving())
+  {
+    // stop observation
+    g_openobserver_pi->m_ooObservations->StopObservation();
+  } else {
     // start observation
     g_openobserver_pi->m_ooObservations->StartObservation();
+  }
+
+  UpdateObservationStatus();
+}
+
+void ooMiniPanel::OnShow(wxShowEvent& event)
+{
+  UpdateObservationStatus();
+}
+
+void ooMiniPanel::UpdateObservationStatus()
+{
+  if (!g_openobserver_pi->m_ooObservations) return;
+
+  if (g_openobserver_pi->m_ooObservations->IsObserving())
+  {
+    m_StartStopObservation->SetLabel("Stop Observation");
 
     // start timer to update observation duration
     m_ObservationDurationTimer.Start(100);  // 100 ms = 0.1 s
   } else {
-    // stop observation
     m_StartStopObservation->SetLabel("Start Observation");
-
-    g_openobserver_pi->m_ooObservations->StopObservation();
 
     m_ObservationDurationTimer.Stop();
   }
-}
-
-void ooMiniPanel::ooControlOpenMiniWindowClick(wxCommandEvent& event) {
-  g_openobserver_pi->ToggleWindow();
 }
 
 void ooMiniPanel::OnObservationDurationTimer(wxTimerEvent& event) {
@@ -149,4 +171,8 @@ void ooMiniPanel::OnObservationDurationTimer(wxTimerEvent& event) {
   std::sprintf(durationString, "%02u:%02u:%02u", hours, minutes, seconds);
 
   m_ObservationDuration->SetValue(durationString);
+}
+
+void ooMiniPanel::OnToggleWindowClick(wxCommandEvent& event) {
+  g_openobserver_pi->ToggleWindow();
 }

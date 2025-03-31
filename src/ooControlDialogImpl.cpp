@@ -62,6 +62,8 @@ ooControlDialogImpl::ooControlDialogImpl(wxWindow* parent)
 #endif // wxCHECK_VERSION(3,0,0)
 
     m_MiniPanel = new ooMiniPanel(m_panelObservations);
+    m_MiniPanel->SetToggleWindowButtonLabel("Minimize");
+    this->Connect(wxEVT_SHOW, wxShowEventHandler(ooMiniPanel::OnShow), NULL, m_MiniPanel);
     bSizerTopButtons->Add(m_MiniPanel, 1, wxEXPAND, 5);
     m_panelObservations->Layout();
 	m_fgSizerObservations->Fit(m_panelObservations);
@@ -75,6 +77,8 @@ ooControlDialogImpl::ooControlDialogImpl(wxWindow* parent)
 
 ooControlDialogImpl::~ooControlDialogImpl()
 {
+    this->Disconnect(wxEVT_SHOW, wxShowEventHandler(ooMiniPanel::OnShow), NULL, m_MiniPanel);
+
     m_BackupTimer.Stop();
 
     if (!m_Observations) return;
@@ -140,6 +144,9 @@ void ooControlDialogImpl::CreateObservationsTable(ooObservations *observations)
 
     // start timer to backup observations every 30 seconds
     m_BackupTimer.Start(30000); // 30'000 ms = 30 s
+
+    std::function<void(wxCommandEvent&)> refreshHandler = [&](wxCommandEvent& event) { m_ObservationsTable->ForceRefresh(); event.Skip(); };
+    m_MiniPanel->m_StartStopObservation->Bind(wxEVT_COMMAND_BUTTON_CLICKED, refreshHandler);
 }
 
 void ooControlDialogImpl::SetPositionFix(time_t fixTime, double lat, double lon)

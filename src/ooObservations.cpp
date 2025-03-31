@@ -102,6 +102,11 @@ void ooObservations::StopObservation()
     m_IsObserving = false;
 }
 
+bool ooObservations::IsObserving() const
+{
+    return m_IsObserving;
+}
+
 long ooObservations::GetObservationDuration()
 {
     return m_ObservationDurationStopWatch.Time();
