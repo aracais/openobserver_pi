@@ -83,6 +83,8 @@ ooControlDialogImpl::~ooControlDialogImpl()
 
     if (!m_Observations) return;
 
+    m_Observations->StopObservation();
+
     wxFileOutputStream output_stream(m_BackupFilename);
     
     if (!output_stream.IsOk())
