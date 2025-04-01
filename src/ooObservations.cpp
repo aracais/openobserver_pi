@@ -25,6 +25,7 @@
 
 #include "ooObservations.h"
 
+#include <wx/log.h>
 #include <wx/sstream.h>
 #include <wx/xml/xml.h>
 
@@ -48,8 +49,16 @@ ooObservations::ooObservations() : wxGridStringTable(0, 7), m_IsObserving(false)
     allColSizes.Add(100);
     allColSizes.Add(200);
     allColSizes.Add(70);
-
     m_col_sizes = wxGridSizesInfo(70, allColSizes);
+
+    m_col_field_types.Clear();
+    m_col_field_types.Add("Start Date");
+    m_col_field_types.Add("Start Time");
+    m_col_field_types.Add("Start Latitude");
+    m_col_field_types.Add("Start Longitude");
+    m_col_field_types.Add("Text");
+    m_col_field_types.Add("Text");
+    m_col_field_types.Add("Mark GUID");
 }
 
 ooObservations::~ooObservations()
@@ -59,6 +68,21 @@ ooObservations::~ooObservations()
 wxGridSizesInfo ooObservations::GetColSizes() const
 {
     return m_col_sizes;
+}
+
+void ooObservations::SetColSizes(const wxGridSizesInfo &sizeInfo)
+{
+    m_col_sizes = sizeInfo;
+}
+
+wxArrayString ooObservations::GetColFieldTypes() const
+{
+    return m_col_field_types;
+}
+
+void ooObservations::SetColFieldTypes(const wxArrayString &colFieldTypes)
+{
+    m_col_field_types = colFieldTypes;
 }
 
 void ooObservations::SetPositionFix(time_t fixTime, double lat, double lon)
@@ -75,18 +99,32 @@ void ooObservations::StartObservation()
     // start duration stopwatch
     m_ObservationDurationStopWatch.Start(0);
 
-    // get start date and time
+    // get date and time
     char dateString[16];
     std::strftime(dateString, 16, "%F", gmtime(&m_position_fix_time));
     char timeString[16];
     std::strftime(timeString, 16, "%T", gmtime(&m_position_fix_time));
 
-    // create new observation in table and fill start date, time and position
+    // create new observation in table and fill in fields
     InsertRows(0, 1);
-    SetValue(0, 0, dateString);
-    SetValue(0, 1, timeString);
-    SetValue(0, 2, toSDMM_PlugIn(1, m_position_fix_lat));
-    SetValue(0, 3, toSDMM_PlugIn(2, m_position_fix_lon));
+    const int C = GetNumberCols();
+    if (m_col_field_types.GetCount() == C)
+    {
+        for (int c=0; c<C; ++c)
+        {
+            wxString field_type = m_col_field_types[c];
+            if (field_type.IsSameAs("Start Date"))
+                SetValue(0, c, dateString);
+            else if (field_type.IsSameAs("Start Time"))
+                SetValue(0, c, timeString);
+            else if (field_type.IsSameAs("Start Latitude"))
+                SetValue(0, c, toSDMM_PlugIn(1, m_position_fix_lat));
+            else if (field_type.IsSameAs("Start Longitude"))
+                SetValue(0, c, toSDMM_PlugIn(2, m_position_fix_lon));
+        }
+    } else {
+        wxLogError("m_col_field_types.GetCount() does not match number of observation columns");
+    }
 
     m_IsObserving = true;
 }
@@ -97,7 +135,33 @@ void ooObservations::StopObservation()
 
     m_ObservationDurationStopWatch.Pause();
 
-    SetValue(0, 4, wxString::Format(wxT("%li"), m_ObservationDurationStopWatch.Time()));
+    // get date and time
+    char dateString[16];
+    std::strftime(dateString, 16, "%F", gmtime(&m_position_fix_time));
+    char timeString[16];
+    std::strftime(timeString, 16, "%T", gmtime(&m_position_fix_time));
+
+    // fill in fields
+    const int C = GetNumberCols();
+    if (m_col_field_types.GetCount() == C)
+    {
+        for (int c=0; c<C; ++c)
+        {
+            wxString field_type = m_col_field_types[c];
+            if (field_type.IsSameAs("End Date"))
+                SetValue(0, c, dateString);
+            else if (field_type.IsSameAs("End Time"))
+                SetValue(0, c, timeString);
+            else if (field_type.IsSameAs("End Latitude"))
+                SetValue(0, c, toSDMM_PlugIn(1, m_position_fix_lat));
+            else if (field_type.IsSameAs("End Longitude"))
+                SetValue(0, c, toSDMM_PlugIn(2, m_position_fix_lon));
+            else if (field_type.IsSameAs("Observation Duration"))
+                SetValue(0, c, wxString::Format(wxT("%li"), m_ObservationDurationStopWatch.Time()));
+        }
+    } else {
+        wxLogError("m_col_field_types.GetCount() does not match number of observation columns");
+    }
 
     m_IsObserving = false;
 }
@@ -114,27 +178,67 @@ long ooObservations::GetObservationDuration()
 
 void ooObservations::AddMarks()
 {
-    const int dateCol = 0;
-    const int timeCol = 1;
-    const int latCol = 2;
-    const int lonCol = 3;
-    const int speciesCol = 4;
-    const int notesCol = 5;
-    const int markGUIDCol = 6;
+    // Get column indices
+    int markGUIDCol = -1;
+    int dateCol = -1;
+    int timeCol = -1;
+    int latCol = -1;
+    int lonCol = -1;
+    int nameCol = -1;
+    int descriptionCol = -1;
+    
+    const int C = GetNumberCols();
+    if (m_col_field_types.GetCount() == C)
+    {
+        for (int c=0; c<C; ++c)
+        {
+            wxString field_type = m_col_field_types[c];
+            if (field_type.IsSameAs("Mark GUID")) {
+                if (markGUIDCol < 0) markGUIDCol = c;
+            } else if (field_type.IsSameAs("Start Date")) {
+                if (dateCol < 0) dateCol = c;
+            } else if (field_type.IsSameAs("Start Time")) {
+                if (timeCol < 0) timeCol = c;
+            } else if (field_type.IsSameAs("Start Latitude")) {
+                if (latCol < 0) latCol = c;
+            } else if (field_type.IsSameAs("Start Longitude")) {
+                if (lonCol < 0) lonCol = c;
+            } else if (field_type.IsSameAs("Text")) {
+                // use first text column as name and second as description
+                if (nameCol < 0) nameCol = c;
+                else if (descriptionCol < 0) descriptionCol = c;
+            }
+        }
+    } else {
+        wxLogError("m_col_field_types.GetCount() does not match number of observation columns");
+        return;
+    }
+
+    if (markGUIDCol < 0) {
+        wxLogError("Could not find a column for storing the Mark GUID");
+        return;
+    }
+
+    if ((latCol < 0) || (lonCol < 0)) {
+        wxLogError("Could not find columns storing the latitude and longitude, so unable to make marks");
+        return;
+    }
 
     const int R = GetNumberRows();
-
     for (int r=0; r<R; ++r)
     {
         if (GetValue(r, markGUIDCol).IsEmpty())
         {
-            wxDateTime datetime;
-            datetime.ParseISODate(GetValue(r, dateCol));
-            datetime.ParseISOTime(GetValue(r, timeCol));
             const double lat = fromDMM_Plugin(GetValue(r, latCol));
             const double lon = fromDMM_Plugin(GetValue(r, lonCol));
-            wxString name = GetValue(r, speciesCol) + " (OO)";
-            wxString description = GetValue(r, notesCol);
+
+            wxDateTime datetime;
+            if (dateCol>=0) datetime.ParseISODate(GetValue(r, dateCol));
+            if (timeCol>=0) datetime.ParseISOTime(GetValue(r, timeCol));
+
+            wxString name = (nameCol>=0) ? GetValue(r, nameCol) + " (OO)" : "Mark (OO)";
+            wxString description = (descriptionCol>=0) ? GetValue(r, descriptionCol) : "";
+
             wxString guid = GetNewGUID();
 
             // add waypoint
@@ -151,10 +255,30 @@ void ooObservations::AddMarks()
 
 void ooObservations::DeleteMarks()
 {
-    const int markGUIDCol = 6;
+    // Get column indices
+    int markGUIDCol = -1;
+    
+    const int C = GetNumberCols();
+    if (m_col_field_types.GetCount() == C)
+    {
+        for (int c=0; c<C; ++c)
+        {
+            wxString field_type = m_col_field_types[c];
+            if (field_type.IsSameAs("Mark GUID")) {
+                if (markGUIDCol < 0) markGUIDCol = c;
+            }
+        }
+    } else {
+        wxLogError("m_col_field_types.GetCount() does not match number of observation columns");
+        return;
+    }
+
+    if (markGUIDCol < 0) {
+        wxLogError("Could not find a column for storing the Mark GUID");
+        return;
+    }
 
     const int R = GetNumberRows();
-
     for (int r=0; r<R; ++r)
     {
         wxString guid = GetValue(r, markGUIDCol);
@@ -268,7 +392,16 @@ bool ooObservations::ReadFromXML(wxString& filename)
 wxArrayString ooObservations::GetObservationFieldTypes()
 {
     wxArrayString observationFieldTypes;
-    observationFieldTypes.Add("A");
-    observationFieldTypes.Add("B");
+    observationFieldTypes.Add("Start Date");
+    observationFieldTypes.Add("Start Time");
+    observationFieldTypes.Add("Start Latitude");
+    observationFieldTypes.Add("Start Longitude");
+    observationFieldTypes.Add("End Date");
+    observationFieldTypes.Add("End Time");
+    observationFieldTypes.Add("End Latitude");
+    observationFieldTypes.Add("End Longitude");
+    observationFieldTypes.Add("Observation Duration");
+    observationFieldTypes.Add("Mark GUID");
+    observationFieldTypes.Add("Text");
     return observationFieldTypes;
 }

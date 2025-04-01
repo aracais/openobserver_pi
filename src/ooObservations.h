@@ -40,6 +40,10 @@ public:
     ~ooObservations();
 
     wxGridSizesInfo GetColSizes() const;
+    void SetColSizes(const wxGridSizesInfo &sizeInfo);
+
+    wxArrayString GetColFieldTypes() const;
+    void SetColFieldTypes(const wxArrayString &colFieldTypes);
 
     void SetPositionFix(time_t fixTime, double lat, double lon);
 
@@ -61,6 +65,7 @@ public:
 
 private:
     wxGridSizesInfo m_col_sizes;
+    wxArrayString m_col_field_types;
 
     time_t m_position_fix_time;
     double m_position_fix_lat;

@@ -39,17 +39,28 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	m_notebookControl = new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
 	m_panelProject = new wxPanel( m_notebookControl, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 	wxFlexGridSizer* fgSizerProject;
-	fgSizerProject = new wxFlexGridSizer( 2, 1, 0, 0 );
+	fgSizerProject = new wxFlexGridSizer( 4, 1, 0, 0 );
 	fgSizerProject->SetFlexibleDirection( wxBOTH );
 	fgSizerProject->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	wxFlexGridSizer* fgSizerProjectButtons;
-	fgSizerProjectButtons = new wxFlexGridSizer( 1, 3, 0, 0 );
+	fgSizerProjectButtons = new wxFlexGridSizer( 1, 6, 0, 0 );
 	fgSizerProjectButtons->SetFlexibleDirection( wxBOTH );
 	fgSizerProjectButtons->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	m_ProjectEditSave = new wxButton( m_panelProject, wxID_ANY, _("Edit"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizerProjectButtons->Add( m_ProjectEditSave, 0, wxALL, 5 );
+	m_ProjectNew = new wxButton( m_panelProject, wxID_ANY, _("New"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizerProjectButtons->Add( m_ProjectNew, 0, wxALL, 5 );
+
+	m_ProjectLoad = new wxButton( m_panelProject, wxID_ANY, _("Load"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizerProjectButtons->Add( m_ProjectLoad, 0, wxALL, 5 );
+
+	m_ProjectSave = new wxButton( m_panelProject, wxID_ANY, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizerProjectButtons->Add( m_ProjectSave, 0, wxALL, 5 );
+
+	m_ProjectEditUse = new wxButton( m_panelProject, wxID_ANY, _("Edit"), wxDefaultPosition, wxDefaultSize, 0 );
+
+	m_ProjectEditUse->SetDefault();
+	fgSizerProjectButtons->Add( m_ProjectEditUse, 0, wxALL, 5 );
 
 	m_ProjectNewColumn = new wxButton( m_panelProject, wxID_ANY, _("New Column"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_ProjectNewColumn->Enable( false );
@@ -64,23 +75,48 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 
 	fgSizerProject->Add( fgSizerProjectButtons, 1, wxEXPAND, 5 );
 
+	m_staticline3 = new wxStaticLine( m_panelProject, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	fgSizerProject->Add( m_staticline3, 0, wxEXPAND | wxALL, 5 );
+
+	wxFlexGridSizer* fgSizer8;
+	fgSizer8 = new wxFlexGridSizer( 2, 2, 0, 0 );
+	fgSizer8->SetFlexibleDirection( wxBOTH );
+	fgSizer8->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	m_staticText61 = new wxStaticText( m_panelProject, wxID_ANY, _("File"), wxDefaultPosition, wxSize( 100,-1 ), 0 );
+	m_staticText61->Wrap( -1 );
+	fgSizer8->Add( m_staticText61, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+	m_textProjectFile = new wxTextCtrl( m_panelProject, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 600,-1 ), wxTE_NO_VSCROLL|wxTE_READONLY );
+	m_textProjectFile->Enable( false );
+
+	fgSizer8->Add( m_textProjectFile, 0, wxALL, 5 );
+
+	m_staticText6 = new wxStaticText( m_panelProject, wxID_ANY, _("Project Name"), wxDefaultPosition, wxSize( 100,-1 ), 0 );
+	m_staticText6->Wrap( -1 );
+	fgSizer8->Add( m_staticText6, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
+
+	m_textProjectName = new wxTextCtrl( m_panelProject, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 600,-1 ), 0 );
+	m_textProjectName->Enable( false );
+
+	fgSizer8->Add( m_textProjectName, 0, wxALL, 5 );
+
+
+	fgSizerProject->Add( fgSizer8, 1, wxEXPAND, 5 );
+
 	m_gridProject = new wxGrid( m_panelProject, wxID_ANY, wxDefaultPosition, wxSize( 740,100 ), 0 );
 
 	// Grid
-	m_gridProject->CreateGrid( 2, 5 );
+	m_gridProject->CreateGrid( 2, 0 );
 	m_gridProject->EnableEditing( true );
 	m_gridProject->EnableGridLines( true );
 	m_gridProject->EnableDragGridSize( false );
 	m_gridProject->SetMargins( 0, 0 );
 
 	// Columns
-	m_gridProject->EnableDragColMove( true );
+	m_gridProject->EnableDragColMove( false );
 	m_gridProject->EnableDragColSize( true );
-	m_gridProject->SetColLabelValue( 0, wxEmptyString );
-	m_gridProject->SetColLabelValue( 1, wxEmptyString );
-	m_gridProject->SetColLabelValue( 2, wxEmptyString );
-	m_gridProject->SetColLabelValue( 3, wxEmptyString );
-	m_gridProject->SetColLabelValue( 4, wxEmptyString );
+	m_gridProject->SetColLabelSize( 20 );
 	m_gridProject->SetColLabelAlignment( wxALIGN_CENTER, wxALIGN_CENTER );
 
 	// Rows
@@ -119,7 +155,7 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	wxBoxSizer* bSizer6;
 	bSizer6 = new wxBoxSizer( wxVERTICAL );
 
-	m_ObservationsDateLabel1 = new wxStaticText( m_panelObservations, wxID_ANY, _("Current Vessel Data (date and time in UTC)"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ObservationsDateLabel1 = new wxStaticText( m_panelObservations, wxID_ANY, _("Current Data (timezone UTC)"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_ObservationsDateLabel1->Wrap( -1 );
 	bSizer6->Add( m_ObservationsDateLabel1, 0, wxALL, 5 );
 
@@ -224,7 +260,10 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 
 	// Connect Events
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( ooControlDialogDef::ooControlDialogDefOnClose ) );
-	m_ProjectEditSave->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectEditSave ), NULL, this );
+	m_ProjectNew->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectNew ), NULL, this );
+	m_ProjectLoad->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectLoad ), NULL, this );
+	m_ProjectSave->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectSave ), NULL, this );
+	m_ProjectEditUse->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectEditUse ), NULL, this );
 	m_ProjectNewColumn->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectNewColumn ), NULL, this );
 	m_ProjectDeleteColumn->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectDeleteColumn ), NULL, this );
 	m_ObservationsNew->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickNewObservation ), NULL, this );
@@ -241,7 +280,10 @@ ooControlDialogDef::~ooControlDialogDef()
 {
 	// Disconnect Events
 	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( ooControlDialogDef::ooControlDialogDefOnClose ) );
-	m_ProjectEditSave->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectEditSave ), NULL, this );
+	m_ProjectNew->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectNew ), NULL, this );
+	m_ProjectLoad->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectLoad ), NULL, this );
+	m_ProjectSave->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectSave ), NULL, this );
+	m_ProjectEditUse->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectEditUse ), NULL, this );
 	m_ProjectNewColumn->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectNewColumn ), NULL, this );
 	m_ProjectDeleteColumn->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectDeleteColumn ), NULL, this );
 	m_ObservationsNew->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickNewObservation ), NULL, this );

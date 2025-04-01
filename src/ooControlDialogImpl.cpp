@@ -157,6 +157,50 @@ void ooControlDialogImpl::CreateObservationsTable(ooObservations *observations)
     m_MiniPanel->m_StartStopObservation->Bind(wxEVT_COMMAND_BUTTON_CLICKED, refreshHandler);
 }
 
+void ooControlDialogImpl::SetupObservationsForProject()
+{
+    // stop any observation, if one is running
+    m_Observations->StopObservation();
+
+    // delete table
+    if (m_Observations->GetNumberRows() > 0)
+        m_Observations->DeleteRows(0, m_Observations->GetNumberRows());
+
+    if (m_Observations->GetNumberCols() > 0)
+        m_Observations->DeleteCols(0, m_Observations->GetNumberCols());
+
+    // add columns
+    m_Observations->InsertCols(0, m_gridProject->GetNumberCols());
+
+    // set the column sizes
+    m_Observations->SetColSizes(m_gridProject->GetColSizes());
+
+    // set the column labels
+    for (int c=0; c<m_gridProject->GetNumberCols(); ++c)
+    {
+        wxString label = m_gridProject->GetCellValue(0, c);
+        if (label.IsEmpty())
+            label = m_gridProject->GetCellValue(1, c);
+
+        m_Observations->SetColLabelValue(c, label);
+    }
+
+    // set the column field types
+    wxArrayString colFieldTypes;
+    for (int c=0; c<m_gridProject->GetNumberCols(); ++c)
+    {
+        wxString fieldType = m_gridProject->GetCellValue(1, c);
+        if (fieldType.IsEmpty())
+            fieldType = wxString("Text");
+
+        colFieldTypes.Add(fieldType);
+    }
+    m_Observations->SetColFieldTypes(colFieldTypes);
+
+    // update column sizes of table to match
+    m_ObservationsTable->SetColSizes(m_Observations->GetColSizes());
+}
+
 void ooControlDialogImpl::SetPositionFix(time_t fixTime, double lat, double lon)
 {
     char dateString[16];
@@ -170,19 +214,71 @@ void ooControlDialogImpl::SetPositionFix(time_t fixTime, double lat, double lon)
     m_ObservationsLon->SetValue(toSDMM_PlugIn(2, lon));
 }
 
-void ooControlDialogImpl::OnButtonClickProjectEditSave(wxCommandEvent& event)
+void ooControlDialogImpl::OnButtonClickProjectEditUse(wxCommandEvent& event)
 {
     if (m_gridProject->IsEnabled()) 
     {
-        m_ProjectEditSave->SetLabel("Edit");
+        // exit edit mode
+
+        // first, prompt user to export observations
+        if (m_Observations)
+        {
+            const int response = wxMessageBox("Warning: your current observations will be cleared. Do you want to export them first?", "Export your observations?", wxYES_NO, this);
+            if (response == wxYES)
+            {
+                wxFileDialog exportFileDialog(this, _("Export observations to CSV file"), "", m_ObservationsDate->GetValue(), "CSV file (*.csv)|*.csv", wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
+            
+                if (exportFileDialog.ShowModal() == wxID_CANCEL)
+                    return;
+
+                wxFileOutputStream output_stream(exportFileDialog.GetPath());
+                if (!output_stream.IsOk())
+                {
+                    wxMessageBox("Unable to save observations to file " + exportFileDialog.GetPath() + ".", "Error", wxOK, this);
+                    return;
+                }
+                
+                m_Observations->StopObservation();
+                m_Observations->SaveToCSV(output_stream.GetFile());
+            }
+        }
+
+        // second, ensure that there is a Mark GUID column and, if not, add one as the last column
+        bool has_mark_guid_col = false;
+        for (int c=0; c<m_gridProject->GetNumberCols(); ++c)
+        {
+            if(m_gridProject->GetCellValue(1, c).IsSameAs("Mark GUID"))
+            {
+                has_mark_guid_col = true;
+                break;
+            }
+        }
+        if (!has_mark_guid_col)
+        {
+            m_gridProject->AppendCols();
+            m_gridProject->SetColLabelValue(m_gridProject->GetNumberCols()-1, "");
+            m_gridProject->SetCellValue(1, m_gridProject->GetNumberCols()-1, "Mark GUID");
+        }
+
+        // third, change the project tab interface
+        m_ProjectEditUse->SetLabel("Edit");
         m_gridProject->Disable();
         m_ProjectNewColumn->Disable();
         m_ProjectDeleteColumn->Disable();
+
+        // disable project name text field, first setting value in code to ensure it stays
+        m_textProjectName->SetValue(m_textProjectName->GetValue());
+        m_textProjectName->Disable();
+
+        // finally, setup observations for the project
+        SetupObservationsForProject();
     } else {
-        m_ProjectEditSave->SetLabel("Save");
+        // enter edit mode
+        m_ProjectEditUse->SetLabel("Use");
         m_gridProject->Enable();
         m_ProjectNewColumn->Enable();
         m_ProjectDeleteColumn->Enable();
+        m_textProjectName->Enable();
     }
 }
 
