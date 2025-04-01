@@ -43,10 +43,10 @@ class ooControlDialogDef : public wxDialog
 		wxBoxSizer* m_SizerControl;
 		wxNotebook* m_notebookControl;
 		wxPanel* m_panelProject;
+		wxButton* m_ProjectEditUse;
 		wxButton* m_ProjectNew;
 		wxButton* m_ProjectLoad;
 		wxButton* m_ProjectSave;
-		wxButton* m_ProjectEditUse;
 		wxButton* m_ProjectNewColumn;
 		wxButton* m_ProjectDeleteColumn;
 		wxStaticLine* m_staticline3;
@@ -78,10 +78,10 @@ class ooControlDialogDef : public wxDialog
 
 		// Virtual event handlers, override them in your derived class
 		virtual void ooControlDialogDefOnClose( wxCloseEvent& event ) { event.Skip(); }
+		virtual void OnButtonClickProjectEditUse( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickProjectNew( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickProjectLoad( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickProjectSave( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnButtonClickProjectEditUse( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickProjectNewColumn( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickProjectDeleteColumn( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnButtonClickNewObservation( wxCommandEvent& event ) { event.Skip(); }

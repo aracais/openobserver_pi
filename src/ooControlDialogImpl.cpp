@@ -100,7 +100,56 @@ ooControlDialogImpl::~ooControlDialogImpl()
     }
 
     m_Observations->SaveToXML(output_stream.GetFile());
+}
 
+void ooControlDialogImpl::NewProject()
+{
+    // delete columns
+    if (m_gridProject->GetNumberCols() > 0)
+        m_gridProject->DeleteCols(0, m_gridProject->GetNumberCols());
+
+    // add columns
+    m_gridProject->InsertCols(0, 8);
+
+    // set the column sizes
+    wxArrayInt allColSizes;
+    allColSizes.Add(70);
+    allColSizes.Add(70);
+    allColSizes.Add(90);
+    allColSizes.Add(90);
+    allColSizes.Add(90);
+    allColSizes.Add(100);
+    allColSizes.Add(200);
+    allColSizes.Add(70);
+    wxGridSizesInfo colSizes = wxGridSizesInfo(70, allColSizes);
+    m_gridProject->SetColSizes(colSizes);
+
+    // set the column labels and cell editors
+    for (int c=0; c<m_gridProject->GetNumberCols(); ++c)
+    {
+        m_gridProject->SetColLabelValue(c, "");
+
+        wxGridCellChoiceEditor *observationFieldTypeEditor = new wxGridCellChoiceEditor(ooObservations::GetObservationFieldTypes());
+        m_gridProject->SetCellEditor(1, c, observationFieldTypeEditor);
+    }
+
+    // fill the table
+    m_gridProject->SetCellValue(0, 0, "Date");
+    m_gridProject->SetCellValue(1, 0, "Start Date");
+    m_gridProject->SetCellValue(0, 1, "Time");
+    m_gridProject->SetCellValue(1, 1, "Start Time");
+    m_gridProject->SetCellValue(0, 2, "Lat");
+    m_gridProject->SetCellValue(1, 2, "Start Latitude");
+    m_gridProject->SetCellValue(0, 3, "Lon");
+    m_gridProject->SetCellValue(1, 3, "Start Longitude");
+    m_gridProject->SetCellValue(0, 4, "Duration");
+    m_gridProject->SetCellValue(1, 4, "Observation Duration");
+    m_gridProject->SetCellValue(0, 5, "Species");
+    m_gridProject->SetCellValue(1, 5, "Text");
+    m_gridProject->SetCellValue(0, 6, "Notes");
+    m_gridProject->SetCellValue(1, 6, "Text");
+    m_gridProject->SetCellValue(0, 7, "Mark GUID");
+    m_gridProject->SetCellValue(1, 7, "Mark GUID");
 }
 
 void ooControlDialogImpl::CreateObservationsTable(ooObservations *observations)
@@ -263,6 +312,9 @@ void ooControlDialogImpl::OnButtonClickProjectEditUse(wxCommandEvent& event)
         // third, change the project tab interface
         m_ProjectEditUse->SetLabel("Edit");
         m_gridProject->Disable();
+        m_ProjectNew->Disable();
+        m_ProjectLoad->Disable();
+        m_ProjectSave->Disable();
         m_ProjectNewColumn->Disable();
         m_ProjectDeleteColumn->Disable();
 
@@ -276,10 +328,21 @@ void ooControlDialogImpl::OnButtonClickProjectEditUse(wxCommandEvent& event)
         // enter edit mode
         m_ProjectEditUse->SetLabel("Use");
         m_gridProject->Enable();
+        m_ProjectNew->Enable();
+        m_ProjectLoad->Enable();
+        m_ProjectSave->Enable();
         m_ProjectNewColumn->Enable();
         m_ProjectDeleteColumn->Enable();
         m_textProjectName->Enable();
     }
+}
+
+void ooControlDialogImpl::OnButtonClickProjectNew(wxCommandEvent& event)
+{
+    const int response = wxMessageBox("Warning: your current project will be cleared. Do you want to continue?", "Warning", wxYES_NO, this);
+    
+    if (response == wxYES)
+        NewProject();
 }
 
 void ooControlDialogImpl::OnButtonClickProjectNewColumn(wxCommandEvent& event)

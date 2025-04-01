@@ -141,6 +141,15 @@ void ooObservations::StopObservation()
     char timeString[16];
     std::strftime(timeString, 16, "%T", gmtime(&m_position_fix_time));
 
+    // get duration
+    const long duration_ms = GetObservationDuration();
+    const unsigned int hours = duration_ms / 3600000;
+    const unsigned int minutes = (duration_ms % 3600000) / 60000;
+    const unsigned int seconds = (duration_ms % 60000) / 1000;
+
+    char durationString[16];
+    std::sprintf(durationString, "%02u:%02u:%02u", hours, minutes, seconds);
+
     // fill in fields
     const int C = GetNumberCols();
     if (m_col_field_types.GetCount() == C)
@@ -157,7 +166,7 @@ void ooObservations::StopObservation()
             else if (field_type.IsSameAs("End Longitude"))
                 SetValue(0, c, toSDMM_PlugIn(2, m_position_fix_lon));
             else if (field_type.IsSameAs("Observation Duration"))
-                SetValue(0, c, wxString::Format(wxT("%li"), m_ObservationDurationStopWatch.Time()));
+                SetValue(0, c, durationString);
         }
     } else {
         wxLogError("m_col_field_types.GetCount() does not match number of observation columns");

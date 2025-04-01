@@ -47,6 +47,8 @@ public:
         ooControlDialogImpl(wxWindow *parent);
         ~ooControlDialogImpl();
 
+        void NewProject();
+
         void CreateObservationsTable(ooObservations *observations);
 
         void SetPositionFix(time_t fixTime, double lat, double lon);
@@ -55,6 +57,7 @@ protected:
         void SetupObservationsForProject();
 
         void OnButtonClickProjectEditUse(wxCommandEvent& event);
+        void OnButtonClickProjectNew(wxCommandEvent& event);
 	void OnButtonClickProjectNewColumn(wxCommandEvent& event);
         void OnButtonClickProjectDeleteColumn(wxCommandEvent& event);
 

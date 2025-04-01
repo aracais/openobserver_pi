@@ -48,19 +48,25 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	fgSizerProjectButtons->SetFlexibleDirection( wxBOTH );
 	fgSizerProjectButtons->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	m_ProjectNew = new wxButton( m_panelProject, wxID_ANY, _("New"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizerProjectButtons->Add( m_ProjectNew, 0, wxALL, 5 );
-
-	m_ProjectLoad = new wxButton( m_panelProject, wxID_ANY, _("Load"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizerProjectButtons->Add( m_ProjectLoad, 0, wxALL, 5 );
-
-	m_ProjectSave = new wxButton( m_panelProject, wxID_ANY, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizerProjectButtons->Add( m_ProjectSave, 0, wxALL, 5 );
-
 	m_ProjectEditUse = new wxButton( m_panelProject, wxID_ANY, _("Edit"), wxDefaultPosition, wxDefaultSize, 0 );
 
 	m_ProjectEditUse->SetDefault();
 	fgSizerProjectButtons->Add( m_ProjectEditUse, 0, wxALL, 5 );
+
+	m_ProjectNew = new wxButton( m_panelProject, wxID_ANY, _("New"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ProjectNew->Enable( false );
+
+	fgSizerProjectButtons->Add( m_ProjectNew, 0, wxALL, 5 );
+
+	m_ProjectLoad = new wxButton( m_panelProject, wxID_ANY, _("Load"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ProjectLoad->Enable( false );
+
+	fgSizerProjectButtons->Add( m_ProjectLoad, 0, wxALL, 5 );
+
+	m_ProjectSave = new wxButton( m_panelProject, wxID_ANY, _("Save"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ProjectSave->Enable( false );
+
+	fgSizerProjectButtons->Add( m_ProjectSave, 0, wxALL, 5 );
 
 	m_ProjectNewColumn = new wxButton( m_panelProject, wxID_ANY, _("New Column"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_ProjectNewColumn->Enable( false );
@@ -260,10 +266,10 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 
 	// Connect Events
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( ooControlDialogDef::ooControlDialogDefOnClose ) );
+	m_ProjectEditUse->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectEditUse ), NULL, this );
 	m_ProjectNew->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectNew ), NULL, this );
 	m_ProjectLoad->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectLoad ), NULL, this );
 	m_ProjectSave->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectSave ), NULL, this );
-	m_ProjectEditUse->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectEditUse ), NULL, this );
 	m_ProjectNewColumn->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectNewColumn ), NULL, this );
 	m_ProjectDeleteColumn->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectDeleteColumn ), NULL, this );
 	m_ObservationsNew->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickNewObservation ), NULL, this );
@@ -280,10 +286,10 @@ ooControlDialogDef::~ooControlDialogDef()
 {
 	// Disconnect Events
 	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( ooControlDialogDef::ooControlDialogDefOnClose ) );
+	m_ProjectEditUse->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectEditUse ), NULL, this );
 	m_ProjectNew->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectNew ), NULL, this );
 	m_ProjectLoad->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectLoad ), NULL, this );
 	m_ProjectSave->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectSave ), NULL, this );
-	m_ProjectEditUse->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectEditUse ), NULL, this );
 	m_ProjectNewColumn->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectNewColumn ), NULL, this );
 	m_ProjectDeleteColumn->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectDeleteColumn ), NULL, this );
 	m_ObservationsNew->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickNewObservation ), NULL, this );
