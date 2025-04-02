@@ -348,9 +348,9 @@ void ooControlDialogImpl::SetupObservationsForProject()
 void ooControlDialogImpl::SetPositionFix(time_t fixTime, double lat, double lon)
 {
     char dateString[16];
-    std::strftime(dateString, 16, "%F", gmtime(&fixTime));
+    strftime(dateString, 16, "%F", gmtime(&fixTime));
     char timeString[16];
-    std::strftime(timeString, 16, "%T", gmtime(&fixTime));
+    strftime(timeString, 16, "%T", gmtime(&fixTime));
 
     m_ObservationsDate->SetValue(dateString);
     m_ObservationsTime->SetValue(timeString);

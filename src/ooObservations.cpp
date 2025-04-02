@@ -75,9 +75,9 @@ void ooObservations::StartObservation()
 
     // get date and time
     char dateString[16];
-    std::strftime(dateString, 16, "%F", gmtime(&m_position_fix_time));
+    strftime(dateString, 16, "%F", gmtime(&m_position_fix_time));
     char timeString[16];
-    std::strftime(timeString, 16, "%T", gmtime(&m_position_fix_time));
+    strftime(timeString, 16, "%T", gmtime(&m_position_fix_time));
 
     // create new observation in table and fill in fields
     InsertRows(0, 1);
@@ -111,9 +111,9 @@ void ooObservations::StopObservation()
 
     // get date and time
     char dateString[16];
-    std::strftime(dateString, 16, "%F", gmtime(&m_position_fix_time));
+    strftime(dateString, 16, "%F", gmtime(&m_position_fix_time));
     char timeString[16];
-    std::strftime(timeString, 16, "%T", gmtime(&m_position_fix_time));
+    strftime(timeString, 16, "%T", gmtime(&m_position_fix_time));
 
     // get duration
     const long duration_ms = GetObservationDuration();
@@ -122,7 +122,7 @@ void ooObservations::StopObservation()
     const unsigned int seconds = (duration_ms % 60000) / 1000;
 
     char durationString[16];
-    std::sprintf(durationString, "%02u:%02u:%02u", hours, minutes, seconds);
+    sprintf(durationString, "%02u:%02u:%02u", hours, minutes, seconds);
 
     // fill in fields
     const int C = GetNumberCols();

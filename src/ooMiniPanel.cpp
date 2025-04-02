@@ -181,7 +181,7 @@ void ooMiniPanel::UpdateObservationDuration()
   const unsigned int seconds = (duration_ms % 60000) / 1000;
 
   char durationString[16];
-  std::sprintf(durationString, "%02u:%02u:%02u", hours, minutes, seconds);
+  sprintf(durationString, "%02u:%02u:%02u", hours, minutes, seconds);
 
   m_ObservationDuration->SetValue(durationString);
 }
