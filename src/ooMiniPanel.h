@@ -29,6 +29,12 @@
 #include <wx/panel.h>
 
 ///////////////////////////////////////////////////////////////////////////////
+/// Custom events
+///////////////////////////////////////////////////////////////////////////////
+wxDECLARE_EVENT(OBSERVATION_STARTED, wxCommandEvent);
+wxDECLARE_EVENT(OBSERVATION_STOPPED, wxCommandEvent);
+
+///////////////////////////////////////////////////////////////////////////////
 /// Class ooMiniPanel
 ///////////////////////////////////////////////////////////////////////////////
 class ooMiniPanel : public wxPanel {
@@ -52,16 +58,16 @@ public:
 
   void OnShow(wxShowEvent& event);
 
-  wxButton* m_StartStopObservation;
-
 protected:
   void UpdateObservationStatus();
+  void UpdateObservationDuration();
 
   void ooControlStartStopObservationClick(wxCommandEvent& event);
   void OnToggleWindowClick(wxCommandEvent& event);
   
   void OnObservationDurationTimer(wxTimerEvent& event);
 
+  wxButton* m_StartStopObservation;
   wxStaticText* m_ObservationsDurationLabel;
   wxTextCtrl* m_ObservationDuration;
   wxButton* m_buttonToggleWindow;

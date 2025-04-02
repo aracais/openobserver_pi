@@ -36,6 +36,9 @@
 
 extern openobserver_pi* g_openobserver_pi;
 
+wxDEFINE_EVENT(OBSERVATION_STARTED, wxCommandEvent);
+wxDEFINE_EVENT(OBSERVATION_STOPPED, wxCommandEvent);
+
 ooMiniPanel::ooMiniPanel() : wxPanel() {}
 
 ooMiniPanel::ooMiniPanel(wxWindow* parent, wxWindowID id, const wxString& msg,
@@ -117,19 +120,27 @@ void ooMiniPanel::SetToggleWindowButtonLabel(const wxString& label)
   m_buttonToggleWindow->SetLabel(label);
 }
 
-void ooMiniPanel::ooControlStartStopObservationClick(wxCommandEvent& event) {
-  // allow other handlers
-  event.Skip();
-
+void ooMiniPanel::ooControlStartStopObservationClick(wxCommandEvent& event) 
+{
   if (!g_openobserver_pi->m_ooObservations) return;
 
   if (g_openobserver_pi->m_ooObservations->IsObserving())
   {
     // stop observation
     g_openobserver_pi->m_ooObservations->StopObservation();
+
+    // issue event
+    wxCommandEvent event(OBSERVATION_STOPPED, GetId());
+    event.SetEventObject(this);
+    ProcessWindowEvent(event);
   } else {
     // start observation
     g_openobserver_pi->m_ooObservations->StartObservation();
+
+    // issue event
+    wxCommandEvent event(OBSERVATION_STARTED, GetId());
+    event.SetEventObject(this);
+    ProcessWindowEvent(event);
   }
 
   UpdateObservationStatus();
@@ -137,6 +148,7 @@ void ooMiniPanel::ooControlStartStopObservationClick(wxCommandEvent& event) {
 
 void ooMiniPanel::OnShow(wxShowEvent& event)
 {
+  UpdateObservationDuration();
   UpdateObservationStatus();
 }
 
@@ -157,7 +169,8 @@ void ooMiniPanel::UpdateObservationStatus()
   }
 }
 
-void ooMiniPanel::OnObservationDurationTimer(wxTimerEvent& event) {
+void ooMiniPanel::UpdateObservationDuration()
+{
   if (!g_openobserver_pi->m_ooObservations) return;
 
   const long duration_ms =
@@ -171,6 +184,10 @@ void ooMiniPanel::OnObservationDurationTimer(wxTimerEvent& event) {
   std::sprintf(durationString, "%02u:%02u:%02u", hours, minutes, seconds);
 
   m_ObservationDuration->SetValue(durationString);
+}
+
+void ooMiniPanel::OnObservationDurationTimer(wxTimerEvent& event) {
+  UpdateObservationDuration();
 }
 
 void ooMiniPanel::OnToggleWindowClick(wxCommandEvent& event) {
