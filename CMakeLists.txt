@@ -90,7 +90,7 @@ set(CLOUDSMITH_BASE_REPOSITORY "openobserver") # without the pi
 # Set the following to use OpenCPN cloudsmith repositories instead of own
 # repositories
 # set(CLOUDSMITH_USER "opencpn")
-set(CLOUDSMITH_USER "alex-mansfield")
+set(CLOUDSMITH_USER "aracais")
 
 set(XML_INFO_URL "")
 set(XML_SUMMARY ${SHORT_DESCRIPTION})
