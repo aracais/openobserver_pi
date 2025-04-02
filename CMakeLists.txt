@@ -65,7 +65,7 @@ set(VERSION_MAJOR "0")
 set(VERSION_MINOR "0")
 set(VERSION_PATCH "1")
 set(VERSION_TWEAK "0")
-set(VERSION_DATE "01/03/2025") # DD/MM/YYYY format
+set(VERSION_DATE "02/04/2025") # DD/MM/YYYY format
 set(OCPN_MIN_VERSION "ov58")
 
 set(OCPN_API_VERSION_MAJOR "1")
@@ -89,12 +89,10 @@ set(CLOUDSMITH_BASE_REPOSITORY "openobserver") # without the pi
 
 # Set the following to use OpenCPN cloudsmith repositories instead of own
 # repositories
-set(CLOUDSMITH_USER "opencpn")
-# set(CLOUDSMITH_USER "jon-gough")
+# set(CLOUDSMITH_USER "opencpn")
+set(CLOUDSMITH_USER "alex-mansfield")
 
-set(XML_INFO_URL
-    "https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn:opencpn_user_manual:plugins:safety:odraw1.6_pi"
-)
+set(XML_INFO_URL "")
 set(XML_SUMMARY ${SHORT_DESCRIPTION})
 set(XML_DESCRIPTION ${LONG_DESCRIPTION})
 
