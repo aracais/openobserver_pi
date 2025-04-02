@@ -126,7 +126,8 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 //
 //---------------------------------------------------------------------------------------------------------
 
-openobserver_pi::openobserver_pi(void *ppimgr) : opencpn_plugin_118(ppimgr), m_ooObservations(nullptr)
+openobserver_pi::openobserver_pi(void *ppimgr) 
+    : opencpn_plugin_118(ppimgr), m_ooObservations(nullptr), m_ooControlDialogImpl(nullptr), m_ooMiniDialogImpl(nullptr)
 {
     // Create the PlugIn icons
     g_ppimgr = ppimgr;
@@ -196,20 +197,6 @@ int openobserver_pi::Init(void)
     // Get a pointer to the opencpn display canvas, to use as a parent for windows created
     m_parent_window = GetOCPNCanvasWindow();
     m_pConfig = GetOCPNConfigObject();
-
-    m_ooObservations = new ooObservations();
-
-    m_ooControlDialogImpl = new ooControlDialogImpl(m_parent_window);
-    m_ooControlDialogImpl->CreateObservationsTable(m_ooObservations);
-    m_ooControlDialogImpl->Fit();
-    m_ooControlDialogImpl->Layout();
-    m_ooControlDialogImpl->Hide();
-
-    m_ooMiniDialogImpl = new ooMiniDialogImpl(m_parent_window);
-    m_ooMiniDialogImpl->Fit();
-    m_ooMiniDialogImpl->Layout();
-    m_ooMiniDialogImpl->Hide();
-
     LoadConfig();
 
 #ifdef PLUGIN_USE_SVG
@@ -234,6 +221,30 @@ int openobserver_pi::Init(void)
     g_pFontSmall = GetOCPNScaledFont_PlugIn( wxS("tp_Small") );
     wxColour l_fontcolour = GetFontColour_PlugIn( wxS("tp_Label") );
     l_fontcolour = GetFontColour_PlugIn( wxS("tp_Data") );
+
+    m_ooObservations = new ooObservations();
+
+    m_ooMiniDialogImpl = new ooMiniDialogImpl(m_parent_window);
+    m_ooMiniDialogImpl->Fit();
+    m_ooMiniDialogImpl->Layout();
+    m_ooMiniDialogImpl->Hide();
+
+    m_ooControlDialogImpl = new ooControlDialogImpl(m_parent_window);
+    m_ooControlDialogImpl->CreateObservationsTable(m_ooObservations);
+
+    if (m_projectFile.IsEmpty()) 
+        m_ooControlDialogImpl->NewProject();
+    else   
+        m_ooControlDialogImpl->LoadProject(m_projectFile);
+
+    m_ooControlDialogImpl->UseProject();
+
+    // restore backup observations and start backing up on a timer
+    m_ooControlDialogImpl->RestoreBackupObservations();
+
+    m_ooControlDialogImpl->Fit();
+    m_ooControlDialogImpl->Layout();
+    m_ooControlDialogImpl->Hide();
 
     return (
         WANTS_CURSOR_LATLON       |
@@ -402,6 +413,26 @@ wxBitmap *openobserver_pi::GetPlugInBitmap()
     return &m_ptpicons->m_bm_openobserver_pi;
 }
 
+wxString openobserver_pi::GetProjectFile() const
+{
+    return m_projectFile;
+}
+
+wxString openobserver_pi::GetProjectName() const
+{
+    return m_projectName;
+}
+
+void openobserver_pi::SetProject(const wxString& projectFile, const wxString& projectName)
+{
+    m_projectFile = projectFile;
+    m_projectName = projectName;
+    
+    wxString title = "OpenObserver - " + m_projectName;
+    m_ooControlDialogImpl->SetTitle(title);
+    m_ooMiniDialogImpl->SetTitle(title);
+}
+
 void openobserver_pi::ToggleToolbarIcon()
 {
     if (!m_ooControlDialogImpl || !m_ooMiniDialogImpl) return;
@@ -449,21 +480,11 @@ void openobserver_pi::SaveConfig()
     #endif
     #endif
 
-    if(m_pConfig) 
-    {
-        // section in the main OpenCPN setting file (Mac ~/Library/preferences/opencpn/opencpn.ini)
-        m_pConfig->SetPath( wxS( "/Settings/openobserver_pi" ) );
-        // if(m_bRecreateConfig) {
-        //     m_pConfig->DeleteGroup( "/Settings/openobserver_pi" );
-        // } else {
-        //     m_pConfig->Write( wxS( "SaveJSONOnStartup" ), g_bSaveJSONOnStartup );
-        //     m_pConfig->Write( wxS( "JSONSaveFile" ), m_fnOutputJSON.GetFullPath());
-        //     m_pConfig->Write( wxS( "JSONInputFile" ), m_fnInputJSON.GetFullPath());
-        //     m_pConfig->Write( wxS( "CloseSaveFileAferEachWrite" ), m_bCloseSaveFileAfterEachWrite);
-        //     m_pConfig->Write( wxS( "AppendToSaveFile" ), m_bAppendToSaveFile);
-        //     m_pConfig->Write( wxS( "SaveIncommingJSONMessages" ), m_bSaveIncommingJSONMessages);
-        // }
-    }
+    if (!m_pConfig) return;
+
+    // section in the main OpenCPN setting file (Mac ~/Library/preferences/opencpn/opencpn.ini)
+    m_pConfig->SetPath("/Settings/openobserver_pi");
+    m_pConfig->Write("ProjectFile", m_projectFile);
 }
 
 void openobserver_pi::LoadConfig()
@@ -477,23 +498,8 @@ void openobserver_pi::LoadConfig()
     #endif
     #endif
 
-    if(m_pConfig)
-    {
-        m_pConfig->SetPath( wxS( "/Settings/openobserver_pi" ) );
-        // m_pConfig->Read( wxS( "SaveJSONOnStartup"), &g_bSaveJSONOnStartup, false );
-        // if(g_bSaveJSONOnStartup) m_ooControlDialogImpl->SetSaveJSONOnStartup(g_bSaveJSONOnStartup);
-        // wxString l_filepath;
-        // m_pConfig->Read( wxS("JSONSaveFile"), &l_filepath, wxEmptyString);
-        // m_fnOutputJSON.Assign(l_filepath);
-        // if(m_fnOutputJSON != wxEmptyString) m_ooControlDialogImpl->SetJSONSaveFile(m_fnOutputJSON.GetFullPath());
-        // m_pConfig->Read( wxS( "JSONInputFile" ), &l_filepath, wxEmptyString);
-        // m_fnInputJSON.Assign(l_filepath);
-        // if(m_fnInputJSON != wxEmptyString) m_ooControlDialogImpl->SetJSONInputFile(m_fnInputJSON.GetFullPath());
-        // m_pConfig->Read( wxS( "CloseSaveFileAferEachWrite" ), &m_bCloseSaveFileAfterEachWrite, true);
-        // m_ooControlDialogImpl->SetCloseFileAfterEachWrite(m_bCloseSaveFileAfterEachWrite);
-        // m_pConfig->Read( wxS( "AppendToSaveFile" ), &m_bAppendToSaveFile, true);
-        // m_ooControlDialogImpl->SetAppendToSaveFile(m_bAppendToSaveFile);
-        // m_pConfig->Read( wxS( "SaveIncommingJSONMessages" ), &m_bSaveIncommingJSONMessages, false);
-        // m_ooControlDialogImpl->SetIncommingJSONMessages(m_bSaveIncommingJSONMessages);
-    }
+    if (!m_pConfig) return;
+
+    m_pConfig->SetPath("/Settings/openobserver_pi");
+    m_pConfig->Read("ProjectFile", &m_projectFile, wxEmptyString);
 }

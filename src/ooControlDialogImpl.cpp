@@ -82,7 +82,7 @@ ooControlDialogImpl::ooControlDialogImpl(wxWindow* parent)
     wxFileName backup(*g_pData, "observations.xml");
     m_BackupFilename = backup.GetFullPath();
 
-    // bind timers
+    // bind backup timer (started in RestoreBackupObservations)
     m_BackupTimer.Bind(wxEVT_TIMER, &ooControlDialogImpl::OnBackupTimer, this, m_BackupTimer.GetId());
 }
 
@@ -156,7 +156,7 @@ void ooControlDialogImpl::NewProject()
     m_gridProject->SetCellValue(0, 7, "Mark GUID");
     m_gridProject->SetCellValue(1, 7, "Mark GUID");
 
-    m_textProjectFile->SetValue("(not saved to file)");
+    m_textProjectFile->SetValue("");
     m_textProjectName->SetValue("Default Project");
 }
 
@@ -171,6 +171,7 @@ bool ooControlDialogImpl::LoadProject(const wxString& filename)
     if (m_gridProject->GetNumberCols() > 0)
         m_gridProject->DeleteCols(0, m_gridProject->GetNumberCols());
 
+    m_textProjectFile->SetValue(filename);
     m_textProjectName->SetValue(xmlDoc.GetRoot()->GetAttribute("name"));
 
     wxXmlNode *field = xmlDoc.GetRoot()->GetChildren();
@@ -277,9 +278,14 @@ void ooControlDialogImpl::CreateObservationsTable(ooObservations *observations)
     m_ObservationsTable->SetDefaultRenderer(renderer);
 
     // m_ObservationsTable is a wxGrid, ultimately derived from wxWindow
-	m_fgSizerObservations->Add(m_ObservationsTable, 0, wxALL|wxEXPAND, 5);
+	m_fgSizerObservations->Add(m_ObservationsTable, 0, wxALL|wxEXPAND, 5);    
+}
 
-    // restore observations
+void ooControlDialogImpl::RestoreBackupObservations()
+{
+    if (!m_Observations) return;
+
+    // restore observations from backup
     if (!m_Observations->ReadFromXML(m_BackupFilename))
     {
         wxMessageBox("Error loading observations file " + m_BackupFilename + ".", "Error", wxOK, this);
@@ -287,10 +293,14 @@ void ooControlDialogImpl::CreateObservationsTable(ooObservations *observations)
 
     // start timer to backup observations every 30 seconds
     m_BackupTimer.Start(30000); // 30'000 ms = 30 s
+
+    return;
 }
 
 void ooControlDialogImpl::SetupObservationsForProject()
 {
+    if (!m_Observations) return;
+
     // stop any observation, if one is running
     m_Observations->StopObservation();
 
@@ -329,6 +339,8 @@ void ooControlDialogImpl::SetupObservationsForProject()
     }
     m_Observations->SetColFieldTypes(colFieldTypes);
 
+    if (!m_ObservationsTable) return;
+
     // update column sizes of table to match
     m_ObservationsTable->SetColSizes(m_Observations->GetColSizes());
 }
@@ -346,11 +358,32 @@ void ooControlDialogImpl::SetPositionFix(time_t fixTime, double lat, double lon)
     m_ObservationsLon->SetValue(toSDMM_PlugIn(2, lon));
 }
 
+void ooControlDialogImpl::UseProject()
+{
+    // update the project tab interface
+    m_ProjectEditUse->SetLabel("Edit");
+    m_gridProject->Disable();
+    m_ProjectNew->Disable();
+    m_ProjectLoad->Disable();
+    m_ProjectSave->Disable();
+    m_ProjectNewColumn->Disable();
+    m_ProjectDeleteColumn->Disable();
+
+    g_openobserver_pi->SetProject(m_textProjectFile->GetValue(), m_textProjectName->GetValue());
+
+    // disable project name text field, first setting value in code to ensure it stays
+    m_textProjectName->SetValue(m_textProjectName->GetValue());
+    m_textProjectName->Disable();
+
+    // setup observations for the project
+    SetupObservationsForProject();
+}
+
 void ooControlDialogImpl::OnButtonClickProjectEditUse(wxCommandEvent& event)
 {
     if (m_gridProject->IsEnabled()) 
     {
-        // exit edit mode
+        // exit edit mode and use project
 
         // first, prompt user to export observations
         if (m_Observations)
@@ -392,22 +425,8 @@ void ooControlDialogImpl::OnButtonClickProjectEditUse(wxCommandEvent& event)
             m_gridProject->SetCellValue(1, m_gridProject->GetNumberCols()-1, "Mark GUID");
         }
 
-        // third, change the project tab interface
-        m_ProjectEditUse->SetLabel("Edit");
-        m_gridProject->Disable();
-        m_ProjectNew->Disable();
-        m_ProjectLoad->Disable();
-        m_ProjectSave->Disable();
-        m_ProjectNewColumn->Disable();
-        m_ProjectDeleteColumn->Disable();
-        SetTitle("OpenObserver - " + m_textProjectName->GetValue());
-
-        // disable project name text field, first setting value in code to ensure it stays
-        m_textProjectName->SetValue(m_textProjectName->GetValue());
-        m_textProjectName->Disable();
-
-        // finally, setup observations for the project
-        SetupObservationsForProject();
+        UseProject();
+        
     } else {
         // enter edit mode
         m_ProjectEditUse->SetLabel("Use");
@@ -446,8 +465,6 @@ void ooControlDialogImpl::OnButtonClickProjectLoad(wxCommandEvent& event)
         wxMessageBox("Unable to load project from file " + loadProjectDialog.GetPath() + ".", "Error", wxOK, this);
         return;
     }
-
-    m_textProjectFile->SetValue(loadProjectDialog.GetPath());
 }
 
 void ooControlDialogImpl::OnButtonClickProjectSave(wxCommandEvent& event)
@@ -497,6 +514,20 @@ void ooControlDialogImpl::OnButtonClickDeleteObservation( wxCommandEvent& event 
 
     if (m_Observations->GetNumberRows() > 0)
         m_Observations->DeleteRows(0);
+}
+
+void ooControlDialogImpl::OnButtonClickDeleteAllObservations(wxCommandEvent& event)
+{
+    if (!m_Observations) return;
+
+    if (m_Observations->GetNumberRows() <= 0) return;
+
+    const int response = wxMessageBox("Warning: all your current observations will be deleted. Do you want to continue?", "Delete all observations?", wxYES_NO, this);
+
+    if (response == wxYES)
+    {
+        m_Observations->DeleteRows(0, m_Observations->GetNumberRows());
+    }
 }
 
 void ooControlDialogImpl::OnButtonClickExportObservations( wxCommandEvent& event )

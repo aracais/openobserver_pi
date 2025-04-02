@@ -178,6 +178,10 @@ public:
     void SetCursorLatLon(double lat, double lon);
     void SetPositionFix(PlugIn_Position_Fix &pfix);
 
+    wxString GetProjectFile() const;
+    wxString GetProjectName() const;
+    void SetProject(const wxString& projectFile, const wxString& projectName);
+
     void ToggleToolbarIcon();
     void ToggleWindow();
 
@@ -201,6 +205,8 @@ private:
     int     m_iCallerId;
     bool    m_bShowMainDialog;
     int     m_openobserver_button_id;
+    wxString m_projectFile;
+    wxString m_projectName;
 
     double  m_cursor_lat;
     double  m_cursor_lon;

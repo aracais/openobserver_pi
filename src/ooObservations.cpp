@@ -156,7 +156,10 @@ bool ooObservations::IsObserving() const
 
 long ooObservations::GetObservationDuration()
 {
-    return m_ObservationDurationStopWatch.Time();
+    if (IsObserving())
+        return m_ObservationDurationStopWatch.Time();
+    else
+        return 0;
 }
 
 void ooObservations::AddMarks()
@@ -338,7 +341,9 @@ void ooObservations::SaveToXML(wxFile *file)
 bool ooObservations::ReadFromXML(wxString& filename)
 {
     wxXmlDocument xmlDoc;
-    if ((!xmlDoc.Load(filename)) || (xmlDoc.GetRoot()->GetName() != "observations")) {
+    if (filename.IsEmpty() || (!xmlDoc.Load(filename)) || 
+        (xmlDoc.GetRoot()->GetName() != "observations") || 
+        (xmlDoc.GetRoot()->GetAttribute("file_version") != "1")) {
         return false;
     }
 

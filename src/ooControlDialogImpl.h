@@ -50,8 +50,10 @@ public:
         void NewProject();
         bool LoadProject(const wxString& filename);
         void SaveProject(wxFile *file) const;
+        void UseProject();
 
         void CreateObservationsTable(ooObservations *observations);
+        void RestoreBackupObservations();
 
         void SetPositionFix(time_t fixTime, double lat, double lon);
 
@@ -67,6 +69,7 @@ protected:
 
         void OnButtonClickNewObservation( wxCommandEvent& event );
         void OnButtonClickDeleteObservation( wxCommandEvent& event );
+        void OnButtonClickDeleteAllObservations(wxCommandEvent& event);
         void OnButtonClickExportObservations( wxCommandEvent& event );
         void OnButtonClickObservationsAddMarks( wxCommandEvent& event );
         void OnButtonClickObservationsDeleteMarks( wxCommandEvent& event );

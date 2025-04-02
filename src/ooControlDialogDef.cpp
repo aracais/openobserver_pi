@@ -68,7 +68,7 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 
 	fgSizerProjectButtons->Add( m_ProjectSave, 0, wxALL, 5 );
 
-	m_ProjectNewColumn = new wxButton( m_panelProject, wxID_ANY, _("New Column"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ProjectNewColumn = new wxButton( m_panelProject, wxID_ANY, _("Insert Column"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_ProjectNewColumn->Enable( false );
 
 	fgSizerProjectButtons->Add( m_ProjectNewColumn, 0, wxALL, 5 );
@@ -208,17 +208,20 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	m_fgSizerObservations->Add( m_staticline11, 0, wxEXPAND | wxALL, 5 );
 
 	wxFlexGridSizer* fgSizerObservationsButtons;
-	fgSizerObservationsButtons = new wxFlexGridSizer( 1, 5, 0, 0 );
+	fgSizerObservationsButtons = new wxFlexGridSizer( 1, 6, 0, 0 );
 	fgSizerObservationsButtons->SetFlexibleDirection( wxBOTH );
 	fgSizerObservationsButtons->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	m_ObservationsNew = new wxButton( m_panelObservations, wxID_ANY, _("New Row"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ObservationsNew = new wxButton( m_panelObservations, wxID_ANY, _("Insert Row"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizerObservationsButtons->Add( m_ObservationsNew, 0, wxALL, 5 );
 
 	m_ObservationsDelete = new wxButton( m_panelObservations, wxID_ANY, _("Delete Top Row"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizerObservationsButtons->Add( m_ObservationsDelete, 0, wxALL, 5 );
 
-	m_ObservationsAddMarks = new wxButton( m_panelObservations, wxID_ANY, _("Add Marks"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ObservationsDeleteAll = new wxButton( m_panelObservations, wxID_ANY, _("Delete All Rows"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizerObservationsButtons->Add( m_ObservationsDeleteAll, 0, wxALL, 5 );
+
+	m_ObservationsAddMarks = new wxButton( m_panelObservations, wxID_ANY, _("Create Marks"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizerObservationsButtons->Add( m_ObservationsAddMarks, 0, wxALL, 5 );
 
 	m_ObservationsDeleteMarks = new wxButton( m_panelObservations, wxID_ANY, _("Delete Marks"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -274,6 +277,7 @@ bool ooControlDialogDef::Create( wxWindow* parent, wxWindowID id, const wxString
 	m_ProjectDeleteColumn->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectDeleteColumn ), NULL, this );
 	m_ObservationsNew->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickNewObservation ), NULL, this );
 	m_ObservationsDelete->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickDeleteObservation ), NULL, this );
+	m_ObservationsDeleteAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickDeleteAllObservations ), NULL, this );
 	m_ObservationsAddMarks->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickObservationsAddMarks ), NULL, this );
 	m_ObservationsDeleteMarks->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickObservationsDeleteMarks ), NULL, this );
 	m_ObservationsExportObservations->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickExportObservations ), NULL, this );
@@ -294,6 +298,7 @@ ooControlDialogDef::~ooControlDialogDef()
 	m_ProjectDeleteColumn->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickProjectDeleteColumn ), NULL, this );
 	m_ObservationsNew->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickNewObservation ), NULL, this );
 	m_ObservationsDelete->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickDeleteObservation ), NULL, this );
+	m_ObservationsDeleteAll->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickDeleteAllObservations ), NULL, this );
 	m_ObservationsAddMarks->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickObservationsAddMarks ), NULL, this );
 	m_ObservationsDeleteMarks->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickObservationsDeleteMarks ), NULL, this );
 	m_ObservationsExportObservations->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( ooControlDialogDef::OnButtonClickExportObservations ), NULL, this );
