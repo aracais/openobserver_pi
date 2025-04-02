@@ -48,6 +48,8 @@ public:
         ~ooControlDialogImpl();
 
         void NewProject();
+        bool LoadProject(const wxString& filename);
+        void SaveProject(wxFile *file) const;
 
         void CreateObservationsTable(ooObservations *observations);
 
@@ -58,6 +60,8 @@ protected:
 
         void OnButtonClickProjectEditUse(wxCommandEvent& event);
         void OnButtonClickProjectNew(wxCommandEvent& event);
+        void OnButtonClickProjectLoad(wxCommandEvent& event);
+        void OnButtonClickProjectSave(wxCommandEvent& event);
 	void OnButtonClickProjectNewColumn(wxCommandEvent& event);
         void OnButtonClickProjectDeleteColumn(wxCommandEvent& event);
 

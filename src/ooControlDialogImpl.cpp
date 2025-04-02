@@ -155,6 +155,87 @@ void ooControlDialogImpl::NewProject()
     m_gridProject->SetCellValue(1, 6, "Text");
     m_gridProject->SetCellValue(0, 7, "Mark GUID");
     m_gridProject->SetCellValue(1, 7, "Mark GUID");
+
+    m_textProjectFile->SetValue("(not saved to file)");
+    m_textProjectName->SetValue("Default Project");
+}
+
+bool ooControlDialogImpl::LoadProject(const wxString& filename)
+{
+    wxXmlDocument xmlDoc;
+    if ((!xmlDoc.Load(filename)) || (xmlDoc.GetRoot()->GetName() != "project")|| (xmlDoc.GetRoot()->GetAttribute("file_version") != "1")) {
+        return false;
+    }
+
+    // delete columns
+    if (m_gridProject->GetNumberCols() > 0)
+        m_gridProject->DeleteCols(0, m_gridProject->GetNumberCols());
+
+    m_textProjectName->SetValue(xmlDoc.GetRoot()->GetAttribute("name"));
+
+    wxXmlNode *field = xmlDoc.GetRoot()->GetChildren();
+    while (field)
+    {
+        int c = -1;
+        if (field->GetAttribute("id").ToInt(&c) && (c>=0)) 
+        {
+            // expand number of columns as needed to accommodate fields
+            if (c >= m_gridProject->GetNumberCols()) 
+            {
+                m_gridProject->AppendCols(c - m_gridProject->GetNumberCols() + 1);
+            }
+
+            // set column size
+            int col_size = -1;
+            if (field->GetAttribute("col_size").ToInt(&col_size) && (col_size>=0)) {
+                m_gridProject->SetColSize(c, col_size);
+            }
+
+            // set label and field type
+            m_gridProject->SetCellValue(0, c, field->GetAttribute("label"));
+            m_gridProject->SetCellValue(1, c, field->GetAttribute("field_type"));
+        }
+
+        field = field->GetNext();
+    }
+
+    // set the column labels and cell editors
+    for (int c=0; c<m_gridProject->GetNumberCols(); ++c)
+    {
+        m_gridProject->SetColLabelValue(c, "");
+
+        wxGridCellChoiceEditor *observationFieldTypeEditor = new wxGridCellChoiceEditor(ooObservations::GetObservationFieldTypes());
+        m_gridProject->SetCellEditor(1, c, observationFieldTypeEditor);
+    }
+
+    return true;
+}
+
+void ooControlDialogImpl::SaveProject(wxFile *file) const
+{
+    const int C = m_gridProject->GetNumberCols();
+
+    wxXmlDocument xmlDoc;    
+    wxXmlNode* project = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, "project");
+    project->AddAttribute("creator", "OpenObserver for OpenCPN");
+    project->AddAttribute("file_version", "1");
+    project->AddAttribute("name", m_textProjectName->GetValue());
+    xmlDoc.SetRoot(project);
+
+    for (int c=0; c<C; ++c) {
+        wxXmlNode* field = new wxXmlNode(project, wxXML_ELEMENT_NODE, "field");
+        field->AddAttribute("id", wxString::Format(wxT("%i"), c));
+        field->AddAttribute("label", m_gridProject->GetCellValue(0, c));
+        field->AddAttribute("field_type", m_gridProject->GetCellValue(1, c));
+        field->AddAttribute("col_size", wxString::Format(wxT("%i"), m_gridProject->GetColSize(c)));
+    }
+    
+    // write the output to a wxString
+    wxStringOutputStream stream;
+    xmlDoc.Save(stream);
+
+    // write the string to the file
+    file->Write(stream.GetString());    
 }
 
 void ooControlDialogImpl::CreateObservationsTable(ooObservations *observations)
@@ -319,6 +400,7 @@ void ooControlDialogImpl::OnButtonClickProjectEditUse(wxCommandEvent& event)
         m_ProjectSave->Disable();
         m_ProjectNewColumn->Disable();
         m_ProjectDeleteColumn->Disable();
+        SetTitle("OpenObserver - " + m_textProjectName->GetValue());
 
         // disable project name text field, first setting value in code to ensure it stays
         m_textProjectName->SetValue(m_textProjectName->GetValue());
@@ -345,6 +427,46 @@ void ooControlDialogImpl::OnButtonClickProjectNew(wxCommandEvent& event)
     
     if (response == wxYES)
         NewProject();
+}
+
+void ooControlDialogImpl::OnButtonClickProjectLoad(wxCommandEvent& event)
+{
+    const int response = wxMessageBox("Warning: your current project will be cleared. Do you want to continue?", "Warning", wxYES_NO, this);
+    
+    if (response != wxYES)
+        return;
+
+    wxFileDialog loadProjectDialog(this, _("Load project from XML file"), "", "", "XML file (*.xml)|*.xml", wxFD_OPEN|wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR);
+
+    if (loadProjectDialog.ShowModal() == wxID_CANCEL)
+        return;
+
+    if (!LoadProject(loadProjectDialog.GetPath()))
+    {
+        wxMessageBox("Unable to load project from file " + loadProjectDialog.GetPath() + ".", "Error", wxOK, this);
+        return;
+    }
+
+    m_textProjectFile->SetValue(loadProjectDialog.GetPath());
+}
+
+void ooControlDialogImpl::OnButtonClickProjectSave(wxCommandEvent& event)
+{
+    wxFileDialog saveProjectDialog(this, _("Save project to XML file"), "", m_textProjectName->GetValue(), "XML file (*.xml)|*.xml", wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
+ 
+    if (saveProjectDialog.ShowModal() == wxID_CANCEL)
+        return;
+ 
+    wxFileOutputStream output_stream(saveProjectDialog.GetPath());
+    if (!output_stream.IsOk())
+    {
+        wxMessageBox("Unable to save project to file " + saveProjectDialog.GetPath() + ".", "Error", wxOK, this);
+        return;
+    }
+
+    SaveProject(output_stream.GetFile());
+
+    m_textProjectFile->SetValue(saveProjectDialog.GetPath());
 }
 
 void ooControlDialogImpl::OnButtonClickProjectNewColumn(wxCommandEvent& event)
