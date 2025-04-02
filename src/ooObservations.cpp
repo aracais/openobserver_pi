@@ -31,34 +31,8 @@
 
 #include "ocpn_plugin.h"
 
-ooObservations::ooObservations() : wxGridStringTable(0, 7), m_IsObserving(false)
+ooObservations::ooObservations() : wxGridStringTable(0, 0), m_IsObserving(false)
 {
-    SetColLabelValue( 0, _("Date") );
-	SetColLabelValue( 1, _("Time (UTC)") );
-	SetColLabelValue( 2, _("Lat") );
-	SetColLabelValue( 3, _("Lon") );
-	SetColLabelValue( 4, _("Species") );
-	SetColLabelValue( 5, _("Notes") );
-	SetColLabelValue( 6, _("Mark GUID") );
-
-    wxArrayInt allColSizes;
-    allColSizes.Add(70);
-    allColSizes.Add(70);
-    allColSizes.Add(90);
-    allColSizes.Add(90);
-    allColSizes.Add(100);
-    allColSizes.Add(200);
-    allColSizes.Add(70);
-    m_col_sizes = wxGridSizesInfo(70, allColSizes);
-
-    m_col_field_types.Clear();
-    m_col_field_types.Add("Start Date");
-    m_col_field_types.Add("Start Time");
-    m_col_field_types.Add("Start Latitude");
-    m_col_field_types.Add("Start Longitude");
-    m_col_field_types.Add("Text");
-    m_col_field_types.Add("Text");
-    m_col_field_types.Add("Mark GUID");
 }
 
 ooObservations::~ooObservations()
