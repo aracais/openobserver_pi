@@ -82,15 +82,13 @@ set(PROD "prod") # Standard Repos
 set(BETA "beta") # Standard Repos
 set(ALPHA "alpha") # Standard Repos
 
-# Set if  Cloudsmith Base Repository name does not match your Git Repository
+# Set if Cloudsmith Base Repository name does not match your Git Repository
 # name. set(CLOUDSMITH_BASE_REPOSITORY "${GIT_REPOSITORY_NAME}")
-# set(CLOUDSMITH_BASE_REPOSITORY "opencpn-plugins")  #Ricks's customization
-set(CLOUDSMITH_BASE_REPOSITORY "testplugin") # without the pi
+set(CLOUDSMITH_BASE_REPOSITORY "openobserver") # without the pi
 
 # Set the following to use OpenCPN cloudsmith repositories instead of own
 # repositories
-set(CLOUDSMITH_USER "opencpn")
-# set(CLOUDSMITH_USER "jon-gough")
+set(CLOUDSMITH_USER "aracais")
 
 set(XML_INFO_URL
     "https://opencpn.org/wiki/dokuwiki/doku.php?id=opencpn:opencpn_user_manual:plugins:safety:odraw1.6_pi"
