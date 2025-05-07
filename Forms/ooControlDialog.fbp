@@ -53,7 +53,7 @@
       <property name="size">750,716</property>
       <property name="style">wxCAPTION|wxCLOSE_BOX|wxDEFAULT_DIALOG_STYLE|wxSTAY_ON_TOP</property>
       <property name="subclass"></property>
-      <property name="title">OpenObserver</property>
+      <property name="title">Open Observer</property>
       <property name="tooltip"></property>
       <property name="two_step_creation">1</property>
       <property name="window_extra_style"></property>

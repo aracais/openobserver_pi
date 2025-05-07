@@ -1,6 +1,6 @@
 /***************************************************************************
 * Project:  OpenCPN
-* Purpose:  OpenObserver Plugin Control Dialog
+* Purpose:  Open Observer Plugin Control Dialog
 * Author:   Jon Gough
 *
 * Project:  OpenCPN

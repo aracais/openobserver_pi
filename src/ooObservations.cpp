@@ -1,7 +1,7 @@
 /**************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenObserver Plugin Observations
+ * Purpose:  Open Observer Plugin Observations
  * Author:   Alex Mansfield
  *
  ***************************************************************************
@@ -315,7 +315,7 @@ void ooObservations::SaveToXML(wxFile *file)
 
     wxXmlDocument xmlDoc;    
     wxXmlNode* observations = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, "observations");
-    observations->AddAttribute("creator", "OpenObserver for OpenCPN");
+    observations->AddAttribute("creator", "Open Observer for OpenCPN");
     observations->AddAttribute("file_version", "1");
     xmlDoc.SetRoot(observations);
     

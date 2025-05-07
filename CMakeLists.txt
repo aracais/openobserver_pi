@@ -67,14 +67,14 @@ set(SHORT_DESCRIPTION
     "Plugin to record marine observations"
 )
 set(LONG_DESCRIPTION
-    "The OpenObserver Plugin is used to record any kind of marine observations."
+    "The Open Observer Plugin can be used to record all kinds of marine observations."
 )
 
 set(VERSION_MAJOR "0")
 set(VERSION_MINOR "0")
-set(VERSION_PATCH "331")
+set(VERSION_PATCH "1")
 set(VERSION_TWEAK "0")
-set(VERSION_DATE "06/04/2025") # DD/MM/YYYY format
+set(VERSION_DATE "07/05/2025") # DD/MM/YYYY format
 set(OCPN_MIN_VERSION "ov58")
 
 set(OCPN_API_VERSION_MAJOR "1")

@@ -1,6 +1,6 @@
 /***************************************************************************
 * Project:  OpenCPN
-* Purpose:  OpenObserver Plugin Observations
+* Purpose:  Open Observer Plugin Observations
 * Author:   Alex Mansfield
 *
 * Project:  OpenCPN

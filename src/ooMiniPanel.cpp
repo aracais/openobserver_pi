@@ -1,7 +1,7 @@
 /**************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenObserver Plugin Mini Panel
+ * Purpose:  Open Observer Plugin Mini Panel
  * Author:   Alex Mansfield
  *
  ***************************************************************************

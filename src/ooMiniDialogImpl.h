@@ -1,6 +1,6 @@
 /***************************************************************************
 * Project:  OpenCPN
-* Purpose:  OpenObserver Plugin Mini Dialog
+* Purpose:  Open Observer Plugin Mini Dialog
 * Author:   Alex Mansfield
 *
 * Project:  OpenCPN

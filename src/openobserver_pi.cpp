@@ -1,7 +1,7 @@
 /******************************************************************************
  * updated: 4-5-2012
  * Project:  OpenCPN
- * Purpose:  OpenObserver Plugin
+ * Purpose:  Open Observer Plugin
  * Author:   Jon Gough
  *
  ***************************************************************************
@@ -200,11 +200,11 @@ int openobserver_pi::Init(void)
     LoadConfig();
 
 #ifdef PLUGIN_USE_SVG
-    m_openobserver_button_id  = InsertPlugInToolSVG(_("OpenObserver Plugin"), m_ptpicons->m_s_openobserver_grey_pi, m_ptpicons->m_s_openobserver_pi, m_ptpicons->m_s_openobserver_toggled_pi, wxITEM_CHECK,
-                                                  _("OpenObserver Plugin"), wxS(""), NULL, openobserver_POSITION, 0, this);
+    m_openobserver_button_id  = InsertPlugInToolSVG(_("Open Observer Plugin"), m_ptpicons->m_s_openobserver_grey_pi, m_ptpicons->m_s_openobserver_pi, m_ptpicons->m_s_openobserver_toggled_pi, wxITEM_CHECK,
+                                                  _("Open Observer Plugin"), wxS(""), NULL, openobserver_POSITION, 0, this);
 #else
-    m_openobserver_button_id  = InsertPlugInTool(_("OpenObserver Plugin"), &m_ptpicons->m_bm_openobserver_grey_pi, &m_ptpicons->m_bm_openobserver_pi, wxITEM_CHECK,
-                                             _("OpenObserver Plugin"), wxS(""), NULL, openobserver_POSITION, 0, this);
+    m_openobserver_button_id  = InsertPlugInTool(_("Open Observer Plugin"), &m_ptpicons->m_bm_openobserver_grey_pi, &m_ptpicons->m_bm_openobserver_pi, wxITEM_CHECK,
+                                             _("Open Observer Plugin"), wxS(""), NULL, openobserver_POSITION, 0, this);
 #endif
 
     //    In order to avoid an ASSERT on msw debug builds,
@@ -428,7 +428,7 @@ void openobserver_pi::SetProject(const wxString& projectFile, const wxString& pr
     m_projectFile = projectFile;
     m_projectName = projectName;
     
-    wxString title = "OpenObserver - " + m_projectName;
+    wxString title = "Open Observer - " + m_projectName;
     m_ooControlDialogImpl->SetTitle(title);
     m_ooMiniDialogImpl->SetTitle(title);
 }

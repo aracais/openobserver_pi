@@ -1,7 +1,7 @@
 /**************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  OpenObserver Plugin Control Dialog
+ * Purpose:  Open Observer Plugin Control Dialog
  * Author:   Jon Gough
  *
  ***************************************************************************
@@ -218,7 +218,7 @@ void ooControlDialogImpl::SaveProject(wxFile *file) const
 
     wxXmlDocument xmlDoc;    
     wxXmlNode* project = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, "project");
-    project->AddAttribute("creator", "OpenObserver for OpenCPN");
+    project->AddAttribute("creator", "Open Observer for OpenCPN");
     project->AddAttribute("file_version", "1");
     project->AddAttribute("name", m_textProjectName->GetValue());
     xmlDoc.SetRoot(project);
