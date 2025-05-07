@@ -1,67 +1,88 @@
 # openobserver_pi
-Plugin to test JSON and ODAPI and develop a templated build system
 
-The idea is really to debug the process to see what happens.
-The openobserver should 'do' what a plugin would do to create stuff,
+The Open Observer plugin for OpenCPN is a tool to record marine observations.
 
-Only ODAPI is working at the moment. JSON is being developed now.
-1. With the ODAPI select the type of object you want to create,
-2. click on the chart to pick the click location for its creation or provide the lat/lon,
-3. then click create.
-4. The object 'should' be created.
+This plugin is based on [testplugin_pi](https://github.com/jongough/testplugin_pi) and uses the FrontEnd 2 (FE2) templated build process.
 
-For more details see: https://opencpn-manuals.github.io/main/opencpn-dev/odraw-messaging.html
+## What is Open Observer?
 
-The templated build process is known and FrontEnd 2 (FE2), which simplifies the information needed to build a plugin to the
-CMakeLists.txt file for most builds. All the other files needed for a plugin are supplied to allow automated building
-of the current environments supported by OpenCPN. The templated system allows for extensions per plugin to be addede by the
-developer.
+Every voyage has the potential to lead to an observation of scientific interest, and every boat has the potential to be a sensor providing accurate and consistent data.
 
-NOTE this is currently a work in progress and should be considered 'Alpha/Beta'. It may have issues at times as new functionality is added. It is a test tool not a production plugin.
+Open Observer is a tool to make use of this potential in order to record marine observations.
 
-The build process can be used in a few ways:
-  1. A standard cmake/make process on the command line
-  2. Run a batch file to create a 'Plugin Manager' installable. An example is `build-local-package.sh` which basically runs a script that is used on circleci locally and creates the installable files in the build directory
-  3. Run 'circleci local' which will run what circleci does in the cloud locally for non-ORB based environment, and example being shown in `run-circleci-local.txt`
-  4. Run a build process on pushing/merging a change on github, and when creating a new tag/version
+The Open Observer project has the following goals:
 
-# Examples
-## Local build
+1. Aid the recording of accurate, complete, consistent and structured observations
+   - Observation protocols can be easily created, customised and shared.
+   - Valid values and formatting can be specified per field.
+   - Fields can be automatically populated from boat sensor data where available.
+   - Observations can be easily exported and shared.
+2. Easy to install, setup and use on any platform
+   - Available through the OpenCPN plugin manager
+   - Ready and available to use at all times, without obstructing navigation
+3. Promote citizen science projects and encourage participation within the sailing, boating and fishing communities
 
-The simplest way to produce a package that can be imported with the "Import plugin..." button in the OpenCPN plugin manager is to run the following
+## Who is Open Observer for?
 
-```
-rm build -rf; mkdir build; cd build; bash ../build-local-package.sh
-```
+- Mariners who want to contribute to citizen science projects
+- Scientists who want to run a citizen science project
+- Mariners who want to record other observations during their voyages, separately to their log book
 
-Notice: You can of course also run the steps inside that script manually. However, in that case be aware that `make package` does not actually
-generate a file that can be used in the plugin manager. The generated `.tar.gz` gets modified (in place) to generate such a package by
-the next step, `./cloudsmith-upload.sh` (this is the case even if no account info is provided and the upload thus fails).
+Example projects which Open Observer could be used for include:
 
-## IDE setup & debugging
+- Whale observations and identification
+- Sea bird observation and counting
+- Plastic waste observation and counting
+- Microplastics trawling
+- ...
 
-This is totally dependant on the IDE that is being used. Basically the IDE needs to have both OpenCPN and the Plugin open in the IDE so that the IDE can do debugging.
-OpenCPN will/should be built with DEBUG as should the Plugin. The simplest way to continue is to use Plugin Manger once to setup your plugin correctly, i.e. all the directories and files. This can be done once you have a working plugin, openobserver_pi does work so if you base your plugin on this code, to start with, you should have an installable plugin if it compiles successfully. Then you can use the 'Local build' process to create the installable package.
+## Why is Open Observer an OpenCPN plugin?
 
-The IDE needs to be setup to run OpenCPN with the "-p" option so that all data and programs exist in the location the opencpn executable is or sub-directories of this location. Now you can use Plugin Manager to install your plugin. You will need to have set 'CatalogExpert=1' in the [Plugins] section of the opencpn.conf/ini file so that you get full access to the facilities in Plugin Manager.
+OpenCPN...
 
-Once you have installed the plugin and checked that it works you can continue to build the new functionality. When doing this you then just need to copy the plugin library to the '(opencpn build directory)/plugins/lib' directory with OpenCPN stopped, then start OpenCPN and it will load the new version of your plugin. If both OpenCPN and your Plugin are known to the IDE you should be able to single step (or other debugging processes) through both sets of code if needed.
+- is already widely used and has proven reliablity and versatility
+- is available on a wide range of platforms
+- is open source and freely available
+- is suppported by an active community of developers
+- has an built-in plugin manager, making it easy to distribute, install and update this tool
+- can be configured as a hub for boat sensor data, which Open Observer can make use of
+- provides a chart-based interface, upon which observations can be overlayed
 
-# Initial setup
+## Why are we developing Open Observer?
 
-## Git submodules
+The [Glacialis expedition](https://atlasexpeditions.org/glacialis/) in 2021 was an independent expedition supported by [Atlas Expeditions](https://atlasexpeditions.org) with the aim to collect marine wildlife data, with a focus on large whales, over a 10'000 miles voyage from the Azores archipelago to Disko Bay on the west coast of Greenland.
+
+This experimental initiative proved that a well-prepared small craft can contribute to scientific discovery. In particular, we made unprecedented observations of humpback whales which raised new questions about their migration patterns. 
+
+These results were due to the joint effort of a team of trained citizen scientists ([Glacialis](https://atlasexpeditions.org/glacialis/)), supported by a non-profit organisation ([Atlas Expeditions](https://atlasexpeditions.org)) working in direct collaboration with academic and institutional researchers (NAHWC).
+
+At [Atlas Expeditions](https://atlasexpeditions.org), this expedition and the following SILA expedition to southwest Greenland in 2023, taught us that any voyage at sea has the potential to provide a relevant scientific observation, and it is therefore extremely valuable for sailors to be encouraged to go to sea with an observation attitude, the right training and the right tools to record observations in a simple but structured manner. We had the idea that integrating these tools in chart plotters would be very powerful and thus the idea for Open Observer was born.
+
+## Installing Open Observer
+
+Open Observer is still in development and is therefore not yet available directly from the OpenCPN plugin manager. 
+
+If you would like to test the latest beta version, follow the steps below.
+
+1. Open https://cloudsmith.io/~aracais/repos/openobserver-beta/ and download the version of the plugin for your OS
+    - For MacOS, download the .gz file containing “darwin” in the name e.g. https://dl.cloudsmith.io/public/aracais/openobserver-beta/raw/names/openobserver_pi-0.0.1.0-darwin-wx32-arm64-x86_64-14.1-macos-tarball/versions/0.0.1.0+241.0369d1c/openobserver_pi-0.0.1.0-darwin-wx32-arm64-x86_64-14.1-macos.tar.gz
+    - For Windows, download the .gz file containing “msvc” in the name e.g. https://dl.cloudsmith.io/public/aracais/openobserver-beta/raw/names/openobserver_pi-0.0.1.0-msvc-x86-wx32-10.0.20348-MSVC-tarball/versions/0.0.1.0+236.0369d1c/openobserver_pi-0.0.1.0-msvc-x86-wx32-10.0.20348-MSVC.tar.gz
+2. Open OpenCPN, open the Preferences panel, go to the Plugins tab and click the button “Import plugin…”. Select the downloaded package and click “Open” to install it.
+3. Ensure that the tickbox “Enabled” is ticked.
+4. Click on the Open Observer button in the toolbar to open the plugin windows. 
+
+# Development
+
+## Initial setup
 ```
 git submodule init  
 git submodule update
 ```
 
-## Renaming plugin
+## Local build
 
-To start a new plugin, clone this repo, then run
+The simplest way to produce a package that can be imported with the "Import plugin..." button in the OpenCPN plugin manager is to run the following:
 
 ```
-git remote rm origin
-git remote add origin url-to-new-repo
-bash make-new-plugin.sh newname
-git commit -a -m "Start of new plugin newname"
+rm build -rf; mkdir build; cd build; bash ../build-local-package.sh
 ```
