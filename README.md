@@ -40,10 +40,10 @@ Example projects which Open Observer could be used for include:
 
 OpenCPN...
 
-- is already widely used and has proven reliablity and versatility
+- is already widely used and has proven reliability and versatility
 - is available on a wide range of platforms
 - is open source and freely available
-- is suppported by an active community of developers
+- is supported by an active community of developers
 - has an built-in plugin manager, making it easy to distribute, install and update this tool
 - can be configured as a hub for boat sensor data, which Open Observer can make use of
 - provides a chart-based interface, upon which observations can be overlayed
