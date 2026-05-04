@@ -531,6 +531,11 @@ void openobserver_pi::ToggleWindow()
     }
 }
 
+bool openobserver_pi::IsLateInitDone() const
+{
+    return m_bReadyForRequests;
+}
+
 void openobserver_pi::SaveConfig()
 {
     #ifndef __WXMSW__
@@ -682,7 +687,7 @@ void openobserver_pi::RefreshListings()
         if (ooObservations::ReadListingFromXML(f, items, icons)) {
             wxString filename = wxFileName(f).GetName();
             ooObservations::AddListing(filename, items);
-            if (icons.GetCount() > 0) ooObservations::SetIcons(filename, icons);
+            if (icons.GetCount() > 0) ooObservations::AddIcons(filename, icons);
         }
     }
 }

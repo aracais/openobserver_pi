@@ -38,6 +38,8 @@
 #include "ocpn_plugin.h"
 #include <openobserver_pi.h>
 
+extern openobserver_pi* g_openobserver_pi;
+
 void ComputeTrueWind(double sog, double cog, double apparentWindSpeed,
                      double apparentWindAngle, double& trueWindSpeed,
                      double& trueWindDirection);
@@ -161,8 +163,7 @@ void ooProject::OnFieldTypeChanged()
 }
 
 std::unordered_map<wxString, wxArrayString> ooObservations::m_listings;
-wxArrayString ooObservations::m_icons;
-wxString ooObservations::m_iconsListing;
+std::unordered_map<wxString, wxArrayString> ooObservations::m_listingsIcons;
 
 ooObservations::ooObservations() : wxGridStringTable(0, 0), m_IsObserving(false)
 {
@@ -546,6 +547,7 @@ void ooObservations::AddMarks(int targetRow)
     int nameCol = -1;
     int descriptionCol = -1;
     int iconCol = -1;
+    wxString iconFieldType;
     const int C = m_project.GetColCount();
 
     for (int c=0; c<C; ++c)
@@ -563,8 +565,9 @@ void ooObservations::AddMarks(int targetRow)
             if (latCol < 0) latCol = c;
         } else if (field_type.IsSameAs("Start Longitude")) {
             if (lonCol < 0) lonCol = c;
-        } else if (field_type.IsSameAs(m_iconsListing)) {
+        } else if (m_listingsIcons.find(field_type) != m_listingsIcons.end()) {
             if (iconCol < 0) iconCol = c;
+            iconFieldType = field_type;
         } else if (field_type.IsSameAs("Text")) {
             // use first text column as name and second as description
             if (nameCol < 0) nameCol = c;
@@ -605,8 +608,8 @@ void ooObservations::AddMarks(int targetRow)
             wxString icon;
             if (iconCol != -1) {
                 wxString iconValue = GetValue(r, iconCol);
-                int iconIndex = m_listings[m_iconsListing].Index(iconValue);
-                if (iconIndex != wxNOT_FOUND) icon = m_icons[iconIndex];
+                int iconIndex = m_listings[iconFieldType].Index(iconValue);
+                if (iconIndex != wxNOT_FOUND) icon = m_listingsIcons[iconFieldType][iconIndex];
             }
             if (icon.IsEmpty()) icon = m_project.GetMarkIcon();
             
@@ -666,6 +669,13 @@ void ooObservations::DeleteMarks(int targetRow)
 
 int ooObservations::UpdateObservationsFromMarks()
 {
+    // !!! Work-around !!!
+    // Since OpenCPN 5.14.0, calling GetSingleWaypoint() during plugin
+    // initialization crashes so we'll skip this step if plugin initizalization is not done.
+    // (which does not matter, because there are no usecases where this function has anything
+    // to do during initialization)
+    if (!g_openobserver_pi->IsLateInitDone()) return 0; 
+
     int res = 0;
     const int R = GetRowsCount();
     const int markCol = GetProject().GetMarkCol();
@@ -1071,8 +1081,7 @@ wxArrayString ooObservations::GetObservationFieldTypes()
 void ooObservations::ClearListings()
 {
     m_listings.clear();
-    m_icons.clear();
-    m_iconsListing.clear();
+    m_listingsIcons.clear();
 }
 
 void ooObservations::AddListing(const wxString& listing, const wxArrayString& items)
@@ -1102,10 +1111,9 @@ wxArrayString ooObservations::GetListingKeys()
     return res;
 }
 
-void ooObservations::SetIcons(const wxString& listing, const wxArrayString& icons)
+void ooObservations::AddIcons(const wxString& listing, const wxArrayString& icons)
 {
-    m_icons = icons;
-    m_iconsListing = listing;
+    m_listingsIcons[listing] = icons;
 }
 
 void ooObservations::SetNMEAFields(const std::vector<NMEAField>& fields)
